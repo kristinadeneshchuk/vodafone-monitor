@@ -149,13 +149,19 @@ function FeedPageContent() {
     const avgRelevance = (feedbacks.reduce((acc, f) => acc + f.relevanceScore, 0) / total).toFixed(2);
     const avgConstructiveness = (feedbacks.reduce((acc, f) => acc + f.constructivenessScore, 0) / total).toFixed(2);
     
-    const churnCount = feedbacks.filter(f => f.churnIntent).length;
-    const churnRate = total > 0 ? ((churnCount / total) * 100).toFixed(1) : '0.0';
+    // Намір піти рахується від СКАРГ, а не від усіх згадок: ділити
+    // девʼять погроз на 1246 згадок разом із похвалами безглуздо.
+    const complaints = feedbacks.filter(f => f.sentiment === 'negative');
+    const churnCount = complaints.filter(f => f.churnIntent).length;
+    const churnRate = complaints.length > 0
+      ? ((churnCount / complaints.length) * 100).toFixed(1) : '0.0';
     const totalResonance = feedbacks.reduce((acc, f) => acc + (f.resonance ?? (f.relevanceScore * (f.reachWeight ?? 1))), 0);
     const avgResonance = (totalResonance / (total || 1)).toFixed(1);
 
+    // "Топ епіцентр" має показувати місце з найбільшою кількістю ПРОБЛЕМ,
+    // інакше туди потрапляє місто, де про оператора найбільше пишуть добре.
     const locationCounts: Record<string, number> = {};
-    feedbacks.forEach(f => {
+    complaints.forEach(f => {
       if (f.locationName !== 'Невідомо') {
         locationCounts[f.locationName] = (locationCounts[f.locationName] || 0) + 1;
       }
@@ -346,7 +352,7 @@ function FeedPageContent() {
                       {analytics.highRiskCount}
                     </span>
                     <span className="text-xs text-slate-400">
-                      ({Math.round((analytics.highRiskCount / feedbacks.length) * 100)}%)
+                      ({((analytics.highRiskCount / Math.max(feedbacks.length, 1)) * 100).toFixed(1)}%)
                     </span>
                   </div>
                 </CardContent>
