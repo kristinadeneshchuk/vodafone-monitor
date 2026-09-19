@@ -20,7 +20,8 @@ import {
 } from 'lucide-react';
 import { feedbackService } from '@/lib/data/feedback-service';
 import { DashboardMetrics, DailyBriefing } from '@/lib/data/types';
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { Bar, BarChart, Cell, ReferenceLine, ResponsiveContainer,
+         Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { useRouter } from 'next/navigation';
 import summary from '@/lib/data/real-summary.json';
 
@@ -543,31 +544,25 @@ export default function DashboardOverview() {
           </CardHeader>
           <CardContent className="h-[220px] sm:h-[280px] md:h-[300px] p-2 sm:p-6 pt-0">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={metrics.timelineData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+              <BarChart data={metrics.weeklyData ?? []}
+                        margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis 
-                  dataKey="date" 
-                  tickLine={false} 
-                  axisLine={false} 
-                  tick={{fill: '#888', fontSize: 10}}
-                  interval={4}
+                <XAxis dataKey="label" tickLine={false} axisLine={false}
+                       tick={{ fill: '#888', fontSize: 10 }} interval={3} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fill: '#888', fontSize: 11 }} />
+                <Tooltip
+                  formatter={(val: any) => [val, 'Скарг за тиждень']}
+                  labelFormatter={(label) => `Тиждень від ${label}`}
+                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '12px' }}
                 />
-                <YAxis tickLine={false} axisLine={false} tick={{fill: '#888', fontSize: 11}} />
-                <Tooltip 
-                  formatter={(val: any) => [val, 'Кількість скарг']}
-                  labelFormatter={(label) => `Дата: ${label}`}
-                  contentStyle={{borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)', fontSize: '12px'}}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="issuesCount" 
-                  stroke="#ef4444" 
-                  strokeWidth={2.5} 
-                  dot={{r: 2.5, fill: '#ef4444'}} 
-                  activeDot={{r: 4.5}}
-                  name="Кількість скарг" 
-                />
-              </LineChart>
+                <ReferenceLine y={metrics.weeklyBaseline ?? 0} stroke="#94a3b8"
+                               strokeDasharray="4 4" />
+                <Bar dataKey="count" name="Скарг за тиждень" radius={[3, 3, 0, 0]}>
+                  {(metrics.weeklyData ?? []).map((w, i) => (
+                    <Cell key={i} fill={w.aboveNorm ? '#ef4444' : '#cbd5e1'} />
+                  ))}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>

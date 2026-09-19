@@ -32,6 +32,10 @@ export interface FeedbackRecord {
   context?: string | null;
   /** Матеріал про телеком-ринок загалом, а не про цього оператора. */
   isMarketWide?: boolean;
+  /** Хто говорить: 'user' — абонент, 'news' — медіа чи офіційна заява. */
+  genre?: 'user' | 'news';
+  /** Тон із класом 'mixed', якого немає в контракті sentiment. */
+  tone?: 'positive' | 'neutral' | 'negative' | 'mixed';
   churnIntent?: boolean;      // намір піти від оператора
   churnScore?: number;        // 0-10
   reachWeight?: number;       // охоплення джерела, 0-10
@@ -96,6 +100,11 @@ export interface DashboardMetrics {
   topCauses?: { cause: string; count: number }[];
   /** Скарги за попередній такий самий період — для порівняння. */
   previousComplaints?: number;
+  /** Скарги по тижнях: денний графік на двох скаргах у добу показував
+   *  рівну лінію з одним шпилем. */
+  weeklyData?: { week: string; label: string; count: number; aboveNorm: boolean }[];
+  /** Медіана скарг на тиждень — межа "звичайного". */
+  weeklyBaseline?: number;
   timelineData: { date: string; issuesCount: number; averageRisk: number }[];
 }
 

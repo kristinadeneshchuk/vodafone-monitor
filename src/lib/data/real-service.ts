@@ -276,6 +276,33 @@ export class RealFeedbackService implements IFeedbackService {
       .map(([cause, count]) => ({ cause, count }))
       .sort((a, b) => b.count - a.count);
 
+    // Тижневі стовпчики замість денної лінії. Медіана — 2 скарги на
+    // добу, і 41 день на рік має нуль: денний графік показував рівну
+    // лінію з одним шпилем 2 липня, тобто одну подію й нічого більше.
+    // Тиждень дає числа, які видно, а медіана тижня — межу, вище якої
+    // починається "більше за звичайне".
+    const weekMap: Record<string, number> = {};
+    for (const f of feedbacks) {
+      if (f.sentiment !== 'negative') continue;
+      const d = parseISO(f.timestamp.slice(0, 10));
+      const monday = format(subDays(d, (d.getDay() + 6) % 7), 'yyyy-MM-dd');
+      weekMap[monday] = (weekMap[monday] ?? 0) + 1;
+    }
+    const weeks = Object.entries(weekMap)
+      .map(([week, count]) => ({ week, count }))
+      .sort((a, b) => a.week.localeCompare(b.week))
+      .slice(-26);
+    const weekCounts = weeks.map(w => w.count).sort((a, b) => a - b);
+    const weeklyBaseline = weekCounts.length
+      ? weekCounts[Math.floor(weekCounts.length / 2)]
+      : 0;
+    const weeklyData = weeks.map(w => ({
+      ...w,
+      // короткий підпис "01.09" читабельніший за ISO
+      label: `${w.week.slice(8, 10)}.${w.week.slice(5, 7)}`,
+      aboveNorm: w.count > weeklyBaseline * 2,
+    }));
+
     const topLocations = Object.entries(locationMap)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
@@ -323,6 +350,8 @@ export class RealFeedbackService implements IFeedbackService {
       topLocationsAllTime,
       topCauses,
       previousComplaints: prevComplaints,
+      weeklyData,
+      weeklyBaseline,
       timelineData,
     };
   }

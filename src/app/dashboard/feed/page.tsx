@@ -220,6 +220,26 @@ function FeedPageContent() {
     };
   }, [feedbacks]);
 
+  /**
+   * Підпис рядка. Жанр важливіший за тон: "Vodafone попередив про
+   * перебої" — переказ офіційної заяви, а не скарга абонента, і
+   * підписувати таке словом "скарга" означає рахувати одну подію як
+   * сотню незадоволених людей. Клас "змішано" теж окремий: "все супер,
+   * але на дачі інтернет поганий" — ні скарга, ні похвала.
+   */
+  const getToneLabel = (r: FeedbackRecord) =>
+    r.genre === 'news' ? 'Новина'
+      : r.tone === 'mixed' ? 'Змішано'
+      : r.sentiment === 'negative' ? 'Скарга'
+      : r.sentiment === 'positive' ? 'Похвала' : 'Нейтрально';
+
+  const getToneClass = (r: FeedbackRecord, size: string) =>
+    r.genre === 'news' ? `${size} font-normal text-sky-700 bg-sky-50 border-sky-200`
+      : r.tone === 'mixed' ? `${size} font-normal text-amber-700 bg-amber-50 border-amber-200`
+      : r.sentiment === 'negative' ? `${size} font-normal text-red-700 bg-red-50 border-red-200`
+      : r.sentiment === 'positive' ? `${size} font-normal text-emerald-700 bg-emerald-50 border-emerald-200`
+      : `${size} font-normal text-slate-600 bg-slate-50`;
+
   const getProblemLabel = (problem: ProblemType) => {
     switch(problem) {
       case 'no_signal': return 'Немає сигналу';
@@ -549,13 +569,9 @@ function FeedPageContent() {
                       {/* Badges Row */}
                       <div className="flex flex-wrap items-center gap-1.5 text-xs">
                         <Badge variant="outline" className={
-                          record.sentiment === 'negative'
-                            ? 'text-[10px] py-0 font-normal text-red-700 bg-red-50 border-red-200'
-                            : record.sentiment === 'positive'
-                            ? 'text-[10px] py-0 font-normal text-emerald-700 bg-emerald-50 border-emerald-200'
-                            : 'text-[10px] py-0 font-normal text-slate-600 bg-slate-50'
+                          getToneClass(record, 'text-[10px] py-0')
                         }>
-                          {record.sentiment === 'negative' ? 'Скарга' : record.sentiment === 'positive' ? 'Похвала' : 'Нейтрально'}
+                          {getToneLabel(record)}
                         </Badge>
                         {record.problemType !== 'none' && (
                           <Badge variant="outline" className="text-[10px] py-0 font-normal text-slate-700 bg-slate-50">
@@ -643,14 +659,9 @@ function FeedPageContent() {
                           {/* Problem Type */}
                           <TableCell className="align-top py-3">
                             <div className="flex flex-col gap-1 items-start">
-                              <Badge variant="outline" className={
-                                record.sentiment === 'negative'
-                                  ? 'text-xs font-normal text-red-700 bg-red-50 border-red-200'
-                                  : record.sentiment === 'positive'
-                                  ? 'text-xs font-normal text-emerald-700 bg-emerald-50 border-emerald-200'
-                                  : 'text-xs font-normal text-slate-600 bg-slate-50'}>
-                                {record.sentiment === 'negative' ? 'Скарга'
-                                  : record.sentiment === 'positive' ? 'Похвала' : 'Нейтрально'}
+                              <Badge variant="outline"
+                                     className={getToneClass(record, 'text-xs')}>
+                                {getToneLabel(record)}
                               </Badge>
                               {record.problemType !== 'none' && (
                                 <Badge variant="outline" className="text-xs font-normal text-slate-700 bg-slate-50">

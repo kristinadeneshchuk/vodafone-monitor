@@ -73,7 +73,7 @@ def fetch(scope='problems', limit=None, days=None):
                a.problem_type, a.risk_score, a.address_name, a.lat, a.lng,
                a.relevance_score, a.constructive_score, a.cause, a.context,
                a.churn_intent, a.churn_score, a.reach_weight, a.resonance,
-               a.is_market_wide
+               a.is_market_wide, a.genre, a.sentiment AS tone
         FROM analysis a JOIN mentions m ON m.id = a.mention_id
         WHERE {' AND '.join(conds)}
         ORDER BY m.published_at DESC
@@ -122,6 +122,13 @@ def fetch(scope='problems', limit=None, days=None):
             # Такі зберігаються по разу на бренд, тому без цієї ознаки
             # галузева стаття потрапляє у стрічку кожного оператора.
             'isMarketWide': bool(r['is_market_wide']),
+            # Хто говорить: абонент чи медіа. "Vodafone попередив про
+            # перебої" — переказ офіційної заяви, а не скарга абонента.
+            'genre': r['genre'] or 'user',
+            # Сирий тон разом зі 'змішано': у контракті №6 змішане
+            # зводиться до негативу, і "все супер, але на дачі інтернет
+            # поганий" підписувалось у стрічці словом "Скарга".
+            'tone': r['tone'],
             'churnIntent': bool(r['churn_intent']),
             'churnScore': r['churn_score'],
             'reachWeight': r['reach_weight'],
