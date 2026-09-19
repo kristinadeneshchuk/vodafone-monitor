@@ -1,12 +1,12 @@
 {
  "problemLocations": 17,
- "gridDriven": 10,
- "chronicLocations": 0,
+ "gridDriven": 8,
+ "chronicLocations": 1,
  "healthyLocations": 1,
  "incidentLocations": 0,
  "coverageMentions": 1246,
- "coverageComplaints": 727,
- "coveragePraise": 208,
+ "coverageComplaints": 765,
+ "coveragePraise": 212,
  "gridOutageShare": 22.2,
  "gridOutageCount": 276,
  "withLocation": 133,
@@ -19,6 +19,6 @@
   "lifecell": 83
  },
  "wakeAlertsPerYear": 4,
- "alertsTotal": 255,
+ "alertsTotal": 256,
  "maxSpikeVelocity": 24.0
 }
