@@ -32,7 +32,12 @@ COVERAGE_CAUSES = ('coverage', 'internet', 'calls', 'outage', 'blackout')
 
 def fetch(scope='problems', limit=None, days=None):
     """
-    scope='problems' — лише справжні скарги на звʼязок (за замовчуванням).
+    scope='coverage' — усе про звʼязок: і скарги, І ПОХВАЛИ (за замовчуванням).
+                       Без позитиву цифра "1106 скарг" ні про що не говорить:
+                       незрозуміло, це багато чи мало. Співвідношення дає
+                       відповідь на питання "де працює, а де ні" — саме те,
+                       заради чого будувався продукт.
+    scope='problems' — лише скарги на звʼязок.
     scope='negative' — весь негатив, включно з тарифами й застосунком.
     scope='all'      — увесь потік, разом із похвалами.
 
@@ -49,7 +54,7 @@ def fetch(scope='problems', limit=None, days=None):
     params = []
     if scope in ('problems', 'negative'):
         conds.append("a.sentiment IN ('negative','mixed')")
-    if scope == 'problems':
+    if scope in ('problems', 'coverage'):
         placeholders = ','.join('?' * len(COVERAGE_CAUSES))
         conds.append(f"a.cause IN ({placeholders})")
         params.extend(COVERAGE_CAUSES)
@@ -130,7 +135,7 @@ def build_locations(records):
     from collections import defaultdict
 
     groups = defaultdict(lambda: {
-        'complaints': 0, 'grid': 0, 'chronic': 0,
+        'complaints': 0, 'praise': 0, 'grid': 0, 'chronic': 0,
         'days': set(), 'brands': defaultdict(int),
         'causes': defaultdict(int), 'samples': [],
         'lat': None, 'lng': None,
@@ -144,7 +149,10 @@ def build_locations(records):
             continue
         g = groups[name]
         g['lat'], g['lng'] = r['lat'], r['lng']
-        g['complaints'] += 1
+        if r['sentiment'] == 'negative':
+            g['complaints'] += 1
+        elif r['sentiment'] == 'positive':
+            g['praise'] += 1
         g['days'].add(r['timestamp'][:10])
         g['brands'][r['brand']] += 1
         g['causes'][r['cause']] += 1
@@ -158,14 +166,24 @@ def build_locations(records):
     out = []
     for name, g in groups.items():
         n = g['complaints']
+        if n == 0 and g['praise'] == 0:
+            continue
         days = len(g['days'])
-        grid_share = round(100 * g['grid'] / n, 1)
+        grid_share = round(100 * g['grid'] / n, 1) if n else 0.0
+
+        # Частка негативу — головний показник локації. Саме він
+        # відповідає на питання "де звʼязок працює, а де ні":
+        # 14% в Одесі й 95% у Полтаві це два різні світи.
+        both = n + g['praise']
+        negativity = round(100 * n / both, 1) if both else 0.0
 
         # Що це насправді: разова аварія чи постійний фон.
         # Скарги, розмазані по багатьох днях, — це не подія,
         # і команду по них піднімати не треба.
         intensity = n / days if days else 0
-        if grid_share >= 50:
+        if both and negativity <= 35:
+            pattern = 'healthy'       # тут хвалять частіше, ніж скаржаться
+        elif grid_share >= 50:
             pattern = 'grid'          # проблема не в мережі оператора
         elif days >= 10 and intensity < 2.5:
             pattern = 'chronic'       # постійний фон, питання інвестицій
@@ -177,10 +195,12 @@ def build_locations(records):
         out.append({
             'name': name, 'lat': g['lat'], 'lng': g['lng'],
             'complaints': n,
+            'praise': g['praise'],
+            'negativityShare': negativity,
             'daysWithComplaints': days,
             'intensity': round(intensity, 2),
             'gridShare': grid_share,
-            'chronicGapShare': round(100 * g['chronic'] / n, 1),
+            'chronicGapShare': round(100 * g['chronic'] / n, 1) if n else 0.0,
             'pattern': pattern,
             'topCause': max(g['causes'], key=g['causes'].get),
             'byBrand': dict(sorted(g['brands'].items(), key=lambda x: -x[1])),
@@ -214,9 +234,12 @@ def build_summary(records, alerts):
         'problemLocations': len(locations),
         'gridDriven': sum(1 for l in locations if l['pattern'] == 'grid'),
         'chronicLocations': sum(1 for l in locations if l['pattern'] == 'chronic'),
+        'healthyLocations': sum(1 for l in locations if l['pattern'] == 'healthy'),
         'incidentLocations': sum(1 for l in locations if l['pattern'] == 'incident'),
 
-        'coverageComplaints': total,
+        'coverageMentions': total,
+        'coverageComplaints': sum(1 for r in records if r['sentiment'] == 'negative'),
+        'coveragePraise': sum(1 for r in records if r['sentiment'] == 'positive'),
         'gridOutageShare': round(100 * grid / total, 1) if total else 0,
         'gridOutageCount': grid,
         'withLocation': geo,
@@ -248,8 +271,8 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--limit', type=int)
     p.add_argument('--days', type=int)
-    p.add_argument('--scope', default='problems',
-                   choices=['problems', 'negative', 'all'])
+    p.add_argument('--scope', default='coverage',
+                   choices=['coverage', 'problems', 'negative', 'all'])
     args = p.parse_args()
 
     records = fetch(args.scope, args.limit, args.days)

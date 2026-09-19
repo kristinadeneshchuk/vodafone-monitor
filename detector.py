@@ -210,6 +210,76 @@ def build_summary(brand, cause, count, base, cities, source_types, event_type, s
     )
 
 
+# ------------------------------------------------------------------ медійний сплеск
+
+MEDIA_MIN_ITEMS = 4        # публікацій за добу на одну тему в одному місці
+MEDIA_MIN_OUTLETS = 3      # і від скількох різних видань
+
+def detect_media_bursts(con):
+    """
+    Сплеск МЕДІЙНОЇ УВАГИ, незалежно від тональності окремих матеріалів.
+
+    Навіщо окремо від сплеску скарг. 14 вересня 2026 про генератори
+    Vodafone на Полтавщині вийшло шість матеріалів за добу, з них
+    негативним був лише один — критика від ОВА. Решта нейтральні:
+    "станції готують до роботи без світла", "область відстає із
+    забезпеченням". Детектор скарг це пропустив, бо рахує негатив.
+
+    Але шість публікацій за добу на одну тему в одному регіоні — це
+    вже репутаційна подія. Тему підхопили медіа, і комунікаційній
+    команді треба реагувати незалежно від того, як розмічено настрій
+    кожного окремого заголовка.
+    """
+    rows = con.execute("""
+        SELECT substr(m.published_at,1,10) AS day, m.brand_query AS brand,
+               a.cause, a.address_name AS place, m.source_name, m.text
+        FROM analysis a JOIN mentions m ON m.id = a.mention_id
+        WHERE m.source_type = 'news'
+    """).fetchall()
+
+    groups = {}
+    for r in rows:
+        key = (r['day'], r['brand'], r['cause'], r['place'])
+        groups.setdefault(key, []).append(r)
+
+    out = []
+    for (day, brand, cause, place), items in groups.items():
+        if len(items) < MEDIA_MIN_ITEMS:
+            continue
+        # Видання витягуємо із заголовка: "Заголовок - Видання"
+        outlets = set()
+        for r in items:
+            head = (r['text'] or '').split('. ')[0]
+            if ' - ' in head:
+                outlets.add(head.rsplit(' - ', 1)[-1].strip().lower())
+        if len(outlets) < MEDIA_MIN_OUTLETS:
+            continue
+
+        where = f" ({place})" if place else ""
+        out.append({
+            'level': 'watch',
+            'event_type': 'media_attention',
+            'brand': brand,
+            'cause': cause,
+            'cities': place,
+            'window_start': day + 'T00:00:00+00:00',
+            'window_end': day + 'T23:59:59+00:00',
+            'count': len(items),
+            'baseline': 0.0,
+            'ratio': float(len(items)),
+            'n_source_types': len(outlets),
+            'example_ids': json.dumps([]),
+            'summary': (f"Медійна увага: {CAUSE_UA.get(cause, cause)}, "
+                        f"бренд {brand}{where}. {len(items)} публікацій за добу "
+                        f"від {len(outlets)} різних видань. Тональність окремих "
+                        f"матеріалів може бути нейтральною — значення має обсяг."),
+            'recommended_action': (
+                'Тему підхопили медіа. Перевірити, чи є офіційна позиція компанії, '
+                'і чи не формується наратив без нашої участі.'),
+        })
+    return out
+
+
 def run(window_hours=WINDOW_HOURS, brand=None, save=True):
     con = connect()
     con.execute(SCHEMA)
@@ -235,6 +305,8 @@ def run(window_hours=WINDOW_HOURS, brand=None, save=True):
                 if a:
                     alerts.append(a)
         cur = w_end
+
+    alerts.extend(detect_media_bursts(con))
 
     if save and alerts:
         con.executemany("""
