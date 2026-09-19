@@ -533,13 +533,15 @@ export default function DashboardOverview() {
         <Card className="col-span-1 border-slate-200 shadow-sm bg-white">
           <CardHeader className="pb-2 p-4 sm:p-6">
             <CardTitle className="text-base flex items-center justify-between">
-              <span>Динаміка скарг по днях</span>
+              <span>Скарги по тижнях</span>
               <Badge variant="outline" className="text-[10px] font-normal text-slate-500">
-                Останні 30 днів
+                Норма: {metrics.weeklyBaseline ?? 0} на тиждень
               </Badge>
             </CardTitle>
             <CardDescription className="text-xs">
-              Хронологія кількості звернень за останній місяць
+              Пунктир — медіана тижня за весь період спостереження. Червоні
+              стовпчики вдвічі вищі за неї: там щось сталося, а не просто
+              випав активний день.
             </CardDescription>
           </CardHeader>
           <CardContent className="h-[220px] sm:h-[280px] md:h-[300px] p-2 sm:p-6 pt-0">
