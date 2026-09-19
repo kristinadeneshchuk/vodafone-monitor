@@ -93,7 +93,7 @@ export interface DailyBriefing {
   dateLabel: string;          // Наприклад "18 вересня 2026"
   generatedAt: string;        // ISO timestamp
   status: 'normal' | 'warning' | 'critical';
-  statusLabel: string;        // "Штатний стан" | "Підвищена увага" | "Критична загроза"
+  statusLabel: string;        // "Нормально" | "Підвищена увага" | "Критична загроза"
   executiveSummary: string;   // Головний вердикт
   keyDrivers: {
     title: string;

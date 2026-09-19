@@ -188,7 +188,7 @@ export default function DashboardOverview() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <CardTitle className="text-lg font-bold text-white tracking-wide flex items-center gap-2">
+                  <CardTitle className="text-lg font-bold text-slate-700 tracking-wide flex items-center gap-2">
                     AI Репутаційний вердикт за період
                   </CardTitle>
                   <Badge className="bg-slate-100 text-slate-600 hover:bg-slate-100 text-[10px] font-bold px-1.5 py-0 border border-slate-200">
@@ -214,7 +214,7 @@ export default function DashboardOverview() {
               >
                 {briefing.status === 'critical' && '🚨 '}
                 {briefing.status === 'warning' && '⚠️ '}
-                {briefing.status === 'normal' && '🟢 '}
+                {briefing.status === 'normal' && ' '}
                 {briefing.statusLabel}
               </Badge>
             )}
@@ -401,7 +401,7 @@ export default function DashboardOverview() {
             </CardHeader>
             <CardContent>
               <div className={`text-lg font-bold truncate ${isRiskCrit ? 'text-red-600' : 'text-slate-700'}`}>
-                {metrics.topLocations[0]?.name || 'Штатний стан'}
+                {metrics.topLocations[0]?.name || 'Нормально'}
               </div>
               <p className="text-xs text-slate-500 mt-1">
                 {metrics.topLocations[0] ? `${metrics.topLocations[0].count} скарг за 7 днів` : 'аномалій не виявлено'}

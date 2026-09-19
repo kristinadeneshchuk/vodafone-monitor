@@ -733,7 +733,7 @@ export default function TimelinePage() {
                     }>
                       {periodMetrics.isSpike 
                         ? (isRange ? 'Період підвищеної напруги' : 'Аномальний сплеск скарг')
-                        : (isRange ? 'Штатний період' : 'Штатний фоновий стан')
+                        : (isRange ? 'Нормальний період' : 'Нормальний фоновий стан')
                       }
                     </Badge>
                   </div>

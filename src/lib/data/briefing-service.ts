@@ -69,7 +69,7 @@ export function generateHeuristicBriefing(
     ? 'Критична загроза' 
     : isModerate 
     ? 'Підвищена увага' 
-    : 'Штатний стан';
+    : 'Нормально';
 
   const topLoc = metrics.topLocations[0]?.name || 'Усі регіони';
   const topLocCount = metrics.topLocations[0]?.count || 0;
@@ -80,7 +80,7 @@ export function generateHeuristicBriefing(
   } else if (isModerate) {
     executiveSummary = `Помірна активність: ${metrics.totalComplaints} звернень, середній ризик ${metrics.averageRiskScore}/100. Локальні нарікання зафіксовано у ${topLoc}. Ситуація під контролем.`;
   } else {
-    executiveSummary = `Штатний режим: ${metrics.totalComplaints} звернень (фонова норма, ризик ${metrics.averageRiskScore}/100). Аномальних збоїв та репутаційних загроз бренду не зафіксовано.`;
+    executiveSummary = `Нормальний режим: ${metrics.totalComplaints} звернень (фонова норма, ризик ${metrics.averageRiskScore}/100). Аномальних збоїв та репутаційних загроз бренду не зафіксовано.`;
   }
 
   const keyDrivers = [
@@ -107,11 +107,11 @@ export function generateHeuristicBriefing(
 
   const churnRiskAnalysis = metrics.churnIntentCount > 0
     ? `⚠️ Ризик відтоку: ${metrics.churnIntentRate}% звернень (${metrics.churnIntentCount} абонентів загрожують піти до конкурентів).`
-    : `🟢 Ризик відтоку відсутній: погроз зміни оператора не зафіксовано.`;
+    : ` Ризик відтоку відсутній: погроз зміни оператора не зафіксовано.`;
 
   const mediaViralityRisk = metrics.averageResonance >= 3.0
     ? `🚨 Загроза резонансу (${metrics.averageResonance}x): скарги публікуються у великих TG-каналах.`
-    : `🟢 Резонанс відсутній (${metrics.averageResonance}x): згадки мають приватний характер без вірусності.`;
+    : ` Резонанс відсутній (${metrics.averageResonance}x): згадки мають приватний характер без вірусності.`;
 
   const recommendedActions = [
     {
@@ -207,7 +207,7 @@ export async function generateBriefingWithGemini(
 Поверни JSON:
 {
   "status": "normal" | "warning" | "critical",
-  "statusLabel": "Штатний стан" | "Підвищена увага" | "Критична загроза",
+  "statusLabel": "Нормально" | "Підвищена увага" | "Критична загроза",
   "executiveSummary": "1-2 короткі речення із загальним вердиктом доби.",
   "keyDrivers": [
     { "title": "Коротко суть", "description": "1 коротке речення пояснення", "impact": "low" | "medium" | "high" },
@@ -239,7 +239,7 @@ export async function generateBriefingWithGemini(
       dateLabel,
       generatedAt: new Date().toISOString(),
       status: parsed.status || 'normal',
-      statusLabel: parsed.statusLabel || 'Штатний стан',
+      statusLabel: parsed.statusLabel || 'Нормально',
       executiveSummary: parsed.executiveSummary || '',
       keyDrivers: parsed.keyDrivers || [],
       churnRiskAnalysis: parsed.churnRiskAnalysis || '',
