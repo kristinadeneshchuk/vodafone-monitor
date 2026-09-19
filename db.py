@@ -1,3 +1,4 @@
+import re
 import sqlite3
 import hashlib
 from datetime import datetime, timezone, timedelta
@@ -47,6 +48,26 @@ def init_db():
         ''')
         conn.commit()
 
+# Персональні дані, які людина могла вписати у власний текст.
+# Авторів ми не зберігаємо взагалі, але номер чи пошту абонент іноді
+# пише прямо у відгуку — а тексти ми показуємо на дашборді.
+# Затираємо на вході, щоб вони не потрапили в базу й далі нікуди.
+_PII = [
+    (re.compile(r'(?:\+?38)?0\d{9}\b'), '[номер]'),
+    (re.compile(r'\b0\d{2}[\s\-]\d{3}[\s\-]\d{2}[\s\-]\d{2}\b'), '[номер]'),
+    (re.compile(r'\b[\w.\-]+@[\w\-]+\.[a-z]{2,}\b', re.I), '[пошта]'),
+    (re.compile(r'\bUA\d{27}\b', re.I), '[рахунок]'),
+    (re.compile(r'\b\d{4}[\s\-]?\d{4}[\s\-]?\d{4}[\s\-]?\d{4}\b'), '[картка]'),
+]
+
+
+def scrub(text):
+    """Прибирає персональні дані з тексту згадки."""
+    for rx, repl in _PII:
+        text = rx.sub(repl, text or '')
+    return text
+
+
 def generate_text_hash(mention):
     """
     Хеш для відсіювання ДУБЛІКАТІВ ЗБОРУ, а не однакових скарг.
@@ -74,6 +95,7 @@ def save_mentions(mentions_list):
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         for m in mentions_list:
+            m['text'] = scrub(m['text'])
             text_hash = generate_text_hash(m)
             try:
                 cursor.execute('''
