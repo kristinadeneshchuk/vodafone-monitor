@@ -1,0 +1,17 @@
+{
+ "coverageComplaints": 1106,
+ "gridOutageShare": 16.3,
+ "gridOutageCount": 180,
+ "withLocation": 269,
+ "withLocationShare": 24.3,
+ "chronicGaps": 37,
+ "byBrand": {
+  "kyivstar": 522,
+  "vodafone": 285,
+  "unknown": 216,
+  "lifecell": 83
+ },
+ "wakeAlertsPerYear": 4,
+ "alertsTotal": 72,
+ "maxSpikeVelocity": 24.0
+}

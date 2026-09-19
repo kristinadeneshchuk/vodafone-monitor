@@ -26,14 +26,33 @@ PROBLEM = {0: 'no_signal', 1: 'slow_internet', 2: 'dropped_calls', 3: 'other'}
 SOURCE_MAP = {'telegram': 'telegram', 'news': 'news', 'review': 'review'}
 
 
-def fetch(relevant_only=False, limit=None, days=None):
+# Причини, що стосуються покриття та звʼязку — тема, яку ми вирішуємо.
+COVERAGE_CAUSES = ('coverage', 'internet', 'calls', 'outage', 'blackout')
+
+
+def fetch(scope='problems', limit=None, days=None):
+    """
+    scope='problems' — лише справжні скарги на звʼязок (за замовчуванням).
+    scope='negative' — весь негатив, включно з тарифами й застосунком.
+    scope='all'      — увесь потік, разом із похвалами.
+
+    Чому за замовчуванням 'problems': дашборд підписує кожен запис
+    словом "скарга". Якщо віддати все підряд, "Всього скарг 5498"
+    включатиме "дякую, все супер" на пʼять зірок, а "Топ проблемних
+    ділянок: Київ 593" рахуватиме й похвали. Цифри стають великими
+    й беззмістовними.
+    """
     con = sqlite3.connect(DB_PATH)
     con.row_factory = sqlite3.Row
 
     conds = ["a.sentiment IS NOT NULL"]
     params = []
-    if relevant_only:
-        conds.append("a.is_relevant = 1")
+    if scope in ('problems', 'negative'):
+        conds.append("a.sentiment IN ('negative','mixed')")
+    if scope == 'problems':
+        placeholders = ','.join('?' * len(COVERAGE_CAUSES))
+        conds.append(f"a.cause IN ({placeholders})")
+        params.extend(COVERAGE_CAUSES)
     if days:
         conds.append("m.published_at >= date('now', ?)")
         params.append(f'-{days} days')
@@ -78,12 +97,55 @@ def fetch(relevant_only=False, limit=None, days=None):
             'lng': r['lng'],
             'cause': r['cause'],
             'context': r['context'],
+
+            # Чия це аварія. Під час відключень світла базові станції
+            # сідають на акумулятори — звʼязок падає, але оператор
+            # ні до чого. Для тривоги це не наша аварія, для бізнесу —
+            # окрема тема про автономність станцій, тож не ховаємо,
+            # а позначаємо.
+            'attribution': ('grid' if (r['context'] == 'blackout'
+                                       or r['cause'] == 'blackout')
+                            else 'network'),
+            'isCoverageProblem': r['cause'] in COVERAGE_CAUSES,
             'churnIntent': bool(r['churn_intent']),
             'churnScore': r['churn_score'],
             'reachWeight': r['reach_weight'],
             'resonance': r['resonance'],
         })
     return out
+
+
+def build_summary(records, alerts):
+    """
+    Бізнес-показники для головного екрана.
+
+    Кожен підпис має бути правдою. "Всього скарг" мусить означати скарги,
+    а не весь потік відгуків разом із подяками.
+    """
+    total = len(records)
+    grid = sum(1 for r in records if r['attribution'] == 'grid')
+    geo = sum(1 for r in records if r['lat'])
+    chronic = sum(1 for r in records
+                  if r['context'] in ('transport', 'terrain', 'rural'))
+
+    by_brand = {}
+    for r in records:
+        by_brand[r['brand']] = by_brand.get(r['brand'], 0) + 1
+
+    wake = [a for a in alerts if a['level'] == 'wake']
+
+    return {
+        'coverageComplaints': total,
+        'gridOutageShare': round(100 * grid / total, 1) if total else 0,
+        'gridOutageCount': grid,
+        'withLocation': geo,
+        'withLocationShare': round(100 * geo / total, 1) if total else 0,
+        'chronicGaps': chronic,
+        'byBrand': dict(sorted(by_brand.items(), key=lambda x: -x[1])),
+        'wakeAlertsPerYear': len(wake),
+        'alertsTotal': len(alerts),
+        'maxSpikeVelocity': max((a['ratio'] for a in alerts), default=0),
+    }
 
 
 def fetch_alerts():
@@ -105,15 +167,20 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--limit', type=int)
     p.add_argument('--days', type=int)
-    p.add_argument('--relevant-only', action='store_true')
+    p.add_argument('--scope', default='problems',
+                   choices=['problems', 'negative', 'all'])
     args = p.parse_args()
 
-    records = fetch(args.relevant_only, args.limit, args.days)
+    records = fetch(args.scope, args.limit, args.days)
     alerts = fetch_alerts()
 
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, 'w', encoding='utf-8') as f:
         json.dump(records, f, ensure_ascii=False)
+
+    summary_path = OUT_JSON.replace('real-data.json', 'real-summary.json')
+    with open(summary_path, 'w', encoding='utf-8') as f:
+        json.dump(build_summary(records, alerts), f, ensure_ascii=False, indent=1)
 
     alerts_path = OUT_JSON.replace('real-data.json', 'real-alerts.json')
     with open(alerts_path, 'w', encoding='utf-8') as f:
@@ -121,10 +188,13 @@ def main():
 
     size = os.path.getsize(OUT_JSON) / 1024 / 1024
     with_geo = sum(1 for r in records if r['lat'])
-    print(f"Записів: {len(records)} ({size:.1f} МБ), з координатами: {with_geo}")
+    grid = sum(1 for r in records if r['attribution'] == 'grid')
+    print(f"Записів: {len(records)} ({size:.1f} МБ) | з координатами: {with_geo} "
+          f"| через світло: {grid}")
     print(f"Алертів: {len(alerts)}")
     print(f"  {OUT_JSON}")
     print(f"  {alerts_path}")
+    print(f"  {summary_path}")
 
 
 if __name__ == '__main__':
