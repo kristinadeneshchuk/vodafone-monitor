@@ -79,14 +79,20 @@ def generate_text_hash(mention):
     Тепер у ключ входять джерело й URL. Повторний збір того самого поста
     так само відсікається, а однакові скарги від різних людей зберігаються —
     саме вони і є сигналом.
+
+    Виняток — новини. Google News віддає на той самий матеріал щоразу
+    нове посилання-редирект, тому URL у ключі перетворював повторний
+    збір однієї статті на дві згадки. 11 вересня це підняло тривогу
+    рівня "будити": 15 згадок про атаку на офіс Київстару виявились
+    сімома публікаціями, зібраними двічі. Для новин URL із ключа
+    виключено: та сама стаття від того самого видання про той самий
+    бренд — це одна згадка.
     """
-    key = '|'.join([
-        mention['source_type'],
-        mention['source_name'],
-        mention.get('url', '') or '',
-        mention['text'].strip().lower(),
-    ])
-    return hashlib.sha256(key.encode('utf-8')).hexdigest()
+    parts = [mention['source_type'], mention['source_name']]
+    if mention['source_type'] != 'news':
+        parts.append(mention.get('url', '') or '')
+    parts.append(mention['text'].strip().lower())
+    return hashlib.sha256('|'.join(parts).encode('utf-8')).hexdigest()
 
 def save_mentions(mentions_list):
     inserted_count = 0
