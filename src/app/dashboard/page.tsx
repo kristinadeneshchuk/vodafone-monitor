@@ -237,39 +237,6 @@ export default function DashboardOverview() {
                 </p>
               </div>
 
-              {/* Key Problem Drivers (Short & Punchy) */}
-              <div>
-                <div className="text-xs uppercase font-bold tracking-wider text-slate-400 mb-2.5">
-                  Ключові фактори та драйвери скарг за місяць
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-                  {briefing.keyDrivers.map((driver, idx) => (
-                    <div 
-                      key={idx} 
-                      className="p-3 rounded-lg bg-slate-50 border border-slate-200/70"
-                    >
-                      <div className="flex justify-between items-center gap-2 mb-1">
-                        <span className="font-semibold text-xs text-slate-900 truncate">
-                          {driver.title}
-                        </span>
-                        <Badge 
-                          variant="outline"
-                          className={`text-[9px] px-1.5 py-0 font-bold shrink-0 ${
-                            driver.impact === 'high' 
-                              ? 'text-red-700 border-red-200 bg-red-50' 
-                              : 'text-slate-600 border-slate-200 bg-slate-100'
-                          }`}
-                        >
-                          {driver.impact === 'high' ? 'Критично' : 'Норма'}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-slate-600 leading-snug">
-                        {driver.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
 
               {/* Churn Risk Analysis (Concise) */}
               {briefing.churnRiskAnalysis && (

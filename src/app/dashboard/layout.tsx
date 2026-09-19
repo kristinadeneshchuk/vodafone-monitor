@@ -2,30 +2,21 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { 
   Activity, 
   BarChart3, 
   Clock, 
   Map, 
   MessageSquare, 
-  LogOut, 
   ShieldAlert,
   Menu,
   X
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const handleLogout = () => {
-    document.cookie = 'auth_token=; path=/; max-age=0';
-    router.push('/login');
-    router.refresh();
-  };
 
   const navItems = [
     { name: 'Головна', shortName: 'Головна', href: '/dashboard', icon: BarChart3 },
@@ -63,14 +54,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           })}
         </nav>
         <div className="p-4 border-t border-slate-200">
-          <Button 
-            variant="ghost" 
-            className="w-full flex justify-start gap-3 text-slate-600 hover:text-red-600 hover:bg-red-50 cursor-pointer" 
-            onClick={handleLogout}
-          >
-            <LogOut size={19} />
-            <span>Вийти</span>
-          </Button>
+          <div className="flex items-center gap-2 px-2 py-1 text-xs text-slate-500 font-medium">
+            <span>Vodafone UA</span>
+          </div>
         </div>
       </aside>
 
@@ -124,14 +110,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </nav>
 
             <div className="p-4 border-t border-slate-100">
-              <Button 
-                variant="ghost" 
-                className="w-full flex justify-start gap-3 text-slate-600 hover:text-red-600 hover:bg-red-50 cursor-pointer" 
-                onClick={handleLogout}
-              >
-                <LogOut size={19} />
-                <span>Вийти з системи</span>
-              </Button>
+              <div className="flex items-center gap-2 px-2 py-1 text-xs text-slate-500 font-medium">
+                <span>Vodafone UA</span>
+              </div>
             </div>
           </div>
         </div>

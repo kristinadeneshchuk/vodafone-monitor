@@ -28,16 +28,16 @@ interface ChatMessage {
   content: string;
   timestamp: string;
   source?: string;
+  sql?: string;
+  durationMs?: number;
 }
 
 const INITIAL_MESSAGE: ChatMessage = {
   id: 'welcome-msg',
   role: 'model',
-  content: `Вітаю! Я аналітичний AI-асистент Vodafone Україна з моніторингу репутаційних ризиків та прогнозування.
+  content: `Привіт! Я аналітичний асистент Vodafone. Маю доступ до повної бази моніторингу за рік (1 051 звернення щодо покриття, відключень світла, порівняння з Київстар і lifecell та ризиків відтоку).
 
-Доступна повна база даних моніторингу за 2025–2026 роки (1 051 верифіковане звернення, телеметрія впливу енергетичних відключень, порівняльні дані щодо Київстар та lifecell, а також індикатори ризику відтоку абонентів).
-
-Готовий надати структурований аналіз, фактологічні показники та обґрунтовані прогнози щодо стану мережі й репутаційних загроз. Оберіть одне зі швидких запитань вище або сформулюйте власний запит.`,
+Запитуйте про що завгодно: конкретні факти по містах, прогнози на зиму, поведінку конкурентів або що турбує абонентів найбільше. Оберіть запитання вище або напишіть власне.`,
   timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
   source: 'gemini-3.6-flash'
 };
@@ -92,7 +92,7 @@ function renderAiParagraph(rawParagraph: string, pIdx: number) {
   if (!paragraph) return null;
 
   // Check if paragraph is or starts with a section header (e.g., "Резюме:", "Факти та метрики:", etc.)
-  const sectionHeaderRegex = /^(Резюме|Факти та метрики|Прогноз та оцінка ризиків|Рекомендовані заходи|Висновки|Оцінка ситуації|Ключові фактори|Метрики|Прогноз|Рекомендації):/i;
+  const sectionHeaderRegex = /^(Резюме|Факти та метрики|Прогноз та оцінка ризиків|Рекомендовані заходи|Висновки|Оцінка ситуації|Ключові фактори|Метрики|Прогноз|Рекомендації|Головне|Що показують дані|Ключові факти|Що відомо|Розподіл по містах|Прогноз та ризики|Що робити|Що варто зробити|Головні спостереження|Очікування та прогнози):/i;
 
   if (sectionHeaderRegex.test(paragraph.trim())) {
     const colonIndex = paragraph.indexOf(':');
@@ -211,7 +211,9 @@ export default function AnalyticsPage() {
         role: 'model',
         content: data.reply || (res.ok ? 'Не вдалося сформувати відповідь. Спробуйте ще раз.' : `Помилка зв'язку (${res.status}). Будь ласка, спробуйте ще раз.`),
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        source: data.source || 'gemini'
+        source: data.source || 'gemini',
+        sql: data.sql,
+        durationMs: data.durationMs
       };
 
       setMessages(prev => [...prev, aiMessage]);
@@ -335,12 +337,28 @@ export default function AnalyticsPage() {
                   {/* Metadata and Actions */}
                   <div className={`flex items-center gap-2 text-[10px] sm:text-[11px] text-slate-400 px-1 ${isAI ? 'justify-start' : 'justify-end'}`}>
                     <span>{msg.timestamp}</span>
-                    {isAI && msg.source && (
+                    {isAI && (
                       <>
-                        <span>·</span>
-                        <span className="text-[9px] sm:text-[10px] text-slate-400 font-mono">
-                          {msg.source === 'gemini-3.6-flash' ? 'Gemini 3.6 Flash' : 'Аналітичний рушій'}
-                        </span>
+                        {msg.durationMs !== undefined && (
+                          <>
+                            <span>·</span>
+                            <span 
+                              className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/60 font-mono font-medium" 
+                              title={msg.sql ? `SQL: ${msg.sql}` : 'Прямий SQL-запит до бази'}
+                            >
+                              <Database className="w-2.5 h-2.5 text-emerald-600" />
+                              <span>SQL DB ({msg.durationMs} мс)</span>
+                            </span>
+                          </>
+                        )}
+                        {msg.source && (
+                          <>
+                            <span>·</span>
+                            <span className="text-[9px] sm:text-[10px] text-slate-400 font-mono">
+                              {msg.source.startsWith('gemini') ? 'Gemini AI' : 'Аналітичний рушій'}
+                            </span>
+                          </>
+                        )}
                         <button
                           type="button"
                           onClick={() => handleCopy(msg.id, msg.content)}

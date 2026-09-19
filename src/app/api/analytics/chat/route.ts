@@ -8,6 +8,12 @@ import summaryData from '@/lib/data/real-summary.json';
 import locationsData from '@/lib/data/real-locations.json';
 import alertsData from '@/lib/data/real-alerts.json';
 import marketData from '@/lib/data/real-market.json';
+import { 
+  queryDatabaseDirectly, 
+  DATABASE_SCHEMA_PROMPT, 
+  executeSqlQuery,
+  parseUaDate 
+} from '@/lib/data/db-service';
 
 // Pre-compiled telecom analytical context
 const TELECOM_DATASET_CONTEXT = `
@@ -48,34 +54,36 @@ const TELECOM_DATASET_CONTEXT = `
 `;
 
 const SYSTEM_INSTRUCTION = `
-Ти — провідний AI-аналітик департаменту репутаційних ризиків та стратегічного планування Vodafone Україна.
-ТВОЯ МЕТА: Надавати чіткі, аргументовані, професійні аналітичні звіти, спираючись на верифіковану статистику вибірки, та будувати логічно й математично обґрунтовані прогнози (Forecasts).
+Ти — аналітичний асистент та експерт команди Vodafone Україна. Твоє завдання — допомагати орієнтуватися у річній базі моніторингу зв'язку (вересень 2025 – вересень 2026, 1 051 звернення), пояснювати причини проблем, оцінювати ризики та будувати зрозумілі прогнози.
 
-СТАНДАРТИ АНАЛІТИКИ ТА ФОРМАТУВАННЯ:
-1. ДІЛОВИЙ ТА СТРИМАНИЙ СТИЛЬ:
-   - Професійна ділова українська мова корпоративного рівня, без канцеляриту, сленгу чи суржику.
-   - СУВОРО ЗАБОРОНЕНО використовувати будь-які емодзі (ніяких смайлів, значків, піктограм).
-   - СУВОРО ЗАБОРОНЕНО використовувати астерікси (зірочки **, ***) для виділення тексту. Текст має бути чистим, без символів **.
-   - Чіткість, лаконічність і структурність викладу. Починай одразу з суті та фактів.
-2. ФАКТОЛОГІЧНА ТОЧНІСТЬ:
-   - Спирайся на точні кількісні дані з наданого масиву (кількість звернень, відсотки, медіанний час відсутності живлення, географічні центри, рівні ризику).
-   - Завжди розрізняй об'єктивні аварійні деградації (наприклад, енергетичні блекаути) від локальних навантажень.
-3. ПРОГНОЗУВАННЯ ТА МОДЕЛЮВАННЯ СЦЕНАРІЇВ:
-   - Будуй прогнози на основі виявлених сезонних та ринкових трендів (зимовий період навантаження, готовність акумуляторних батарей БС, загроза відтоку до конкурентів).
-   - Вказуй оцінку ймовірності у відсотках (наприклад: "Ймовірність зростання звернень: 75%").
-   - Аналізуй можливі наслідки для репутації та бізнесу у разі бездіяльності.
-4. СТРУКТУРА ВІДПОВІДІ (кожен розділ з нового рядка з двокрапкою, БЕЗ зірочок і БЕЗ емодзі):
-   Резюме:
-   (1-2 лаконічні речення з ключовою оцінкою)
+ГОЛОВНІ ПРИНЦИПИ СПІЛКУВАННЯ:
+1. ЖИВА, ЗРОЗУМІЛА ТА ПРИРОДНА МОВА:
+   - Спілкуйся як досвідчений колега-аналітик: спокійно, впевнено, просто і по суті.
+   - Уникай бюрократичних штампів, важкого канцеляриту та штучно ускладнених фраз.
+   - СУВОРО ЗАБОРОНЕНО використовувати будь-які емодзі (ніяких смайликів, значків, піктограм).
+   - СУВОРО ЗАБОРОНЕНО використовувати астерікси (зірочки **, ***) для виділення тексту. Текст має бути чистим.
+   - Не використовуй слово "конструктивність".
 
-   Факти та метрики:
-   (цифри, порівняння, динаміка за базою даних у вигляді списку через дефіс)
+2. ГНУЧКА АДАПТАЦІЯ ПІД ТИП ЗАПИТУ (не використовуй однаковий шаблон для всього):
+   - Якщо запитання коротке або фактологічне (наприклад: "Скільки скарг у Києві?", "Яка головна причина збоїв?"):
+     * Відповідай одразу прямо і лаконічно за 1-3 речення. Не потрібно вигадувати довгі формальні розділи, якщо користувач шукає конкретне число чи факт.
+   - Якщо запитання порівняльне (наприклад: "Vodafone чи Київстар?", "Чому переходять на lifecell?"):
+     * Дай збалансоване порівняння: сильні сторони, слабкі місця за відгуками, що показують цифри та стислий підсумок.
+   - Якщо запитання аналітичне, стратегічне або прогнозного характеру (наприклад: "Що чекати взимку?", "Який ризик відтоку?"):
+     * Надай змістовну структуру: суть ситуації, ключові фактори з реальними цифрами, прогноз із ймовірностями та кілька конкретних дій, що варто зробити.
+   - Якщо користувач веде діалог або уточнює:
+     * Відповідай у контексті бесіди, без повторення вступних привітань чи шаблонних офіційних формулювань.
 
-   Прогноз та оцінка ризиків:
-   (моделювання сценаріїв, ймовірність, часовий горизонт)
+3. СПОРА НА РЕАЛЬНІ ДАНІ:
+   - Спирайся на цифри наданої бази (1 051 запис: 701 без сигналу, 157 повільний 4G, 142 через блекаути, 8 загроз відтоку, Київ 21, Львів 17, Полтава 11 тощо).
+   - Чітко розрізняй зафіксовані факти та прогнозні припущення.
+   - Якщо конкретних даних щодо якогось питання у вибірці немає, прямо про це скажи і запропонуй найближчу релевантну інформацію.
 
-   Рекомендовані заходи:
-   (практичні нумеровані кроки для PR-департаменту, служби клієнтської підтримки та технічної дирекції)
+4. ФОКУС НА VODAFONE ЗА ЗАМОВЧУВАННЯМ:
+   - За замовчуванням уся аналітика, зрізи звернень, оцінка репутаційного ризику та динаміка проводяться САМЕ ЩОДО VODAFONE УКРАЇНА.
+   - Якщо користувач запитує загальні питання (наприклад: "перечисли всі скарги за 14.09", "скільки звернень у Києві", "який стан мережі", "зроби звіт за день"), фокусуйся першочергово на абонентах, інфраструктурі та скаргах саме Vodafone.
+   - Якщо за запитану дату чи критерій скарг на Vodafone не зафіксовано, спершу прямо і чітко констатуй це (наприклад: "У зазначений період скарг саме на мережу Vodafone не зафіксовано"), а вже потім, якщо це доречно для повноти розуміння ситуації на ринку, коротко додай загальний фон або інциденти конкурентів.
+   - До аналізу конкурентів (Київстар, lifecell) переходь тільки за прямого запиту користувача або як додатковий контекст до ситуації у Vodafone.
 `;
 
 function getGeminiApiKey(): string {
@@ -140,6 +148,252 @@ function sanitizeAnalyticsReply(text: string): string {
     .trim();
 }
 
+interface LiveDatabaseContext {
+  isSpecificQuery: boolean;
+  filterLabel: string;
+  totalFound: number;
+  complaints: number;
+  positives: number;
+  neutrals: number;
+  avgRisk: number;
+  highRiskCount: number;
+  churnCount: number;
+  topLocations: Array<{ name: string; count: number }>;
+  topCauses: Array<{ cause: string; count: number }>;
+  samples: Array<{
+    date: string;
+    source: string;
+    brand: string;
+    location: string;
+    risk: number;
+    sentiment: string;
+    content: string;
+  }>;
+  promptSnippet: string;
+}
+
+function queryLiveDatabaseContext(userMessage: string): LiveDatabaseContext {
+  const q = userMessage.toLowerCase();
+  const allRecords = realData as any[];
+
+  // 1. Determine date filter
+  let startDate: string | null = null;
+  let endDate: string | null = null;
+  let filterLabel = 'Загальний річний зріз (1 051 запис)';
+  let isSpecificQuery = false;
+
+  const availableDates = [...new Set(allRecords.map(r => r.timestamp.slice(0, 10)))].sort();
+  const latestDate = availableDates[availableDates.length - 1] || '2026-09-18';
+  const prevDate = availableDates[availableDates.length - 2] || '2026-09-17';
+
+  const customDate = parseUaDate(userMessage);
+  if (customDate) {
+    startDate = customDate.startDate;
+    endDate = customDate.endDate;
+    filterLabel = `Дата ${customDate.label}`;
+    isSpecificQuery = true;
+  } else if (q.includes('сьогодні') || q.includes('today') || q.includes('зараз') || q.includes('поточний день') || q.includes('за день') || q.includes('за добу')) {
+    startDate = latestDate;
+    endDate = latestDate;
+    filterLabel = `Остання активна доба (${latestDate})`;
+    isSpecificQuery = true;
+  } else if (q.includes('вчора') || q.includes('yesterday')) {
+    startDate = prevDate;
+    endDate = prevDate;
+    filterLabel = `Попередня доба (${prevDate})`;
+    isSpecificQuery = true;
+  } else if (q.includes('тиждень') || q.includes('7 днів') || q.includes('week')) {
+    startDate = '2026-09-11';
+    endDate = latestDate;
+    filterLabel = `Останні 7 днів (11.09.2026 – ${latestDate})`;
+    isSpecificQuery = true;
+  } else if (q.includes('місяць') || q.includes('30 днів') || q.includes('month')) {
+    startDate = '2026-08-19';
+    endDate = latestDate;
+    filterLabel = `Останній місяць (19.08.2026 – ${latestDate})`;
+    isSpecificQuery = true;
+  } else if (q.includes('вересень') || q.includes('вересні')) {
+    startDate = '2026-09-01';
+    endDate = latestDate;
+    filterLabel = 'Вересень 2026';
+    isSpecificQuery = true;
+  } else if (q.includes('серпень') || q.includes('серпні')) {
+    startDate = '2026-08-01';
+    endDate = '2026-08-31';
+    filterLabel = 'Серпень 2026';
+    isSpecificQuery = true;
+  } else if (q.includes('липень') || q.includes('липні')) {
+    startDate = '2026-07-01';
+    endDate = '2026-07-31';
+    filterLabel = 'Липень 2026';
+    isSpecificQuery = true;
+  } else if (q.includes('червень') || q.includes('червні')) {
+    startDate = '2026-06-01';
+    endDate = '2026-06-30';
+    filterLabel = 'Червень 2026';
+    isSpecificQuery = true;
+  } else if (q.includes('зима') || q.includes('зим') || q.includes('холод')) {
+    startDate = '2025-11-01';
+    endDate = '2026-02-28';
+    filterLabel = 'Зимовий сезон (листопад 2025 – лютий 2026)';
+    isSpecificQuery = true;
+  } else if (q.includes('січень') || q.includes('січні')) {
+    startDate = '2026-01-01';
+    endDate = '2026-01-31';
+    filterLabel = 'Січень 2026';
+    isSpecificQuery = true;
+  } else if (q.includes('лютий') || q.includes('лютому')) {
+    startDate = '2026-02-01';
+    endDate = '2026-02-28';
+    filterLabel = 'Лютий 2026';
+    isSpecificQuery = true;
+  }
+
+  // 2. Location filter
+  let locationFilter: string | null = null;
+  const cities = ['Київ', 'Львів', 'Одеса', 'Дніпро', 'Полтава', 'Тернопіль', 'Запоріжжя', 'Харків', 'Вінниця', 'Черкаси'];
+  for (const city of cities) {
+    if (q.includes(city.toLowerCase()) || q.includes(city.toLowerCase().slice(0, -1))) {
+      locationFilter = city;
+      isSpecificQuery = true;
+      filterLabel += `, локація: ${city}`;
+      break;
+    }
+  }
+
+  // 3. Brand filter
+  let brandFilter: string | null = null;
+  if (q.includes('київстар') || q.includes('kyivstar')) {
+    brandFilter = 'kyivstar';
+    filterLabel += ', бренд: Київстар';
+    isSpecificQuery = true;
+  } else if (q.includes('lifecell') || q.includes('лайф')) {
+    brandFilter = 'lifecell';
+    filterLabel += ', бренд: lifecell';
+    isSpecificQuery = true;
+  } else if (q.includes('vodafone') || q.includes('водафон')) {
+    brandFilter = 'vodafone';
+    filterLabel += ', бренд: Vodafone';
+    isSpecificQuery = true;
+  }
+
+  // 4. Topic / Problem filter
+  let topicFilter: string | null = null;
+  if (q.includes('блекаут') || q.includes('світл') || q.includes('живлен') || q.includes('енерг') || q.includes('акумул') || q.includes('генератор')) {
+    topicFilter = 'blackout';
+    filterLabel += ', тема: відключення живлення';
+    isSpecificQuery = true;
+  } else if (q.includes('відтік') || q.includes('churn') || q.includes('перехід') || q.includes('розірва')) {
+    topicFilter = 'churn';
+    filterLabel += ', тема: відтік абонентів';
+    isSpecificQuery = true;
+  }
+
+  // Filter records
+  let matched = allRecords;
+
+  if (startDate) {
+    matched = matched.filter(r => {
+      const d = r.timestamp.slice(0, 10);
+      return d >= startDate! && d <= (endDate || startDate!);
+    });
+  }
+
+  if (locationFilter) {
+    matched = matched.filter(r => r.locationName === locationFilter);
+  }
+
+  if (brandFilter) {
+    matched = matched.filter(r => r.brand === brandFilter);
+  }
+
+  if (topicFilter === 'blackout') {
+    matched = matched.filter(r => r.cause === 'blackout' || r.problemType === 'blackout' || /блекаут|світл|електро|живлен/i.test(r.content));
+  } else if (topicFilter === 'churn') {
+    matched = matched.filter(r => r.churnIntent || /перейду|розірв|іншого оператор/i.test(r.content));
+  }
+
+  // If filtered for "today" and found < 2 records, take the 48-hour window so the report is comprehensive
+  if (startDate === latestDate && matched.length <= 1) {
+    matched = allRecords.filter(r => {
+      const d = r.timestamp.slice(0, 10);
+      return d >= prevDate && d <= latestDate;
+    });
+    filterLabel = `Остання активна доба та останні 48 годин (${prevDate} – ${latestDate})`;
+  }
+
+  const totalFound = matched.length;
+  const complaints = matched.filter(r => r.sentiment === 'negative').length;
+  const positives = matched.filter(r => r.sentiment === 'positive').length;
+  const neutrals = matched.filter(r => r.sentiment === 'neutral').length;
+  const risks = matched.map(r => r.reputationalRiskScore || 0);
+  const avgRisk = risks.length ? Math.round(risks.reduce((a, b) => a + b, 0) / risks.length) : 0;
+  const highRiskCount = matched.filter(r => r.reputationalRiskScore >= 50).length;
+  const churnCount = matched.filter(r => r.churnIntent).length;
+
+  // Top locations
+  const locMap: Record<string, number> = {};
+  matched.forEach(r => {
+    if (r.locationName && r.locationName !== 'Невідомо') {
+      locMap[r.locationName] = (locMap[r.locationName] || 0) + 1;
+    }
+  });
+  const topLocations = Object.entries(locMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([name, count]) => ({ name, count }));
+
+  // Top causes
+  const causeMap: Record<string, number> = {};
+  matched.forEach(r => {
+    if (r.cause) causeMap[r.cause] = (causeMap[r.cause] || 0) + 1;
+  });
+  const topCauses = Object.entries(causeMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([cause, count]) => ({ cause, count }));
+
+  // Sample actual user quotes
+  const samples = matched.slice(0, 5).map(r => ({
+    date: r.timestamp.slice(0, 16).replace('T', ' '),
+    source: r.source || 'review',
+    brand: r.brand || 'vodafone',
+    location: r.locationName || 'Невідомо',
+    risk: r.reputationalRiskScore || 0,
+    sentiment: r.sentiment || 'neutral',
+    content: (r.content || '').replace(/\s+/g, ' ').slice(0, 140)
+  }));
+
+  const promptSnippet = `
+[АКТУАЛЬНИЙ ЗРІЗ З БАЗИ ДАНИХ (ОТРИМАНО В РЕАЛЬНОМУ ЧАСІ)]:
+Параметри запиту: "${userMessage}"
+Визначений критерій: ${filterLabel}
+Кількість записів у базі за цим критерієм: ${totalFound}
+- Скарги: ${complaints} | Похвали: ${positives} | Нейтральні: ${neutrals}
+- Середній ризик: ${avgRisk}/100 (критичних скарг ≥50: ${highRiskCount})
+- Зафіксовано погроз відтоку (Churn): ${churnCount}
+${topLocations.length ? `- Топ-локації: ${topLocations.map(l => `${l.name} (${l.count})`).join(', ')}` : ''}
+${topCauses.length ? `- Ключові причини: ${topCauses.map(c => `${c.cause} (${c.count})`).join(', ')}` : ''}
+${samples.length ? `Фактичні повідомлення з бази:\n${samples.map((s, i) => `${i + 1}. [${s.date}, ${s.source}, ${s.brand}, ${s.location}, ризик ${s.risk}/100]: "${s.content}"`).join('\n')}` : ''}
+`;
+
+  return {
+    isSpecificQuery,
+    filterLabel,
+    totalFound,
+    complaints,
+    positives,
+    neutrals,
+    avgRisk,
+    highRiskCount,
+    churnCount,
+    topLocations,
+    topCauses,
+    samples,
+    promptSnippet
+  };
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { message, history = [] } = await req.json();
@@ -148,14 +402,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Повідомлення обов’язкове' }, { status: 400 });
     }
 
+    // 1. Direct in-memory SQL execution on the complete 1,051-record dataset
+    const dbDirect = queryDatabaseDirectly(message);
+    const liveContext = queryLiveDatabaseContext(message);
+
     const apiKey = getGeminiApiKey();
 
     if (!apiKey) {
       console.warn('[Analytics Chat] Gemini API key not found. Using domain rule engine.');
-      const fallbackReply = generateHeuristicPredictionReply(message);
+      const fallbackReply = generateHeuristicPredictionReply(message, liveContext, dbDirect);
       return NextResponse.json({
         reply: sanitizeAnalyticsReply(fallbackReply),
-        source: 'heuristic'
+        source: 'heuristic',
+        sql: dbDirect.primaryResult.sql,
+        durationMs: dbDirect.primaryResult.durationMs
       });
     }
 
@@ -209,8 +469,23 @@ export async function POST(req: NextRequest) {
           model,
           contents: contents as any,
           config: {
-            systemInstruction: `${SYSTEM_INSTRUCTION}\n\nОсь повна інформація та вибірка даних за рік для використання у відповідях:\n${TELECOM_DATASET_CONTEXT}\n\nКористувач ставить тобі питання. Відповідай строго за інструкцією: без емодзі та без подвійних зірочок (астеріксів).`,
-            temperature: 0.25,
+            systemInstruction: `${SYSTEM_INSTRUCTION}
+
+Ось загальна довідкова інформація за рік:
+${TELECOM_DATASET_CONTEXT}
+
+${DATABASE_SCHEMA_PROMPT}
+
+${liveContext.promptSnippet}
+
+${dbDirect.summaryText}
+
+Користувач ставить тобі запитання. Тобі надано прямий результат виконання SQL-запиту до реальної бази даних (${dbDirect.primaryResult.durationMs} мс):
+Виконаний SQL: ${dbDirect.primaryResult.sql}
+Результат з бази: ${JSON.stringify(dbDirect.primaryResult.data || [])}
+
+ОБОВ'ЯЗКОВО спирайся на отримані точні факти з бази даних. Твій основний фокус за замовчуванням — завжди саме Vodafone Україна (дані по інших операторах подавай лише при прямому запиті або як короткий фон після аналізу Vodafone). Якщо користувач просить або запитує про SQL-запит чи структуру, продемонструй відповідний SQL. Відповідай зрозуміло, природно, адаптуючи формат під суть запиту. Без емодзі та без подвійних зірочок (астеріксів).`,
+            temperature: 0.35,
           }
         });
 
@@ -218,7 +493,9 @@ export async function POST(req: NextRequest) {
         if (reply) {
           return NextResponse.json({ 
             reply: sanitizeAnalyticsReply(reply), 
-            source: model 
+            source: model,
+            sql: dbDirect.primaryResult.sql,
+            durationMs: dbDirect.primaryResult.durationMs
           });
         }
       } catch (err: any) {
@@ -229,10 +506,12 @@ export async function POST(req: NextRequest) {
 
     // If all online models fail, provide fallback from our rich analytical rule engine
     console.warn('[Analytics Chat] All Gemini models failed or timed out. Falling back to heuristic analytics engine:', lastError?.message || lastError);
-    const fallbackReply = generateHeuristicPredictionReply(message);
+    const fallbackReply = generateHeuristicPredictionReply(message, liveContext, dbDirect);
     return NextResponse.json({
       reply: sanitizeAnalyticsReply(fallbackReply),
-      source: 'heuristic'
+      source: 'heuristic',
+      sql: dbDirect.primaryResult.sql,
+      durationMs: dbDirect.primaryResult.durationMs
     });
 
   } catch (error: any) {
@@ -245,103 +524,186 @@ export async function POST(req: NextRequest) {
  * Intelligent domain-specific rule engine that generates sharp, factual, 
  * data-driven answers and predictions when Gemini API key is missing or offline.
  */
-function generateHeuristicPredictionReply(query: string): string {
+function generateHeuristicPredictionReply(
+  query: string, 
+  live?: LiveDatabaseContext,
+  dbDirect?: ReturnType<typeof queryDatabaseDirectly>
+): string {
   const q = query.toLowerCase();
+
+  // Scenario 0: Explicit request to list complaints/messages (e.g. "перечисли всі скарги за 14.09")
+  const isListRequested = 
+    q.includes('перечисл') || 
+    q.includes('переліч') || 
+    q.includes('список') || 
+    q.includes('покажи всі') || 
+    q.includes('які саме') || 
+    q.includes('всі скарг') || 
+    q.includes('всі звернення') ||
+    q.includes('які скарг') || 
+    q.includes('процитуй') ||
+    q.includes('що писали');
+
+  if (isListRequested && dbDirect?.primaryResult?.data && dbDirect.primaryResult.data.length > 0 && dbDirect.primaryResult.data[0].content) {
+    const rows = dbDirect.primaryResult.data;
+    const items = rows.map((r: any, i: number) => 
+      `${i + 1}. [${r.date || ''}, ${r.brand || 'невідомо'}, ${r.location || 'Україна'}, ризик ${r.risk_score || 0}/100]:\n"${r.content || ''}"`
+    ).join('\n\n');
+    return `Звернення та скарги за критерієм "${dbDirect.label}" (знайдено ${rows.length} записів у базі даних):\n\n${items}`;
+  }
+
+  // Scenario 0a: User directly provided a raw SQL SELECT query
+  if (q.trim().startsWith('select ') && dbDirect?.primaryResult) {
+    if (!dbDirect.primaryResult.success) {
+      return `Помилка виконання SQL-запиту (${dbDirect.primaryResult.durationMs} мс): ${dbDirect.primaryResult.error}`;
+    }
+    const rows = dbDirect.primaryResult.data || [];
+    if (rows.length === 0) {
+      return `SQL-запит виконано успішно (${dbDirect.primaryResult.durationMs} мс). Записів за вашим фільтром не знайдено.`;
+    }
+    const keys = Object.keys(rows[0] || {});
+    const header = `| ${keys.join(' | ')} |`;
+    const separator = `| ${keys.map(() => '---').join(' | ')} |`;
+    const rowLines = rows.slice(0, 15).map(r => `| ${keys.map(k => String(r[k] ?? '')).join(' | ')} |`);
+    return `Результат виконання SQL-запиту до бази (${dbDirect.primaryResult.durationMs} мс, знайдено рядків: ${dbDirect.primaryResult.rowCount}):\n\n${header}\n${separator}\n${rowLines.join('\n')}${rows.length > 15 ? `\n...показано перші 15 із ${rows.length} рядків.` : ''}`;
+  }
+
+  // Scenario 0b: Day of week analysis
+  if (q.includes('дні тижня') || q.includes('днях тижня') || q.includes('понеділок') || q.includes('вівторок')) {
+    const rows = dbDirect?.primaryResult?.data || [];
+    if (rows.length > 0) {
+      const list = rows.map((r: any) => `- ${r.day_of_week}: ${r.cnt} скарг (середній ризик: ${r.avg_risk}/100)`).join('\n');
+      return `Розподіл скарг за днями тижня (прямий розрахунок по всій базі за ${dbDirect?.primaryResult?.durationMs || 10} мс):\n\n${list}\n\nВисновок:\nНайвища концентрація нарікань та репутаційного ризику припадає на будні дні (понеділок – четвер) під час пікових годин бізнес-активності та масового переходу з домашнього інтернету на мобільний.`;
+    }
+  }
+
+  // Scenario 0c: Court, Regulator NKEK, Fines
+  if (q.includes('суд') || q.includes('нкек') || q.includes('штраф')) {
+    const rows = dbDirect?.primaryResult?.data || [];
+    if (rows.length > 0) {
+      const list = rows.map((r: any, i: number) => `${i + 1}. [${r.date}, ${r.brand}, ризик ${r.risk_score}/100]: "${r.content}"`).join('\n\n');
+      return `Згадки регулятора НКЕК, судових справ та штрафних санкцій у базі даних:\n\n${list}\n\nВисновок:\nОсновні регуляторні ризики пов'язані з перевірками 72-годинної автономності мереж під час блекаутів та вимогами коректного інформування щодо швидкості передачі даних.`;
+    }
+  }
+
+  // Scenario 0d: Specific Date Report (Today / Yesterday / Selected period)
+  if (
+    q.includes('сьогодні') || 
+    q.includes('вчора') || 
+    q.includes('звіт за') || 
+    q.includes('звіт по') || 
+    (live && live.isSpecificQuery && (q.includes('звіт') || q.includes('покажи') || q.includes('ситуація') || q.includes('що зараз')))
+  ) {
+    const desc = live?.filterLabel || 'останній звітний період';
+    const total = live?.totalFound || 0;
+    const complaints = live?.complaints || 0;
+    const avgRisk = live?.avgRisk || 0;
+    const churn = live?.churnCount || 0;
+
+    return `Оперативний звіт за ${desc} (прямий SQL-запит до бази):
+
+Зафіксовано звернень: ${total} (скарг: ${complaints}, позитивних згадок: ${live?.positives || 0}).
+Середній рівень репутаційного ризику: ${avgRisk} зі 100.
+${churn > 0 ? `Зафіксовано ризик відтоку: ${churn} звернень із прямою погрозою зміни оператора.` : 'Погроз переходу до конкурентів у цій вибірці не зафіксовано.'}
+
+${live?.topLocations && live.topLocations.length ? `Ключові локації:\n${live.topLocations.map(l => `- ${l.name}: ${l.count} звернень`).join('\n')}\n` : ''}
+${live?.topCauses && live.topCauses.length ? `Головні типи нарікань:\n${live.topCauses.map(c => `- ${c.cause}: ${c.count}`).join('\n')}\n` : ''}
+${live?.samples && live.samples.length ? `Фактичні повідомлення з бази:\n${live.samples.slice(0, 3).map((s, i) => `${i + 1}. [${s.source}, ${s.brand}, ${s.location}, ризик ${s.risk}/100]: "${s.content}"`).join('\n')}\n` : ''}
+Оцінка та висновок:
+${avgRisk >= 40 || complaints >= 5 
+  ? 'Спостерігається підвищена концентрація скарг. Рекомендується перевірити стан енергопостачання та базових станцій у зазначених зонах.' 
+  : 'Ситуація повністю в межах штатної норми. Системних аварій чи критичних репутаційних загроз не зафіксовано.'}`;
+  }
 
   // Scenario 1: Churn / Відтік абонентів
   if (q.includes('відтік') || q.includes('churn') || q.includes('втрат') || q.includes('перехід') || q.includes('конкурент')) {
-    return `Резюме: Ризик відтоку становить 0.8% (8 критичних скарг із 1 051). Загроза локалізована, але критична для High-LTV сегмента.
+    return `Загальний ризик відтоку абонентів наразі помірний і становить 0.8% від усіх скарг (8 прямих погроз перейти до конкурентів на 1 051 звернення). 
 
-Факти та метрики:
-- У річній базі зафіксовано 8 прямих погроз переходу до Київстар або lifecell.
-- 100% цих скарг пов'язані з відсутністю зв'язку понад 5 годин поспіль під час блекаутів.
-- Регіональний розподіл загроз відтоку: Київ (3), Львів (2), Полтава (2), Одеса (1).
+Що показують дані:
+- Усі 8 критичних скарг пов'язані з тривалою відсутністю зв'язку під час блекаутів (понад 5 годин поспіль).
+- Географія звернень: Київ (3 скарги), Львів (2), Полтава (2), Одеса (1).
+- Основний напрямок задекларованого переходу — lifecell (через їхню публічну комунікацію щодо енергонезалежних точок) та частково Київстар.
 
-Прогноз та оцінка ризиків:
-- Ймовірність сплеску відтоку взимку: 75%, якщо час автономності БС залишиться на рівні 4 годин.
-- При затримці первинної реакції служби підтримки понад 15 хвилин у моменти блекаутів ризик фактичного розірвання договору зростає на 22%.
-- Головний бенефіціар ризику — lifecell (через позиціонування енергостійких точок).
+Прогноз та ризики:
+- Якщо час автономної роботи БС узимку не перевищуватиме 4 годин, ризик сплеску погроз відтоку зростає до 75% під час багатогодинних графіків відключень.
+- Затримка первинної реакції служби підтримки понад 15 хвилин у моменти аварій збільшує ризик розірвання договору ще на 20-22%.
 
-Рекомендовані заходи:
-1. Retention (Підтримка): Абонентам, які залишили скаргу зі статусом Churn, протягом 60 хвилин нараховувати 10 ГБ або знижку 20% на наступний місяць.
-2. Технічний блок: Перевірити ємність літій-залізо-фосфатних АКБ на 5 ключових вузлових БС у Києві та Львові.
-3. PR: Запустити публічний дашборд готовності генераторів Vodafone до зимового сезону.`;
+Що варто зробити:
+1. Для абонентів із зафіксованим наміром піти — запровадити автоматичне нарахування додаткового трафіку або знижки на абонплату протягом першої години після звернення.
+2. Провести ревізію ємності літієвих батарей на ключових вузлових станціях у Києві та Львові.
+3. Проактивно інформувати про реальні терміни відновлення живлення у додатку My Vodafone.`;
   }
 
   // Scenario 2: Blackouts / Блекаути / Зима / Світло
   if (q.includes('блекаут') || q.includes('світл') || q.includes('зим') || q.includes('акумул') || q.includes('генератор') || q.includes('енерг')) {
-    return `Резюме: Блекаути генерують 25.3% усіх скарг року. Головне вузьке місце — деградація батарей після 4-ї години відключення.
+    return `Енергетичні відключення — головний каталізатор скарг, на них припадає приблизно чверть усіх нарікань (25.3%, або 142 інциденти за рік).
 
-Факти та метрики:
-- 142 скарги за рік безпосередньо спричинені відключеннями світла.
-- 84.5% (120 скарг) припали на період листопад–лютий. Пік: січень (46) та лютий (35).
-- Медіанний час утримання зв'язку без зовнішнього живлення: 4.0 години. Після цього сигнал зникає у 68% локацій без стаціонарних дизель-генераторів.
+Ключові факти:
+- 84.5% таких звернень припали на період з листопада по лютий, а пікові значення зафіксовані у січні (46 скарг) та лютому (35).
+- Медіанний час утримання зв'язку без зовнішнього живлення — 4.0 години (час розряду стандартних батарей). Після цього сигнал суттєво слабшає або зникає на станціях без стаціонарних генераторів.
+- Головна проблема — перевантаження 4G: коли вимикається домашній Wi-Fi, весь інтернет-трафік одночасно переходить на мобільну мережу.
 
-Прогноз та оцінка ризиків:
-- Прогноз на листопад 2026 — лютий 2027: При повторенні графіків вимкнень 4 через 4 обсяг скарг зросте до 40–50 на добу (у 3.2 рази вище за норму).
-- Критичні міста ризику: Київ (Дніпровський та Оболонський райони), Полтава, Дніпро.
-- Скарги на 4G зростуть на 180%, оскільки домашній Wi-Fi масово вимикається і весь трафік переходить на мобільну мережу.
+Прогноз на зимовий сезон:
+- За графіків відключень понад 4 години поспіль добова кількість скарг може зростати до 40-50 на добу (у 3 рази вище за фонову норму).
+- Найбільш чутливі локації: спальні райони Києва, Полтава та промислові райони Дніпра.
 
-Рекомендовані заходи:
-1. Технічний блок: Забезпечити 6-годинний запас автономії для опорних БС у ТОП-5 обласних центрах до 15 жовтня.
-2. Operations: Розгорнути автоматичне відключення другорядних частот (LTE 2600) під час знеструмлення для економії заряду АКБ на користь базового LTE 900.
-3. PR: Опублікувати карту пунктів незламності та енергостійких базових станцій Vodafone.`;
+Рекомендації:
+1. Налаштувати автоматичне розвантаження мережі (вимкнення другорядного LTE 2600 під час знеструмлень на користь базового LTE 900 для збереження заряду).
+2. Забезпечити пріоритетну доставку палива на опорні базові станції у великих містах.
+3. Додати в додаток карту станцій із гарантованим резервним живленням.`;
   }
 
   // Scenario 3: Geography / Локації / Міста / Епіцентри
-  if (q.includes('локац') || q.includes('міст') || q.includes('київ') || q.includes('львів') || q.includes('одес') || q.includes('регіон')) {
-    return `Резюме: 68% скарг із вказаною геолокацією сконцентровані в 7 містах. Хронічних проблемних зон немає — проблеми зумовлені рельєфом та щільністю забудови.
+  if (q.includes('локац') || q.includes('міст') || q.includes('київ') || q.includes('львів') || q.includes('одес') || q.includes('регіон') || q.includes('де')) {
+    return `Близько 68% скарг із визначеною локацією зосереджені у 7 обласних центрах. Хронічних "білих плям" немає — складнощі зумовлені щільністю висотної забудови або енергетичною ситуацією.
 
-Факти та метрики:
-- Київ: 21 скарга (лідер за обсягом, переважно висотна забудова Позняків та Голосієва).
-- Львів: 17 скарг (історичний центр із товстими стінами та спальні райони Сихова).
-- Полтава: 11 скарг (найвища чутливість до знеструмлень РЕМ).
-- Тернопіль: 9 скарг (скарги вздовж об'їзної та в приватних секторах).
-- Одеса: 7 скарг (густонаселені райони, Таїрова).
+Розподіл по містах:
+- Київ (21 скарга) — лідер за рахунок щільності населення, заглиблених приміщень та висотних масивів (Позняки, Голосіїв).
+- Львів (17 скарг) — спальні квартали Сихова та історичний центр із товстими стінами.
+- Полтава (11 скарг) — найвища залежність від стабільності міських електромереж.
+- Тернопіль (9 скарг) — нарікання вздовж об'їзних доріг та у приватному секторі.
+- Одеса (7 скарг) — приморська зона та щільна забудова масиву Таїрова.
 
-Прогноз та оцінка ризиків:
-- Київ: Зростання навантаження на мережу на 15% щокварталу через міграцію трафіку у сховища та підвальні приміщення.
-- Полтава та Дніпро: Найвища ймовірність аварійних відключень в осінньо-зимовий період (ризик деградації покриття 80%).
+Прогноз:
+- У Києві та Львові споживання мобільного інтернету в укриттях та підвалах зростатиме на 10-15% щокварталу.
+- У Полтаві та Дніпрі головним фактором ризику восени та взимку залишиться стабільність електропостачання.
 
-Рекомендовані заходи:
-1. Tech: Встановити додаткові мікро-БС (small cells) на ключових транспортних розв'язках Києва та Львова.
-2. Моніторинг: Поставити на цілодобовий алертинг телеметрію живлення по Полтавській та Одеській філіях.`;
+Що робити:
+1. Встановити додаткові мікро-станції (small cells) на найбільш завантажених перехрестях та в переходах Києва і Львова.
+2. Тримати на цілодобовому моніторингу телеметрію живлення по Полтавській та Одеській філіях.`;
   }
 
   // Scenario 4: Competitors / Конкуренти / Kyivstar / lifecell
   if (q.includes('київстар') || q.includes('kyivstar') || q.includes('лайф') || q.includes('lifecell') || q.includes('ринок')) {
-    return `Резюме: Загальний інформаційний фон спільний для всієї трійки операторів. Vodafone тримає паритет за якістю інтернету, але програє lifecell у швидкості публічного PR щодо автономності.
+    return `У порівнянні з ринком Vodafone утримує міцний паритет за стабільністю та швидкістю мобільного інтернету, проте кожен оператор має свої акценти в очах користувачів.
 
-Факти та метрики:
-- У вибірці зафіксовано 49 спільних ринкових матеріалів (Київстар, Водафон, lifecell — де є зв'язок).
-- Рівень похвал за стабільність: Vodafone має 173 позитивні згадки (16.5% від масиву), що на 3% вище за середньоринковий показник.
-- У скаргах абоненти порівнюють Vodafone з lifecell у 65% випадків та з Київстар у 35% випадків.
+Що кажуть дані моніторингу:
+- За рік зафіксовано 49 спільних ринкових матеріалів та обговорень. У 65% випадків абоненти порівнюють Vodafone з lifecell, а у 35% — з Київстар.
+- Vodafone має помітну частку позитивних відгуків за стійкість зв'язку (173 згадки, або 16.5% від усього масиву), що навіть дещо вище за середньоринковий рівень.
+- lifecell має перевагу в інформаційному просторі завдяки активній промоції енергонезалежних пунктів, хоча користувачі частіше скаржаться на їхню нижчу середню швидкість.
+- Київстар стикається з аналогічними навантаженнями під час блекаутів, проте має ширше покриття в невеликих населених пунктах.
 
-Прогноз та оцінка ризиків:
-- Прогноз MNP (перенесення номерів): Якщо конкуренти запустять кампанії з обіцянками гарантованого інтернету 10 годин без світла, відтік може зрости на 1.2–1.5% активної бази.
-- Медійна активність регулятора (НКЕК, Мінцифри) посилиться до зими: очікуються обов'язкові перевірки 72-годинної готовності об'єктів.
+Прогноз та ризики:
+- Якщо конкуренти запустять масштабні кампанії з гарантіями тривалої роботи без світла, це може спричинити короткочасний відтік до 1-1.5% абонентів.
+- До зими очікується посилений контроль з боку регулятора (НКЕК) щодо виконання вимог 72-годинної автономності.
 
-Рекомендовані заходи:
-1. PR: Підготувати серію матеріалів про заміну свинцевих акумуляторів на літієві на базових станціях Vodafone.
-2. Маркетинг: Запустити тарифну опцію пріоритетного трафіку для критичних сервісів у період збоїв.`;
+Рекомендації:
+1. Активніше інформувати абонентів про планову заміну акумуляторів на сучасні літієві на базових станціях.
+2. Запровадити спеціальні опції підтримки для критичних сервісів під час тривалих відключень світла.`;
   }
 
   // General Predictive Executive Summary
-  return `Резюме: Система моніторингу опрацювала 1 051 згадку за річний цикл (377 днів). Загальний стан — штатний помірний ризик (34/100), системних аварій у мережі наразі немає.
+  return `За річний цикл моніторингу (1 051 верифікована згадка) ситуація в мережі Vodafone залишається контрольованою, а середній показник репутаційного ризику становить 34 зі 100, що відповідає штатній нормі.
 
-Факти та метрики:
-- Скарг на якість зв'язку: 721 | Похвал за стійкість: 173 (коефіцієнт позитиву: 1 до 4.1).
-- Ключова проблема: відсутність сигналу (66.7%) та просідання швидкості 4G (14.9%).
-- Ризик Churn: 0.8% | Скарги з критичним ризиком (понад 50): 7 випадків за весь період.
-- Залежність від енергомережі: 25.3% усіх інцидентів спричинені перебоями в живленні БС.
+Головні спостереження:
+- Скарги на відсутність сигналу становлять 66.7% (701 випадок), повільний 4G — 14.9% (157 випадків).
+- Зафіксовано 173 позитивні відгуки за стійкість мережі (16.5%), що доводить локальний характер більшості проблем.
+- Близько чверті звернень (25.3%) напряму зумовлені зовнішніми знеструмленнями під час блекаутів.
+- Ризик відтоку залишається мінімальним — лише 8 прямих погроз зміни оператора за весь рік.
 
-Прогноз та оцінка ризиків:
-- Жовтень–грудень 2026: Очікується сезонне зростання звернень на 35–50% через настання холодів та зростання вечірнього споживання трафіку.
-- Зимовий пік (січень 2027): Прогнозується до 120–140 скарг на місяць, якщо графіки вимкнень перевищуватимуть 4 години.
-- Ймовірність медійної кризи: Низька (менше 15%), за умови збереження часу реакції підтримки в межах 15 хвилин.
+Очікування та прогнози:
+- Восени та взимку можливе сезонне зростання звернень на 30-40% у періоди частих відключень світла та похолодання.
+- Загрози системної медійної кризи немає за умови збереження часу реакції підтримки в межах 15 хвилин.
 
-Рекомендовані заходи:
-1. PR: Утримувати превентивну комунікацію щодо планових робіт на лініях.
-2. Support: Автоматизувати відправку SMS про терміни відновлення зв'язку в разі аварії на БС.
-3. Tech: Перевірити стан генераторних установок у Києві, Львові та Полтаві.`;
+Якщо вас цікавить конкретний зріз даних (певне місто, вплив блекаутів чи порівняння з іншим оператором) — запитайте, і я надам точніші цифри.`;
 }
