@@ -3,42 +3,42 @@
   "name": "Київ",
   "lat": 50.4501,
   "lng": 30.5234,
-  "complaints": 11,
+  "complaints": 9,
   "praise": 6,
-  "negativityShare": 64.7,
-  "daysWithComplaints": 23,
-  "intensity": 0.48,
-  "gridShare": 45.5,
-  "chronicGapShare": 27.3,
-  "pattern": "chronic",
+  "negativityShare": 60.0,
+  "daysWithComplaints": 17,
+  "intensity": 0.53,
+  "gridShare": 55.6,
+  "chronicGapShare": 11.1,
+  "pattern": "grid",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 10,
-   "vodafone": 9,
+   "vodafone": 8,
    "kyivstar": 7,
+   "unknown": 4,
    "lifecell": 2
   },
   "samples": [
    "у Київській обл. 4g працює дуже нестабільно.раніше рятував 3g але зараз він взагалі відсутній.тому не розумію за що ці ш",
-   "**россия получит покрытие спутниковой связи на всей территории Украины в течение следующего года, и это приведёт к нашем",
-   "Додаток подобається, а покриття мережі ні. Під Києвом ловлю мережу на даху будинку. Як в 90тих"
+   "Додаток подобається, а покриття мережі ні. Під Києвом ловлю мережу на даху будинку. Як в 90тих",
+   "поповнив рахунок, прийшла смс про нарахування пакету, тільки через тиждень пакет почав працювати. Проживаю від вишки в 3"
   ]
  },
  {
   "name": "Львів",
   "lat": 49.8397,
   "lng": 24.0297,
-  "complaints": 6,
-  "praise": 7,
-  "negativityShare": 46.2,
-  "daysWithComplaints": 16,
+  "complaints": 5,
+  "praise": 6,
+  "negativityShare": 45.5,
+  "daysWithComplaints": 13,
   "intensity": 0.38,
-  "gridShare": 133.3,
-  "chronicGapShare": 33.3,
+  "gridShare": 160.0,
+  "chronicGapShare": 20.0,
   "pattern": "grid",
   "topCause": "internet",
   "byBrand": {
-   "unknown": 12,
+   "unknown": 8,
    "kyivstar": 7,
    "vodafone": 2
   },
@@ -49,44 +49,20 @@
   ]
  },
  {
-  "name": "Дніпро",
-  "lat": 48.4647,
-  "lng": 35.0462,
-  "complaints": 6,
-  "praise": 1,
-  "negativityShare": 85.7,
-  "daysWithComplaints": 10,
-  "intensity": 0.6,
-  "gridShare": 83.3,
-  "chronicGapShare": 16.7,
-  "pattern": "grid",
-  "topCause": "coverage",
-  "byBrand": {
-   "unknown": 7,
-   "kyivstar": 2,
-   "vodafone": 1
-  },
-  "samples": [
-   "**🔥**** У Дніпропетровській області сьогодні з 12:00 на автомобільних дорогах загального користування державного значенн",
-   "Дуже гарний додаток,але вже 3 місяць поганий зв'язок та покриття інтернету у Дніпрі. А тариф лише росте. В мене контракт",
-   "**😱Нова траса «Решетилівка – Дніпро» руйнується, **–** **соцмережі. ** **Там** **помітили серйозні деформації покриття: "
-  ]
- },
- {
   "name": "Полтава",
   "lat": 49.5883,
   "lng": 34.5514,
-  "complaints": 5,
+  "complaints": 4,
   "praise": 1,
-  "negativityShare": 83.3,
-  "daysWithComplaints": 12,
-  "intensity": 0.42,
-  "gridShare": 160.0,
-  "chronicGapShare": 40.0,
+  "negativityShare": 80.0,
+  "daysWithComplaints": 10,
+  "intensity": 0.4,
+  "gridShare": 200.0,
+  "chronicGapShare": 50.0,
   "pattern": "grid",
   "topCause": "blackout",
   "byBrand": {
-   "unknown": 12,
+   "unknown": 10,
    "kyivstar": 1
   },
   "samples": [
@@ -96,28 +72,27 @@
   ]
  },
  {
-  "name": "Харків",
-  "lat": 49.9935,
-  "lng": 36.2304,
+  "name": "Дніпро",
+  "lat": 48.4647,
+  "lng": 35.0462,
   "complaints": 4,
   "praise": 1,
   "negativityShare": 80.0,
-  "daysWithComplaints": 7,
-  "intensity": 0.57,
-  "gridShare": 0.0,
+  "daysWithComplaints": 6,
+  "intensity": 0.67,
+  "gridShare": 125.0,
   "chronicGapShare": 0.0,
-  "pattern": "sporadic",
-  "topCause": "coverage",
+  "pattern": "grid",
+  "topCause": "blackout",
   "byBrand": {
    "unknown": 3,
    "kyivstar": 2,
-   "lifecell": 1,
    "vodafone": 1
   },
   "samples": [
-   "**Київстар утричі розширив тестову 5G-зону у Харкові: відтепер покриття охоплює майже весь центр міста** Завдяки будівни",
-   "В місцевості де я знаходжуся в ЗСУ (Харківська область) Зв'язок Київстар Дуже Поганий, Вимушений Користуватися Послугами",
-   "Рух автомобільного транспорту греблею Печенізького водосховища на Харківщині, яку російські війська [атакували](https://"
+   "Дуже гарний додаток,але вже 3 місяць поганий зв'язок та покриття інтернету у Дніпрі. А тариф лише росте. В мене контракт",
+   "⚡️**По 22 години без світла**. У пресслужбі ДТЕК прокоментували СВОЇм ситуацію з відключеннями частини Саксаганського і ",
+   "**📸 «Зв’язок — це люди»: Київстар представив фотоінсталяцію в Дніпрі** Проєкт створений спільно з фотографами Владою та "
   ]
  },
  {
@@ -167,31 +142,6 @@
   ]
  },
  {
-  "name": "Одеса",
-  "lat": 46.4825,
-  "lng": 30.7233,
-  "complaints": 2,
-  "praise": 6,
-  "negativityShare": 25.0,
-  "daysWithComplaints": 9,
-  "intensity": 0.22,
-  "gridShare": 200.0,
-  "chronicGapShare": 50.0,
-  "pattern": "healthy",
-  "topCause": "coverage",
-  "byBrand": {
-   "unknown": 7,
-   "vodafone": 2,
-   "kyivstar": 2,
-   "lifecell": 1
-  },
-  "samples": [
-   "5G без доплати вже в Одесі: lifecell, \"Київстар\" і Vodafone назвали локації покриття - Знай.ua. 5G без доплати вже в Оде",
-   "В Одесі запустили 5G: швидкість понад 1 Гбіт/с, але мережа покриває не все місто - Знай.ua. В Одесі запустили 5G: швидкі",
-   "В Одесі запустили тестування 5G: швидкість перевищує 1 Гбіт/с - Ukr.net. В Одесі запустили тестування 5G: швидкість пере"
-  ]
- },
- {
   "name": "Херсон",
   "lat": 46.6354,
   "lng": 32.6169,
@@ -214,50 +164,51 @@
   ]
  },
  {
-  "name": "Черкаси",
-  "lat": 49.4444,
-  "lng": 32.0598,
-  "complaints": 2,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 4,
-  "intensity": 0.5,
-  "gridShare": 0.0,
-  "chronicGapShare": 50.0,
-  "pattern": "sporadic",
-  "topCause": "coverage",
-  "byBrand": {
-   "unknown": 4
-  },
-  "samples": [
-   "[​​](http://telegraph.controller.bot/files/952802234/BQACAgIAAxkBAAEEVBBqggPyDH4_RevzJCoZXuWGrWGVRQAC5aoAAjYxEEjQ8maWBx-",
-   "❗️Сьогодні КП «ЧЕЛУАШ» проводить поточні роботи на дорогах міста Черкаси У зв’язку з цим, рух транспорту на окремих діля",
-   "⚠️ У Черкасах триває ремонт дороги на вулиці Юрія Іллєнка. Працівники КП «ЧЕЛУАШ» ліквідовують аварійні вибоїни та відно"
-  ]
- },
- {
   "name": "Запоріжжя",
   "lat": 47.8388,
   "lng": 35.1396,
   "complaints": 2,
   "praise": 3,
   "negativityShare": 40.0,
-  "daysWithComplaints": 5,
-  "intensity": 0.4,
+  "daysWithComplaints": 4,
+  "intensity": 0.5,
   "gridShare": 100.0,
   "chronicGapShare": 0.0,
   "pattern": "grid",
-  "topCause": "coverage",
+  "topCause": "internet",
   "byBrand": {
    "vodafone": 2,
    "kyivstar": 2,
-   "lifecell": 2,
-   "unknown": 1
+   "lifecell": 2
   },
   "samples": [
-   "👷‍♂️РОБОТА В ЗАПОРІЖЖІ ❗️СТАБІЛЬНА ЗАРПЛАТА ❗️БРОНЮВАННЯ 👷‍♂️Найбільша українська будівельна компанія пропонує чоловікам",
    "📣 В Запоріжжі оновлюють систему оповіщення Повідомлення автоматично з’являтиметься поверх усіх програм та навіть на забл",
-   "В Запоріжській обл не скрізь є покриття, але зв'язок якісний."
+   "В Запоріжській обл не скрізь є покриття, але зв'язок якісний.",
+   "❗️Проблема з домашнім інтернетом від Київстар не лише в Запоріжжі — отримуємо скарги з інших міст Сам провайдер мовчить🤷"
+  ]
+ },
+ {
+  "name": "Харків",
+  "lat": 49.9935,
+  "lng": 36.2304,
+  "complaints": 2,
+  "praise": 1,
+  "negativityShare": 66.7,
+  "daysWithComplaints": 4,
+  "intensity": 0.5,
+  "gridShare": 0.0,
+  "chronicGapShare": 0.0,
+  "pattern": "sporadic",
+  "topCause": "coverage",
+  "byBrand": {
+   "kyivstar": 2,
+   "unknown": 1,
+   "vodafone": 1
+  },
+  "samples": [
+   "**Київстар утричі розширив тестову 5G-зону у Харкові: відтепер покриття охоплює майже весь центр міста** Завдяки будівни",
+   "В місцевості де я знаходжуся в ЗСУ (Харківська область) Зв'язок Київстар Дуже Поганий, Вимушений Користуватися Послугами",
+   "Під час російської атаки на Харків 23 листопада загинула Наталія, яка була в гостях у сестри у Шевченківському районі. К"
   ]
  },
  {
@@ -267,43 +218,43 @@
   "complaints": 2,
   "praise": 0,
   "negativityShare": 100.0,
-  "daysWithComplaints": 3,
-  "intensity": 0.67,
+  "daysWithComplaints": 2,
+  "intensity": 1.0,
   "gridShare": 50.0,
-  "chronicGapShare": 150.0,
+  "chronicGapShare": 100.0,
   "pattern": "grid",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 3
+   "unknown": 2
   },
   "samples": [
    "**Скандал довкола смерті мобілізованого з Волині на Франківщині,** – [ЗМІ.](https://kovel.media/tczk-prymusovo-mobilizuv",
-   "**На перевалах Прикарпаття організували чергування дорожніх служб.** Через вологу на Буковецьких, Вишківських, Кривопіль",
    "**Чому у деяких регіонах заходи обмеження споживання вже скасовані, а в інших – відключення залишаються тривалими?** Так"
   ]
  },
  {
-  "name": "Вінниця",
-  "lat": 49.2331,
-  "lng": 28.4682,
+  "name": "Одеса",
+  "lat": 46.4825,
+  "lng": 30.7233,
   "complaints": 1,
-  "praise": 1,
-  "negativityShare": 50.0,
-  "daysWithComplaints": 5,
-  "intensity": 0.2,
-  "gridShare": 0.0,
-  "chronicGapShare": 200.0,
-  "pattern": "sporadic",
+  "praise": 4,
+  "negativityShare": 20.0,
+  "daysWithComplaints": 6,
+  "intensity": 0.17,
+  "gridShare": 300.0,
+  "chronicGapShare": 0.0,
+  "pattern": "healthy",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 4,
-   "kyivstar": 1,
-   "vodafone": 1
+   "unknown": 3,
+   "kyivstar": 2,
+   "vodafone": 1,
+   "lifecell": 1
   },
   "samples": [
-   "** 🚒 На Гетьмана Мазепи у Вінниці горіла автошкола** Зайнялося через коротке замикання електромережі. Надзвичайники опер",
-   "🛟 **Шість наметів незламності на Вінниччині оснастили до зими** 🚒 Вінницькі рятувальники отримали меблі, освітлення та п",
-   "🚧 **У Вінниці ремонтують провулок Гайдамацький** Цьогоріч це вже **шостий об’єкт**, який оновлюють за програмою співфіна"
+   "**5G від Київстар — відтепер і в Одесі** ** ** Одеса стала п’ятим містом, де **оператор розгорнув 5G-покриття**. Протест",
+   "В Одесі запустили пілотне тестування 5G – названі райони з покриттям - Mezha. В Одесі запустили пілотне тестування 5G – ",
+   "Без світла, але на зв’язку: як одеські медіа готуються до зими - Інститут масової інформації. Без світла, але на зв’язку"
   ]
  },
  {
@@ -353,21 +304,19 @@
   "lat": 48.9226,
   "lng": 24.7111,
   "complaints": 1,
-  "praise": 1,
-  "negativityShare": 50.0,
-  "daysWithComplaints": 2,
-  "intensity": 0.5,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 1,
+  "intensity": 1.0,
   "gridShare": 0.0,
   "chronicGapShare": 0.0,
   "pattern": "sporadic",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 1,
-   "kyivstar": 1
+   "unknown": 1
   },
   "samples": [
-   "⚖ **П'ятьох поліцейських, які кришували порноофіси взяли під варту. ** Суд визначив запобіжний захід п’ятьом підозрювани",
-   "останній свій коментар був залишив 18го року і уже 26й пишу на далі сама по собі програма зручна і зрозуміла але от покр"
+   "⚖ **П'ятьох поліцейських, які кришували порноофіси взяли під варту. ** Суд визначив запобіжний захід п’ятьом підозрювани"
   ]
  },
  {
@@ -388,6 +337,28 @@
   },
   "samples": [
    "Суцільне розчарування, зателефонувати у підтримку неможливо,Зоряна не налаштована на інфу про безлад співробітників.Дома"
+  ]
+ },
+ {
+  "name": "Вінниця",
+  "lat": 49.2331,
+  "lng": 28.4682,
+  "complaints": 0,
+  "praise": 1,
+  "negativityShare": 0.0,
+  "daysWithComplaints": 2,
+  "intensity": 0.0,
+  "gridShare": 0.0,
+  "chronicGapShare": 0.0,
+  "pattern": "healthy",
+  "topCause": "coverage",
+  "byBrand": {
+   "kyivstar": 1,
+   "vodafone": 1
+  },
+  "samples": [
+   "**4G Домашній Інтернет без дротів у Вінниці** 4G Домашній Інтернет від Київстар працює на базі 4G покриття мережі операт",
+   "Доброго дня. Сільська місцевіть. Жмеринський р-н. Вінницька область. Дзвонити можна, інтернет бажає кращого. 4 G тримає "
   ]
  }
 ]

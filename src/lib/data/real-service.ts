@@ -19,6 +19,20 @@ export class RealFeedbackService implements IFeedbackService {
 
   private apply(filters?: FeedbackFilters): FeedbackRecord[] {
     let result = [...this.data];
+
+    // ЗА ЗАМОВЧУВАННЯМ — Vodafone. Це продукт для Vodafone, і стрічка,
+    // де 387 скарг на Київстар лежать упереміш із 213 на Vodafone,
+    // виглядає як шум. Конкуренти доступні через фільтр 'all'
+    // і через окреме порівняння на сторінці аналітики.
+    // Скарги без назви оператора ('unknown') сюди НЕ додаються:
+    // приписати їх Vodafone означало б роздути його цифри й зіпсувати
+    // порівняння з конкурентами. Вони доступні через фільтр 'all'
+    // і потрібні карті покриття, де проблема локації стосується всіх.
+    const brand = filters?.brand ?? 'vodafone';
+    if (brand !== 'all') {
+      result = result.filter(f => f.brand === brand);
+    }
+
     if (!filters) return result;
 
     if (filters.problemType?.length) {
