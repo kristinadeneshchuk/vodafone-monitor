@@ -47,8 +47,25 @@ def init_db():
         ''')
         conn.commit()
 
-def generate_text_hash(text):
-    return hashlib.sha256(text.strip().lower().encode('utf-8')).hexdigest()
+def generate_text_hash(mention):
+    """
+    Хеш для відсіювання ДУБЛІКАТІВ ЗБОРУ, а не однакових скарг.
+
+    Раніше хеш рахувався тільки з тексту і мав UNIQUE. Наслідок: якщо
+    20 людей у різних каналах напишуть "нема інтернету", у базу потрапляла
+    одна згадка, сплеску не виникало і детектор нічого не бачив.
+
+    Тепер у ключ входять джерело й URL. Повторний збір того самого поста
+    так само відсікається, а однакові скарги від різних людей зберігаються —
+    саме вони і є сигналом.
+    """
+    key = '|'.join([
+        mention['source_type'],
+        mention['source_name'],
+        mention.get('url', '') or '',
+        mention['text'].strip().lower(),
+    ])
+    return hashlib.sha256(key.encode('utf-8')).hexdigest()
 
 def save_mentions(mentions_list):
     inserted_count = 0
@@ -57,7 +74,7 @@ def save_mentions(mentions_list):
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         for m in mentions_list:
-            text_hash = generate_text_hash(m['text'])
+            text_hash = generate_text_hash(m)
             try:
                 cursor.execute('''
                     INSERT INTO mentions (source_type, source_name, url, published_at, text, brand_query, text_hash, collected_at)
