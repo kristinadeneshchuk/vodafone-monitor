@@ -353,7 +353,7 @@ export default function DashboardOverview() {
           }`}>
             <div className="flex items-center justify-between gap-1.5 mb-2">
               <span className="text-xs font-semibold text-slate-500 truncate">
-                Всі скарги
+                Скарги про звʼязок
               </span>
               <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
                 isComplaintsCrit ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
