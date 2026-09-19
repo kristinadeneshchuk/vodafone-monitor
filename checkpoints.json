@@ -10,5 +10,29 @@
   "scanned": 1801,
   "found": 0,
   "done": "0 згадок з 1801 постів"
+ },
+ "dnepr_operativ": {
+  "last_id": 114170,
+  "scanned": 7580,
+  "found": 14,
+  "done": "14 згадок з 7580 постів"
+ },
+ "info_zp": {
+  "last_id": 165588,
+  "scanned": 25709,
+  "found": 24,
+  "done": "24 згадок з 25709 постів"
+ },
+ "khmlives": {
+  "last_id": 23700,
+  "scanned": 3321,
+  "found": 20,
+  "done": "20 згадок з 3321 постів"
+ },
+ "lvivtp": {
+  "last_id": 51533,
+  "scanned": 5173,
+  "found": 16,
+  "done": "16 згадок з 5173 постів"
  }
 }

@@ -18,6 +18,7 @@
 """
 
 import argparse
+import re
 import time
 import urllib.parse
 from datetime import datetime, timedelta, timezone
@@ -29,6 +30,16 @@ from google_play_scraper import Sort, reviews
 
 import db
 import keywords
+
+_TAG = re.compile(r'<[^>]+>')
+_ENT = re.compile(r'&(nbsp|amp|quot|#39|lt|gt);')
+
+
+def clean_html(text):
+    """Google News віддає опис із HTML-розміткою. Теги псують аналіз:
+    у ознаки потрапляють href і назви доменів замість змісту новини."""
+    return ' '.join(_ENT.sub(' ', _TAG.sub(' ', text or '')).split())
+
 
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
 
@@ -103,7 +114,7 @@ def collect_news(months):
                     'source_name': 'google_news',
                     'url': e.link,
                     'published_at': parse_rss_date(e.get('published', '')),
-                    'text': f"{e.title}. {e.get('description', '')}",
+                    'text': clean_html(f"{e.title}. {e.get('description', '')}"),
                     'brand_query': brand,
                 })
                 got += 1
