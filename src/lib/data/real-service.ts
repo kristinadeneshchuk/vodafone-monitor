@@ -30,7 +30,11 @@ export class RealFeedbackService implements IFeedbackService {
     // і потрібні карті покриття, де проблема локації стосується всіх.
     const brand = filters?.brand ?? 'vodafone';
     if (brand !== 'all') {
-      result = result.filter(f => f.brand === brand);
+      // Галузева стаття "Київстар, Водафон, Лайфселл — куди скаржитися"
+      // зберігається по разу на кожен бренд. У стрічці скарг на Vodafone
+      // їй не місце: вона не про Vodafone. Такі матеріали показуються
+      // окремим блоком "ринковий контекст" на сторінці аналітики.
+      result = result.filter(f => f.brand === brand && !f.isMarketWide);
     }
 
     if (!filters) return result;
@@ -71,6 +75,14 @@ export class RealFeedbackService implements IFeedbackService {
 
   async getFeedbackById(id: string): Promise<FeedbackRecord | null> {
     return this.data.find(f => f.id === id) ?? null;
+  }
+
+  /** Матеріали про телеком-ринок загалом: галузеві статті, порівняння
+   *  операторів, регуляторні вимоги. Окремо від скарг на бренд. */
+  async getMarketContext(): Promise<FeedbackRecord[]> {
+    return this.data
+      .filter(f => f.isMarketWide)
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   }
 
   /** Алерти детектора криз — для стрічки подій. */

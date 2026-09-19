@@ -67,7 +67,8 @@ def fetch(scope='problems', limit=None, days=None):
                a.is_relevant, a.is_constructive, a.importance, a.sentiment_enum,
                a.problem_type, a.risk_score, a.address_name, a.lat, a.lng,
                a.relevance_score, a.constructive_score, a.cause, a.context,
-               a.churn_intent, a.churn_score, a.reach_weight, a.resonance
+               a.churn_intent, a.churn_score, a.reach_weight, a.resonance,
+               a.is_market_wide
         FROM analysis a JOIN mentions m ON m.id = a.mention_id
         WHERE {' AND '.join(conds)}
         ORDER BY m.published_at DESC
@@ -112,6 +113,10 @@ def fetch(scope='problems', limit=None, days=None):
                                        or r['cause'] == 'blackout')
                             else 'network'),
             'isCoverageProblem': r['cause'] in COVERAGE_CAUSES,
+            # Матеріал про ринок, а не про конкретного оператора.
+            # Такі зберігаються по разу на бренд, тому без цієї ознаки
+            # галузева стаття потрапляє у стрічку кожного оператора.
+            'isMarketWide': bool(r['is_market_wide']),
             'churnIntent': bool(r['churn_intent']),
             'churnScore': r['churn_score'],
             'reachWeight': r['reach_weight'],
@@ -218,6 +223,7 @@ def build_summary(records, alerts):
     """
     locations = build_locations(records)
     total = len(records)
+    market = sum(1 for r in records if r.get('isMarketWide'))
     grid = sum(1 for r in records if r['attribution'] == 'grid')
     geo = sum(1 for r in records if r['lat'])
     chronic = sum(1 for r in records
@@ -237,6 +243,7 @@ def build_summary(records, alerts):
         'healthyLocations': sum(1 for l in locations if l['pattern'] == 'healthy'),
         'incidentLocations': sum(1 for l in locations if l['pattern'] == 'incident'),
 
+        'marketWideMentions': market,
         'coverageMentions': total,
         'coverageComplaints': sum(1 for r in records if r['sentiment'] == 'negative'),
         'coveragePraise': sum(1 for r in records if r['sentiment'] == 'positive'),
@@ -289,6 +296,24 @@ def main():
     summary_path = OUT_JSON.replace('real-data.json', 'real-summary.json')
     with open(summary_path, 'w', encoding='utf-8') as f:
         json.dump(build_summary(records, alerts), f, ensure_ascii=False, indent=1)
+
+    # Ринковий контекст: галузеві матеріали окремим файлом, щоб сторінка
+    # аналітики показувала їх поруч зі скаргами, але не всередині них.
+    market = [r for r in records if r.get('isMarketWide')]
+    seen, uniq = set(), []
+    for r in sorted(market, key=lambda x: x['timestamp'], reverse=True):
+        # один і той самий матеріал збережено по разу на кожен бренд
+        key = r['content'][:160]
+        if key in seen:
+            continue
+        seen.add(key)
+        uniq.append({'content': r['content'][:400], 'timestamp': r['timestamp'],
+                     'source': r['source'], 'url': r.get('originalUrl'),
+                     'cause': r.get('cause'), 'sentiment': r['sentiment']})
+    market_path = OUT_JSON.replace('real-data.json', 'real-market.json')
+    with open(market_path, 'w', encoding='utf-8') as f:
+        json.dump({'total': len(market), 'unique': len(uniq),
+                   'items': uniq[:40]}, f, ensure_ascii=False, indent=1)
 
     alerts_path = OUT_JSON.replace('real-data.json', 'real-alerts.json')
     with open(alerts_path, 'w', encoding='utf-8') as f:

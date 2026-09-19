@@ -4,6 +4,7 @@
  "chronicLocations": 0,
  "healthyLocations": 2,
  "incidentLocations": 0,
+ "marketWideMentions": 49,
  "coverageMentions": 1051,
  "coverageComplaints": 721,
  "coveragePraise": 173,
@@ -19,6 +20,6 @@
   "lifecell": 73
  },
  "wakeAlertsPerYear": 4,
- "alertsTotal": 256,
+ "alertsTotal": 257,
  "maxSpikeVelocity": 24.0
 }
