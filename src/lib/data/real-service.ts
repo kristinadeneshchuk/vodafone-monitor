@@ -260,6 +260,23 @@ export class RealFeedbackService implements IFeedbackService {
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
 
+    // Географія — питання не місяця, а року. Місце в тексті називають
+    // лише в 6% скарг (у відгуках магазинів — у 3%), тому за 30 днів
+    // на карті лишалась одна точка з однією згадкою. Рішення "куди
+    // ставити станцію" все одно ухвалюють на горизонті кварталу, тож
+    // рахуємо локації за весь період спостереження.
+    const yearMap: Record<string, number> = {};
+    for (const f of feedbacks) {
+      if (f.sentiment === 'negative'
+          && f.locationName && f.locationName !== 'Невідомо') {
+        yearMap[f.locationName] = (yearMap[f.locationName] ?? 0) + 1;
+      }
+    }
+    const topLocationsAllTime = Object.entries(yearMap)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
     return {
       date: effectiveDayStr,
       windowStart,
@@ -282,6 +299,7 @@ export class RealFeedbackService implements IFeedbackService {
       
       sentimentDistribution,
       topLocations,
+      topLocationsAllTime,
       timelineData,
     };
   }

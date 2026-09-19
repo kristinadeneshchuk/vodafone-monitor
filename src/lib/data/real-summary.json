@@ -73,10 +73,10 @@
    }
   }
  },
- "problemLocations": 16,
- "gridDriven": 7,
+ "problemLocations": 26,
+ "gridDriven": 10,
  "chronicLocations": 1,
- "healthyLocations": 2,
+ "healthyLocations": 5,
  "incidentLocations": 0,
  "marketWideMentions": 35,
  "coverageMentions": 1121,
@@ -84,8 +84,8 @@
  "coveragePraise": 166,
  "gridOutageShare": 24.0,
  "gridOutageCount": 269,
- "withLocation": 93,
- "withLocationShare": 8.3,
+ "withLocation": 105,
+ "withLocationShare": 9.4,
  "chronicGaps": 32,
  "byBrand": {
   "kyivstar": 491,
@@ -94,6 +94,6 @@
   "lifecell": 71
  },
  "wakeAlertsPerYear": 1,
- "alertsTotal": 208,
+ "alertsTotal": 205,
  "maxSpikeVelocity": 36.0
 }

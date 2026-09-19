@@ -89,6 +89,9 @@ export interface DashboardMetrics {
     negative: number;
   };
   topLocations: { name: string; count: number }[];
+  /** Локації за весь період спостереження, а не за вікно звіту:
+   *  місце називають лише в 6% скарг, і за 30 днів карта порожня. */
+  topLocationsAllTime?: { name: string; count: number }[];
   timelineData: { date: string; issuesCount: number; averageRisk: number }[];
 }
 

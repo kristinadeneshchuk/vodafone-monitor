@@ -547,15 +547,17 @@ export default function DashboardOverview() {
         {/* Top Locations for Yesterday */}
         <Card className="col-span-1 border-slate-200 shadow-sm bg-white">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Топ проблемних ділянок за 30 днів</CardTitle>
+            <CardTitle className="text-base">Топ проблемних ділянок за рік</CardTitle>
             <CardDescription className="text-xs">
-              Локації з найбільшою кількістю звернень за звітний період ({metrics.dateLabel})
+              Місце названо лише в 6% скарг, тому за 30 днів на карті лишалась
+              одна точка. Рішення «куди ставити станцію» ухвалюють на горизонті
+              кварталу, тож тут увесь період спостереження.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
-            {metrics.topLocations.length > 0 ? (
+            {(metrics.topLocationsAllTime ?? metrics.topLocations).length > 0 ? (
               <div className="space-y-2.5">
-                {metrics.topLocations.map((loc, i) => (
+                {(metrics.topLocationsAllTime ?? metrics.topLocations).map((loc, i) => (
                   <div key={loc.name} className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100/70 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs shadow-xs">
@@ -572,7 +574,7 @@ export default function DashboardOverview() {
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center text-slate-400 text-sm space-y-2">
                 <MapPin className="w-8 h-8 text-slate-300" />
-                <p className="font-medium text-slate-600">Локальних аномалій за місяць не виявлено</p>
+                <p className="font-medium text-slate-600">Жодна скарга не називає місце</p>
                 <p className="text-xs text-slate-400 max-w-xs">
                   Усі базові станції працювали у нормальному режимі
                 </p>
