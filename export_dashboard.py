@@ -73,7 +73,7 @@ def fetch(scope='problems', limit=None, days=None):
                a.problem_type, a.risk_score, a.address_name, a.lat, a.lng,
                a.relevance_score, a.constructive_score, a.cause, a.context,
                a.churn_intent, a.churn_score, a.reach_weight, a.resonance,
-               a.is_market_wide
+               a.is_market_wide, a.genre, a.sentiment AS tone
         FROM analysis a JOIN mentions m ON m.id = a.mention_id
         WHERE {' AND '.join(conds)}
         ORDER BY m.published_at DESC
@@ -122,6 +122,13 @@ def fetch(scope='problems', limit=None, days=None):
             # Такі зберігаються по разу на бренд, тому без цієї ознаки
             # галузева стаття потрапляє у стрічку кожного оператора.
             'isMarketWide': bool(r['is_market_wide']),
+            # Хто говорить: абонент чи медіа. "Vodafone попередив про
+            # перебої" — переказ офіційної заяви, а не скарга абонента.
+            'genre': r['genre'] or 'user',
+            # Сирий тон разом зі 'змішано': у контракті №6 змішане
+            # зводиться до негативу, і "все супер, але на дачі інтернет
+            # поганий" підписувалось у стрічці словом "Скарга".
+            'tone': r['tone'],
             'churnIntent': bool(r['churn_intent']),
             'churnScore': r['churn_score'],
             'reachWeight': r['reach_weight'],
@@ -219,6 +226,27 @@ def build_locations(records):
     return sorted(out, key=lambda x: -x['complaints'])
 
 
+def all_topics_by_brand():
+    """Скарги на кожен бренд за всіма темами, з розбивкою по темах."""
+    con = sqlite3.connect(DB_PATH)
+    con.row_factory = sqlite3.Row
+    rows = con.execute("""
+        SELECT m.brand_query AS brand, a.cause, count(*) AS n
+        FROM analysis a JOIN mentions m ON m.id = a.mention_id
+        WHERE a.is_ad = 0 AND a.sentiment IN ('negative','mixed')
+          AND a.is_market_wide = 0
+        GROUP BY 1, 2
+    """).fetchall()
+    out = {}
+    for r in rows:
+        b = out.setdefault(r['brand'], {'total': 0, 'coverage': 0, 'byCause': {}})
+        b['total'] += r['n']
+        b['byCause'][r['cause']] = r['n']
+        if r['cause'] in COVERAGE_CAUSES:
+            b['coverage'] += r['n']
+    return out
+
+
 def build_summary(records, alerts):
     """
     Бізнес-показники для головного екрана.
@@ -241,6 +269,11 @@ def build_summary(records, alerts):
     wake = [a for a in alerts if a['level'] == 'wake']
 
     return {
+        # Скарги на бренд ПО ВСІХ темах, не лише про звʼязок. Дашборд
+        # показує тільки покриття — це фокус продукту, — але без цього
+        # числа незрозуміло, чи 240 скарг про звʼязок це багато. Разом
+        # із темами видно і масштаб, і чому ми дивимось саме сюди.
+        'complaintsAllTopics': all_topics_by_brand(),
         # головне: скільки МІСЦЬ має проблему і якого вона типу
         'problemLocations': len(locations),
         'gridDriven': sum(1 for l in locations if l['pattern'] == 'grid'),

@@ -173,6 +173,15 @@ export class RealFeedbackService implements IFeedbackService {
     const dayFeedbacks = feedbacks.filter(
       f => f.timestamp.slice(0, 10) >= windowStart
         && f.timestamp.slice(0, 10) <= effectiveDayStr);
+    // Попередній такий самий період — щоб цифра "9 скарг" мала з чим
+    // порівнюватись. Без цього вона не каже ні "краще", ні "гірше".
+    const prevStart = format(subDays(parseISO(windowStart), WINDOW_DAYS), 'yyyy-MM-dd');
+    const prevEnd = format(subDays(parseISO(windowStart), 1), 'yyyy-MM-dd');
+    const prevComplaints = feedbacks.filter(
+      f => f.sentiment === 'negative'
+        && f.timestamp.slice(0, 10) >= prevStart
+        && f.timestamp.slice(0, 10) <= prevEnd).length;
+
     const sentimentDistribution = { positive: 0, neutral: 0, negative: 0 };
 
     let riskyCount = 0;
@@ -255,7 +264,63 @@ export class RealFeedbackService implements IFeedbackService {
       ? Math.round((totalResonance / dayCount) * 10) / 10
       : 0;
 
+    // Головна причина скарг періоду. Комунікаційній команді потрібна
+    // не оцінка "негативно", а відповідь "що саме зламалось".
+    const causeMap: Record<string, number> = {};
+    for (const f of dayFeedbacks) {
+      if (f.sentiment !== 'negative') continue;
+      const c = f.cause ?? 'other';
+      causeMap[c] = (causeMap[c] ?? 0) + 1;
+    }
+    const topCauses = Object.entries(causeMap)
+      .map(([cause, count]) => ({ cause, count }))
+      .sort((a, b) => b.count - a.count);
+
+    // Тижневі стовпчики замість денної лінії. Медіана — 2 скарги на
+    // добу, і 41 день на рік має нуль: денний графік показував рівну
+    // лінію з одним шпилем 2 липня, тобто одну подію й нічого більше.
+    // Тиждень дає числа, які видно, а медіана тижня — межу, вище якої
+    // починається "більше за звичайне".
+    const weekMap: Record<string, number> = {};
+    for (const f of feedbacks) {
+      if (f.sentiment !== 'negative') continue;
+      const d = parseISO(f.timestamp.slice(0, 10));
+      const monday = format(subDays(d, (d.getDay() + 6) % 7), 'yyyy-MM-dd');
+      weekMap[monday] = (weekMap[monday] ?? 0) + 1;
+    }
+    const weeks = Object.entries(weekMap)
+      .map(([week, count]) => ({ week, count }))
+      .sort((a, b) => a.week.localeCompare(b.week))
+      .slice(-26);
+    const weekCounts = weeks.map(w => w.count).sort((a, b) => a - b);
+    const weeklyBaseline = weekCounts.length
+      ? weekCounts[Math.floor(weekCounts.length / 2)]
+      : 0;
+    const weeklyData = weeks.map(w => ({
+      ...w,
+      // короткий підпис "01.09" читабельніший за ISO
+      label: `${w.week.slice(8, 10)}.${w.week.slice(5, 7)}`,
+      aboveNorm: w.count > weeklyBaseline * 2,
+    }));
+
     const topLocations = Object.entries(locationMap)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    // Географія — питання не місяця, а року. Місце в тексті називають
+    // лише в 6% скарг (у відгуках магазинів — у 3%), тому за 30 днів
+    // на карті лишалась одна точка з однією згадкою. Рішення "куди
+    // ставити станцію" все одно ухвалюють на горизонті кварталу, тож
+    // рахуємо локації за весь період спостереження.
+    const yearMap: Record<string, number> = {};
+    for (const f of feedbacks) {
+      if (f.sentiment === 'negative'
+          && f.locationName && f.locationName !== 'Невідомо') {
+        yearMap[f.locationName] = (yearMap[f.locationName] ?? 0) + 1;
+      }
+    }
+    const topLocationsAllTime = Object.entries(yearMap)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
@@ -282,6 +347,11 @@ export class RealFeedbackService implements IFeedbackService {
       
       sentimentDistribution,
       topLocations,
+      topLocationsAllTime,
+      topCauses,
+      previousComplaints: prevComplaints,
+      weeklyData,
+      weeklyBaseline,
       timelineData,
     };
   }

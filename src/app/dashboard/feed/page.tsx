@@ -179,20 +179,18 @@ function FeedPageContent() {
       return { 
         avgRisk: 0, 
         highRiskCount: 0, 
-        avgRelevance: 0, 
         topLocation: '-',
+        topLocationCount: 0,
+        complaintCount: 0,
         churnCount: 0,
         churnRate: '0.0'
       };
     }
-    const total = feedbacks.length;
     const riskyRecords = feedbacks.filter(f => f.reputationalRiskScore > 0);
     const avgRisk = riskyRecords.length > 0 
       ? Math.round(riskyRecords.reduce((acc, f) => acc + f.reputationalRiskScore, 0) / riskyRecords.length) 
       : 0;
     const highRiskCount = feedbacks.filter(f => f.reputationalRiskScore >= 50).length;
-    const avgRelevance = (feedbacks.reduce((acc, f) => acc + f.relevanceScore, 0) / total).toFixed(2);
-    
     // Намір піти рахується від СКАРГ, а не від усіх згадок: ділити
     // девʼять погроз на 1246 згадок разом із похвалами безглуздо.
     const complaints = feedbacks.filter(f => f.sentiment === 'negative');
@@ -209,16 +207,38 @@ function FeedPageContent() {
       }
     });
     const topLocation = Object.entries(locationCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Невідомо';
+    const topLocationCount = Object.entries(locationCounts).sort((a, b) => b[1] - a[1])[0]?.[1] ?? 0;
 
     return { 
       avgRisk, 
       highRiskCount, 
-      avgRelevance, 
       topLocation,
+      topLocationCount,
+      complaintCount: complaints.length,
       churnCount,
       churnRate
     };
   }, [feedbacks]);
+
+  /**
+   * Підпис рядка. Жанр важливіший за тон: "Vodafone попередив про
+   * перебої" — переказ офіційної заяви, а не скарга абонента, і
+   * підписувати таке словом "скарга" означає рахувати одну подію як
+   * сотню незадоволених людей. Клас "змішано" теж окремий: "все супер,
+   * але на дачі інтернет поганий" — ні скарга, ні похвала.
+   */
+  const getToneLabel = (r: FeedbackRecord) =>
+    r.genre === 'news' ? 'Новина'
+      : r.tone === 'mixed' ? 'Змішано'
+      : r.sentiment === 'negative' ? 'Скарга'
+      : r.sentiment === 'positive' ? 'Похвала' : 'Нейтрально';
+
+  const getToneClass = (r: FeedbackRecord, size: string) =>
+    r.genre === 'news' ? `${size} font-normal text-sky-700 bg-sky-50 border-sky-200`
+      : r.tone === 'mixed' ? `${size} font-normal text-amber-700 bg-amber-50 border-amber-200`
+      : r.sentiment === 'negative' ? `${size} font-normal text-red-700 bg-red-50 border-red-200`
+      : r.sentiment === 'positive' ? `${size} font-normal text-emerald-700 bg-emerald-50 border-emerald-200`
+      : `${size} font-normal text-slate-600 bg-slate-50`;
 
   const getProblemLabel = (problem: ProblemType) => {
     switch(problem) {
@@ -434,7 +454,7 @@ function FeedPageContent() {
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Deep Analytics Block */}
           {!loading && feedbacks.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <Card className="bg-slate-50/60 border-slate-200 shadow-none">
                 <CardContent className="p-3.5">
                   <div className="text-xs text-slate-500 mb-1">Середній ризик</div>
@@ -455,7 +475,7 @@ function FeedPageContent() {
                       {analytics.highRiskCount}
                     </span>
                     <span className="text-xs text-slate-400">
-                      ({((analytics.highRiskCount / Math.max(feedbacks.length, 1)) * 100).toFixed(1)}%)
+                      ({((analytics.highRiskCount / Math.max(analytics.complaintCount, 1)) * 100).toFixed(1)}% скарг)
                     </span>
                   </div>
                 </CardContent>
@@ -475,27 +495,18 @@ function FeedPageContent() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-50/60 border-slate-200 shadow-none">
+              <Card className="bg-slate-50/60 border-slate-200 shadow-none col-span-2 md:col-span-1">
                 <CardContent className="p-3.5">
                   <div className="text-xs text-slate-500 mb-1 flex items-center gap-1">
-                    <Target className="w-3 h-3 text-slate-400" /> Релевантність
+                    <MapPin className="w-3 h-3 text-slate-400" /> Найбільше скарг у локації
                   </div>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-xl font-bold text-blue-600">
-                      {analytics.avgRelevance}
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-sm font-bold text-slate-800 truncate" title={analytics.topLocation}>
+                      {analytics.topLocation}
                     </span>
-                    <span className="text-xs text-slate-400">/ 1.0</span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-slate-50/60 border-slate-200 shadow-none col-span-2 md:col-span-1 lg:col-span-1">
-                <CardContent className="p-3.5">
-                  <div className="text-xs text-slate-500 mb-1 flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-slate-400" /> Топ епіцентр
-                  </div>
-                  <div className="text-sm font-bold text-slate-800 truncate" title={analytics.topLocation}>
-                    {analytics.topLocation}
+                    {analytics.topLocationCount > 0 && (
+                      <span className="text-xs text-slate-400">({analytics.topLocationCount})</span>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -549,13 +560,9 @@ function FeedPageContent() {
                       {/* Badges Row */}
                       <div className="flex flex-wrap items-center gap-1.5 text-xs">
                         <Badge variant="outline" className={
-                          record.sentiment === 'negative'
-                            ? 'text-[10px] py-0 font-normal text-red-700 bg-red-50 border-red-200'
-                            : record.sentiment === 'positive'
-                            ? 'text-[10px] py-0 font-normal text-emerald-700 bg-emerald-50 border-emerald-200'
-                            : 'text-[10px] py-0 font-normal text-slate-600 bg-slate-50'
+                          getToneClass(record, 'text-[10px] py-0')
                         }>
-                          {record.sentiment === 'negative' ? 'Скарга' : record.sentiment === 'positive' ? 'Похвала' : 'Нейтрально'}
+                          {getToneLabel(record)}
                         </Badge>
                         {record.problemType !== 'none' && (
                           <Badge variant="outline" className="text-[10px] py-0 font-normal text-slate-700 bg-slate-50">
@@ -643,14 +650,9 @@ function FeedPageContent() {
                           {/* Problem Type */}
                           <TableCell className="align-top py-3">
                             <div className="flex flex-col gap-1 items-start">
-                              <Badge variant="outline" className={
-                                record.sentiment === 'negative'
-                                  ? 'text-xs font-normal text-red-700 bg-red-50 border-red-200'
-                                  : record.sentiment === 'positive'
-                                  ? 'text-xs font-normal text-emerald-700 bg-emerald-50 border-emerald-200'
-                                  : 'text-xs font-normal text-slate-600 bg-slate-50'}>
-                                {record.sentiment === 'negative' ? 'Скарга'
-                                  : record.sentiment === 'positive' ? 'Похвала' : 'Нейтрально'}
+                              <Badge variant="outline"
+                                     className={getToneClass(record, 'text-xs')}>
+                                {getToneLabel(record)}
                               </Badge>
                               {record.problemType !== 'none' && (
                                 <Badge variant="outline" className="text-xs font-normal text-slate-700 bg-slate-50">

@@ -32,6 +32,10 @@ export interface FeedbackRecord {
   context?: string | null;
   /** Матеріал про телеком-ринок загалом, а не про цього оператора. */
   isMarketWide?: boolean;
+  /** Хто говорить: 'user' — абонент, 'news' — медіа чи офіційна заява. */
+  genre?: 'user' | 'news';
+  /** Тон із класом 'mixed', якого немає в контракті sentiment. */
+  tone?: 'positive' | 'neutral' | 'negative' | 'mixed';
   churnIntent?: boolean;      // намір піти від оператора
   churnScore?: number;        // 0-10
   reachWeight?: number;       // охоплення джерела, 0-10
@@ -89,6 +93,18 @@ export interface DashboardMetrics {
     negative: number;
   };
   topLocations: { name: string; count: number }[];
+  /** Локації за весь період спостереження, а не за вікно звіту:
+   *  місце називають лише в 6% скарг, і за 30 днів карта порожня. */
+  topLocationsAllTime?: { name: string; count: number }[];
+  /** Причини скарг за вікно звіту, від найчастішої. */
+  topCauses?: { cause: string; count: number }[];
+  /** Скарги за попередній такий самий період — для порівняння. */
+  previousComplaints?: number;
+  /** Скарги по тижнях: денний графік на двох скаргах у добу показував
+   *  рівну лінію з одним шпилем. */
+  weeklyData?: { week: string; label: string; count: number; aboveNorm: boolean }[];
+  /** Медіана скарг на тиждень — межа "звичайного". */
+  weeklyBaseline?: number;
   timelineData: { date: string; issuesCount: number; averageRisk: number }[];
 }
 

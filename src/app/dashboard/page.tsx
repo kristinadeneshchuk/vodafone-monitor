@@ -20,8 +20,10 @@ import {
 } from 'lucide-react';
 import { feedbackService } from '@/lib/data/feedback-service';
 import { DashboardMetrics, DailyBriefing } from '@/lib/data/types';
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { Bar, BarChart, Cell, ReferenceLine, ResponsiveContainer,
+         Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { useRouter } from 'next/navigation';
+import summary from '@/lib/data/real-summary.json';
 
 export default function DashboardOverview() {
   const router = useRouter();
@@ -307,6 +309,11 @@ export default function DashboardOverview() {
           </span>
         </div>
 
+        {/* Масштаб і фокус в одному рядку. Дашборд показує лише скарги
+            на звʼязок — це рішення продукту, — але без загального числа
+            незрозуміло, чи це багато. Дані за весь рік, не за період. */}
+        <ScopeStrip />
+
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-3.5">
           {/* 1. Complaints Count */}
           <div className={`p-3 sm:p-4 rounded-xl border shadow-2xs transition-all flex flex-col justify-between ${
@@ -314,7 +321,7 @@ export default function DashboardOverview() {
           }`}>
             <div className="flex items-center justify-between gap-1.5 mb-2">
               <span className="text-xs font-semibold text-slate-500 truncate">
-                Всі скарги
+                Скарги про звʼязок
               </span>
               <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
                 isComplaintsCrit ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
@@ -326,8 +333,23 @@ export default function DashboardOverview() {
               <div className="text-2xl font-black text-slate-900 tracking-tight">
                 {metrics.totalComplaints}
               </div>
-              <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                за 30 днів
+              {/* Без попереднього періоду число "9" не каже ні "краще",
+                  ні "гірше". Порівняння — це мінімум, заради якого
+                  керівник взагалі дивиться на показник. */}
+              <p className="text-[11px] mt-0.5 truncate">
+                {typeof metrics.previousComplaints === 'number' && metrics.previousComplaints > 0 ? (
+                  <span className={metrics.totalComplaints > metrics.previousComplaints
+                    ? 'text-red-600 font-semibold' : 'text-emerald-600 font-semibold'}>
+                    {metrics.totalComplaints > metrics.previousComplaints ? '↑' : '↓'}{' '}
+                    {Math.abs(Math.round(100 * (metrics.totalComplaints - metrics.previousComplaints)
+                      / metrics.previousComplaints))}%{' '}
+                    <span className="text-slate-400 font-normal">
+                      до попередніх 30 днів ({metrics.previousComplaints})
+                    </span>
+                  </span>
+                ) : (
+                  <span className="text-slate-400">за 30 днів</span>
+                )}
               </p>
             </div>
           </div>
@@ -338,7 +360,7 @@ export default function DashboardOverview() {
           }`}>
             <div className="flex items-center justify-between gap-1.5 mb-2">
               <span className="text-xs font-semibold text-slate-500 truncate">
-                Сер. ризик
+                Головна причина
               </span>
               <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
                 isRiskCrit ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
@@ -347,14 +369,18 @@ export default function DashboardOverview() {
               </div>
             </div>
             <div>
-              <div className="flex items-baseline gap-1">
-                <span className={`text-2xl font-black tracking-tight ${isRiskCrit ? 'text-red-600' : 'text-slate-800'}`}>
-                  {metrics.averageRiskScore}
-                </span>
-                <span className="text-xs text-slate-400 font-medium">/ 100</span>
+              {/* "Середній ризик 18/100" не веде до дії: незрозуміло,
+                  що саме зламалось. Причина веде — її можна передати
+                  технічній службі. */}
+              <div className="text-base lg:text-lg font-black text-slate-900 leading-tight">
+                {metrics.topCauses?.[0]
+                  ? (CAUSE_UA[metrics.topCauses[0].cause] ?? metrics.topCauses[0].cause)
+                  : 'Немає скарг'}
               </div>
               <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                індекс загрози
+                {metrics.topCauses?.[0]
+                  ? `${metrics.topCauses[0].count} із ${metrics.totalComplaints} скарг`
+                  : 'за звітний період'}
               </p>
             </div>
           </div>
@@ -365,7 +391,7 @@ export default function DashboardOverview() {
           }`}>
             <div className="flex items-center justify-between gap-1.5 mb-2">
               <span className="text-xs font-semibold text-slate-500 truncate">
-                Критичні
+                Частка негативу
               </span>
               <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
                 isHighRiskCrit ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
@@ -374,11 +400,18 @@ export default function DashboardOverview() {
               </div>
             </div>
             <div>
-              <div className={`text-2xl font-black tracking-tight ${isHighRiskCrit ? 'text-red-600' : 'text-slate-800'}`}>
-                {metrics.highRiskIssuesCount}
+              {/* "Критичні: 0" було нулем щомісяця і нічого не показувало.
+                  Частка негативу проти похвал відповідає на питання
+                  "нас лають чи хвалять", і її є з чим порівняти. */}
+              <div className="text-2xl font-black tracking-tight text-slate-800">
+                {(() => {
+                  const d = metrics.sentimentDistribution;
+                  const all = d.positive + d.neutral + d.negative;
+                  return all > 0 ? Math.round((100 * d.negative) / all) : 0;
+                })()}%
               </div>
               <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                ризик ≥ 50
+                {metrics.sentimentDistribution.positive} похвал поруч
               </p>
             </div>
           </div>
@@ -422,15 +455,15 @@ export default function DashboardOverview() {
                     Головна локація
                   </span>
                   <div className="text-sm font-black text-slate-900 truncate">
-                    {metrics.topLocations[0]?.name || 'Немає'}
+                    {(metrics.topLocationsAllTime ?? metrics.topLocations)[0]?.name || 'Немає'}
                   </div>
                 </div>
               </div>
               <div className="text-right shrink-0">
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
-                  {metrics.topLocations[0]?.count || 0} скарг
+                  {(metrics.topLocationsAllTime ?? metrics.topLocations)[0]?.count || 0} скарг
                 </span>
-                <span className="text-[10px] text-slate-400 block mt-0.5">за 30 днів</span>
+                <span className="text-[10px] text-slate-400 block mt-0.5">за рік</span>
               </div>
             </div>
 
@@ -446,10 +479,12 @@ export default function DashboardOverview() {
               </div>
               <div>
                 <div className="text-xl lg:text-2xl font-black text-slate-900 truncate">
-                  {metrics.topLocations[0]?.name || 'Немає'}
+                  {(metrics.topLocationsAllTime ?? metrics.topLocations)[0]?.name || 'Немає'}
                 </div>
                 <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                  {metrics.topLocations[0] ? `${metrics.topLocations[0].count} скарг за 30 днів` : 'аномалій не виявлено'}
+                  {(metrics.topLocationsAllTime ?? metrics.topLocations)[0]
+                    ? `${(metrics.topLocationsAllTime ?? metrics.topLocations)[0].count} скарг за рік`
+                    : 'жодна скарга не називає місце'}
                 </p>
               </div>
             </div>
@@ -465,42 +500,38 @@ export default function DashboardOverview() {
         <Card className="col-span-1 border-slate-200 shadow-sm bg-white">
           <CardHeader className="pb-2 p-4 sm:p-6">
             <CardTitle className="text-base flex items-center justify-between">
-              <span>Динаміка скарг по днях</span>
+              <span>Скарги по тижнях</span>
               <Badge variant="outline" className="text-[10px] font-normal text-slate-500">
-                Останні 30 днів
+                Норма: {metrics.weeklyBaseline ?? 0} на тиждень
               </Badge>
             </CardTitle>
             <CardDescription className="text-xs">
-              Хронологія кількості звернень за останній місяць
+              Пунктир — медіана тижня за весь період спостереження. Червоні
+              стовпчики вдвічі вищі за неї: там щось сталося, а не просто
+              випав активний день.
             </CardDescription>
           </CardHeader>
           <CardContent className="h-[220px] sm:h-[280px] md:h-[300px] p-2 sm:p-6 pt-0">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={metrics.timelineData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+              <BarChart data={metrics.weeklyData ?? []}
+                        margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis 
-                  dataKey="date" 
-                  tickLine={false} 
-                  axisLine={false} 
-                  tick={{fill: '#888', fontSize: 10}}
-                  interval={4}
+                <XAxis dataKey="label" tickLine={false} axisLine={false}
+                       tick={{ fill: '#888', fontSize: 10 }} interval={3} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fill: '#888', fontSize: 11 }} />
+                <Tooltip
+                  formatter={(val: any) => [val, 'Скарг за тиждень']}
+                  labelFormatter={(label) => `Тиждень від ${label}`}
+                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '12px' }}
                 />
-                <YAxis tickLine={false} axisLine={false} tick={{fill: '#888', fontSize: 11}} />
-                <Tooltip 
-                  formatter={(val: any) => [val, 'Кількість скарг']}
-                  labelFormatter={(label) => `Дата: ${label}`}
-                  contentStyle={{borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)', fontSize: '12px'}}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="issuesCount" 
-                  stroke="#ef4444" 
-                  strokeWidth={2.5} 
-                  dot={{r: 2.5, fill: '#ef4444'}} 
-                  activeDot={{r: 4.5}}
-                  name="Кількість скарг" 
-                />
-              </LineChart>
+                <ReferenceLine y={metrics.weeklyBaseline ?? 0} stroke="#94a3b8"
+                               strokeDasharray="4 4" />
+                <Bar dataKey="count" name="Скарг за тиждень" radius={[3, 3, 0, 0]}>
+                  {(metrics.weeklyData ?? []).map((w, i) => (
+                    <Cell key={i} fill={w.aboveNorm ? '#ef4444' : '#cbd5e1'} />
+                  ))}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
@@ -508,15 +539,17 @@ export default function DashboardOverview() {
         {/* Top Locations for Yesterday */}
         <Card className="col-span-1 border-slate-200 shadow-sm bg-white">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Топ проблемних ділянок за 30 днів</CardTitle>
+            <CardTitle className="text-base">Топ проблемних ділянок за рік</CardTitle>
             <CardDescription className="text-xs">
-              Локації з найбільшою кількістю звернень за звітний період ({metrics.dateLabel})
+              Місце названо лише в 4% скарг, тому за 30 днів на карті лишалась
+              одна точка. Рішення «куди ставити станцію» ухвалюють на горизонті
+              кварталу, тож тут увесь період спостереження.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
-            {metrics.topLocations.length > 0 ? (
+            {(metrics.topLocationsAllTime ?? metrics.topLocations).length > 0 ? (
               <div className="space-y-2.5">
-                {metrics.topLocations.map((loc, i) => (
+                {(metrics.topLocationsAllTime ?? metrics.topLocations).map((loc, i) => (
                   <div key={loc.name} className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100/70 transition-colors">
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs shadow-xs">
@@ -533,7 +566,7 @@ export default function DashboardOverview() {
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center text-slate-400 text-sm space-y-2">
                 <MapPin className="w-8 h-8 text-slate-300" />
-                <p className="font-medium text-slate-600">Локальних аномалій за місяць не виявлено</p>
+                <p className="font-medium text-slate-600">Жодна скарга не називає місце</p>
                 <p className="text-xs text-slate-400 max-w-xs">
                   Усі базові станції працювали у нормальному режимі
                 </p>
@@ -542,6 +575,71 @@ export default function DashboardOverview() {
           </CardContent>
         </Card>
       </div>
+    </div>
+  );
+}
+
+const CAUSE_UA: Record<string, string> = {
+  internet: 'мобільний інтернет', coverage: 'покриття і сигнал', calls: 'дзвінки',
+  blackout: 'відключення світла', outage: 'масовий збій', billing: 'списання коштів',
+  tariffs: 'тарифи', app: 'застосунок', support: 'підтримка', roaming: 'роумінг',
+  number: 'номер', other: 'не класифіковано',
+};
+
+const COVERAGE_CAUSES = ['coverage', 'internet', 'calls', 'outage', 'blackout'];
+
+/** Скарги на бренд за рік: усі теми проти тих, що показує дашборд. */
+function ScopeStrip() {
+  const all = (summary as any).complaintsAllTopics?.vodafone;
+  if (!all) return null;
+
+  const share = Math.round((100 * all.coverage) / Math.max(all.total, 1));
+  const others = Object.entries(all.byCause as Record<string, number>)
+    .filter(([c]) => !COVERAGE_CAUSES.includes(c))
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4);
+
+  return (
+    <div className="mb-3 p-3 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2.5">
+      <div className="flex items-center gap-2">
+        <Database className="w-3.5 h-3.5 text-slate-500" />
+        <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
+          Воронка даних і межі висновків
+        </p>
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
+        <div className="rounded-lg bg-white border border-slate-200 px-2.5 py-2">
+          <div className="font-bold text-slate-900">20 627</div>
+          <div className="text-slate-500">відкритих згадок у повній базі</div>
+        </div>
+        <div className="rounded-lg bg-white border border-slate-200 px-2.5 py-2">
+          <div className="font-bold text-slate-900">9 610</div>
+          <div className="text-slate-500">згадок Vodafone</div>
+        </div>
+        <div className="rounded-lg bg-white border border-slate-200 px-2.5 py-2">
+          <div className="font-bold text-slate-900">{all.total.toLocaleString()}</div>
+          <div className="text-slate-500">скарг Vodafone за всіма темами</div>
+        </div>
+        <div className="rounded-lg bg-red-50/60 border border-red-100 px-2.5 py-2">
+          <div className="font-bold text-red-700">{all.coverage.toLocaleString()} ({share}%)</div>
+          <div className="text-slate-500">скарг про зв’язок — фокус дашборда</div>
+        </div>
+      </div>
+      <p className="text-[11px] text-slate-500 leading-relaxed">
+        Повний корпус: 1 вересня 2025 — 19 вересня 2026 (383 дні). На екранах — лише якість зв’язку, бо для неї є конкретна дія: перевірка мережі, покриття або резервного живлення.
+      </p>
+      <div className="flex flex-wrap gap-1.5 mt-2">
+        <span className="text-[11px] text-slate-400 mr-1">Решта тем:</span>
+        {others.map(([cause, n]) => (
+          <Badge key={cause} variant="outline"
+                 className="text-[11px] font-normal text-slate-600 bg-white">
+            {CAUSE_UA[cause] ?? cause}: {n}
+          </Badge>
+        ))}
+      </div>
+      <p className="text-[11px] text-slate-400 leading-relaxed">
+        Обмеження: автоматичний планувальник ще не налаштований; геолокація показується лише там, де місце прямо назване у тексті (10 із 251 скарги Vodafone про зв’язок, 4%).
+      </p>
     </div>
   );
 }

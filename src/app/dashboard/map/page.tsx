@@ -189,7 +189,7 @@ export default function MapPage() {
 
         <Card className="border-slate-200 shadow-sm">
           <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-3">
-            <CardTitle className="text-base sm:text-lg font-bold">Найпроблемніші локації</CardTitle>
+            <CardTitle className="text-base sm:text-lg font-bold">Локації зі скаргами</CardTitle>
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0 space-y-2 max-h-[360px] sm:max-h-[460px] md:max-h-[500px] overflow-y-auto">
             {points.slice(0, 20).map((p, i) => (

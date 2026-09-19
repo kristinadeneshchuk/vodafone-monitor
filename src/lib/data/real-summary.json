@@ -1,17 +1,91 @@
 {
- "problemLocations": 16,
- "gridDriven": 7,
+ "complaintsAllTopics": {
+  "kyivstar": {
+   "total": 2433,
+   "coverage": 429,
+   "byCause": {
+    "app": 689,
+    "billing": 134,
+    "blackout": 37,
+    "calls": 1,
+    "coverage": 86,
+    "esim": 2,
+    "internet": 286,
+    "number": 5,
+    "other": 773,
+    "outage": 19,
+    "roaming": 15,
+    "support": 56,
+    "tariffs": 330
+   }
+  },
+  "lifecell": {
+   "total": 612,
+   "coverage": 54,
+   "byCause": {
+    "app": 171,
+    "billing": 49,
+    "blackout": 6,
+    "calls": 2,
+    "coverage": 10,
+    "esim": 2,
+    "internet": 34,
+    "number": 5,
+    "other": 182,
+    "outage": 2,
+    "roaming": 6,
+    "support": 29,
+    "tariffs": 114
+   }
+  },
+  "unknown": {
+   "total": 420,
+   "coverage": 87,
+   "byCause": {
+    "app": 17,
+    "billing": 2,
+    "blackout": 16,
+    "coverage": 33,
+    "esim": 2,
+    "internet": 14,
+    "other": 264,
+    "outage": 24,
+    "roaming": 3,
+    "support": 7,
+    "tariffs": 38
+   }
+  },
+  "vodafone": {
+   "total": 1130,
+   "coverage": 251,
+   "byCause": {
+    "app": 241,
+    "billing": 59,
+    "blackout": 34,
+    "coverage": 63,
+    "internet": 130,
+    "number": 4,
+    "other": 360,
+    "outage": 24,
+    "roaming": 9,
+    "support": 42,
+    "tariffs": 164
+   }
+  }
+ },
+ "problemLocations": 26,
+ "gridDriven": 10,
  "chronicLocations": 1,
- "healthyLocations": 2,
+ "healthyLocations": 4,
  "incidentLocations": 0,
  "marketWideMentions": 35,
  "coverageMentions": 1121,
- "coverageComplaints": 799,
- "coveragePraise": 166,
+ "coverageComplaints": 828,
+ "coveragePraise": 137,
  "gridOutageShare": 24.0,
  "gridOutageCount": 269,
- "withLocation": 93,
- "withLocationShare": 8.3,
+ "withLocation": 105,
+ "withLocationShare": 9.4,
  "chronicGaps": 32,
  "byBrand": {
   "kyivstar": 491,
@@ -20,6 +94,6 @@
   "lifecell": 71
  },
  "wakeAlertsPerYear": 1,
- "alertsTotal": 208,
+ "alertsTotal": 205,
  "maxSpikeVelocity": 36.0
 }

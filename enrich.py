@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS analysis (
     -- контракт для №6: enum числами заради місця
     is_market_wide    INTEGER,
     is_ad             INTEGER,
+    genre             TEXT,
     is_relevant       INTEGER,
     relevance_score   REAL,
     is_constructive   INTEGER,
@@ -174,6 +175,69 @@ def classify_tonality(sentiment, q):
     return 'neutral', 'medium'
 
 
+# Застереження після похвали: "все супер, АЛЕ інтернет поганий".
+# Сполучник плюс названа проблема в тому ж реченні.
+CAVEAT_RX = re.compile(
+    r'\b(але|однак|проте|тільки\s+от|шкода\s+що|єдине|мінус|жаль)\b[^.!?]{0,120}'
+    r'(не\s+прац|нема|відсутн|поган|слабк|жахлив|повільн|лага|тормоз|'
+    r'не\s+лови|пропада|зника|не\s+задовіль)'
+    # "але покриття НЕ по всій території задовільне" — заперечення
+    # стоїть перед обставиною, а не перед оцінкою
+    r'|\b(але|однак|проте|єдине|мінус)\b[^.!?]{0,120}'
+    r'\bне\b[^.!?]{0,60}(задовіль|достатн|скрізь|всюди|по\s+всій)',
+    re.IGNORECASE)
+
+# Скарга без сполучника, просто поруч із похвалою: "купив тариф за
+# 520 грн і отримав лагаючий інтернет, застосунок 10/10". Зірки
+# кажуть "позитив", і скарга зникала цілком.
+PLAIN_COMPLAINT_RX = re.compile(
+    r'(інтернет|зв\W?яз|мереж|покритт|сигнал|4g|3g|5g)\w*[^.!?]{0,60}'
+    r'(лага|тормоз|повільн|не\s+прац|не\s+лови|нема|жахлив|поган|слабк)'
+    r'|(лага|тормоз|повільн|жахлив|слабк)\w*[^.!?]{0,40}'
+    r'(інтернет|зв\W?яз|мереж|покритт|сигнал)',
+    re.IGNORECASE)
+
+# Проблема, названа поруч із конкурентом: "там де не ловить Київстар".
+COMPETITOR_PROBLEM = re.compile(
+    r'(київстар|kyivstar|лайфсел|lifecell|life\s?cell)\w*[^.!?]{0,40}'
+    r'(не\s+прац|не\s+лови|нема|гірш|поган|слабк)'
+    r'|(не\s+прац|не\s+лови|нема|гірш|поган|слабк)\w*[^.!?]{0,40}'
+    r'(київстар|kyivstar|лайфсел|lifecell)',
+    re.IGNORECASE)
+
+# Офіційна заява оператора, переказана каналом чи виданням.
+OFFICIAL_RX = re.compile(
+    r'(vodafone|водафон|київстар|kyivstar|lifecell|оператор|компані)\w*\s*'
+    r'[^.!?]{0,30}(попереди[вл]|повідоми[вл]|заяви[вл]|попереджа|'
+    r'прокоментува|підтверди[вл])',
+    re.IGNORECASE)
+
+# Сліди новинного каналу в телеграм-пості.
+NEWS_CHROME_RX = re.compile(
+    r'надіслати\s+новину|підписат\w*|наш\s+чат|\|\s*\[|'
+    r'\[[^\]]*\]\(https?://t\.me',
+    re.IGNORECASE)
+
+
+def detect_genre(text, source_type):
+    """
+    Хто говорить: абонент чи медіа.
+
+    Це різні речі, хоч і лежать в одній стрічці. "Vodafone попередив
+    про перебої" — не скарга абонента, а переказ офіційної заяви;
+    таких у наборі 127 зі 792. Для детекції криз вони цінні: саме
+    вони показують, що тему підхопили. Але підписувати їх словом
+    "скарга" означає рахувати одну подію як сотню незадоволених людей.
+    """
+    if source_type == 'review':
+        return 'user'
+    if source_type == 'news':
+        return 'news'
+    if OFFICIAL_RX.search(text or '') or NEWS_CHROME_RX.search(text or ''):
+        return 'news'
+    return 'user'
+
+
 def enrich_batch(rows):
     """rows: [(id, text, rating, source_type, source_name)] -> кортежі."""
     texts = [r[1] or '' for r in rows]
@@ -190,8 +254,23 @@ def enrich_batch(rows):
         elif rating in (4, 5):
             # але сарказм у 5 зірках не буває, а от у 1 зірці з похвалою — буває
             sent, conf = ('mixed', 1.0) if sent == 'mixed' else ('positive', 1.0)
+            # "чудовий оператор, АЛЕ покриття не задовільне" на 4 зірки —
+            # це не похвала й не скарга, а обидва разом. Зірки казали
+            # "позитив", і скарга в другій половині речення зникала.
+            if sent == 'positive' and (CAVEAT_RX.search(text)
+                                       or PLAIN_COMPLAINT_RX.search(text)):
+                sent, conf = 'mixed', 0.8
+            # "Добрий звʼязок там де не ловить Київстар" — проблема
+            # названа про КОНКУРЕНТА. На пʼять зірок це похвала нам.
+            if sent == 'mixed' and COMPETITOR_PROBLEM.search(text) \
+                    and not CAVEAT_RX.search(text):
+                sent, conf = 'positive', 0.8
         elif rating == 3:
-            sent, conf = 'mixed', 1.0
+            # Три зірки самі по собі не означають "і добре, і погано".
+            # "В Нікополь майже нема звʼязку" на три зірки — це скарга
+            # без жодної похвали, і підписувати її "змішано" неправильно.
+            # Нехай вирішує текст: похвали немає — значить скарга.
+            sent, conf = ('negative', 0.9) if sent == 'negative' else ('mixed', 1.0)
 
         # Телеграм — теж не жанр відгуків: там новини, анонси й реклама.
         # Модель, навчена на відгуках, відносила до негативу пости
@@ -216,6 +295,7 @@ def enrich_batch(rows):
             q['actionability'], q['emotional_noise'], q['promo_like'],
             json.dumps(q, ensure_ascii=False),
             int(c['isMarketWide']), int(c['isAd']),
+            detect_genre(text, source_type),
             int(c['isRelevant']), c['relevanceScore'],
             int(c['isConstructive']), c['constructiveScore'],
             c['importance'], c['sentiment'], c['problemType'], c['reputationalRiskScore'],
@@ -252,7 +332,7 @@ def run(redo=False):
         if not rows:
             break
         con.executemany(
-            "INSERT OR REPLACE INTO analysis VALUES (" + ",".join("?"*29) + ")",
+            "INSERT OR REPLACE INTO analysis VALUES (" + ",".join("?"*30) + ")",
             enrich_batch(rows))
         con.commit()
         done += len(rows)
