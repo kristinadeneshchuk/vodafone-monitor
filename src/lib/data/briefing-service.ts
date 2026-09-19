@@ -108,7 +108,9 @@ export function generateHeuristicBriefing(
     },
     {
       title: 'Тональність та конструктивність відгуків',
-      description: `Частка позитивних/нейтральних відгуків склала ${metrics.sentimentDistribution.positive + metrics.sentimentDistribution.neutral} із ${metrics.totalComplaints}. Користувачі детально описують симптоми збоїв у ${Math.round(metrics.averageConstructiveness * 100)}% випадків.`,
+      // Знаменник — УСІ згадки, а не лише скарги. Було "38 із 16",
+      // бо позитивні ділили на кількість негативних.
+      description: `Позитивних і нейтральних згадок ${metrics.sentimentDistribution.positive + metrics.sentimentDistribution.neutral} із ${metrics.totalMentions ?? (metrics.sentimentDistribution.positive + metrics.sentimentDistribution.neutral + metrics.totalComplaints)} загалом, негативних ${metrics.totalComplaints}. Користувачі детально описують симптоми збоїв у ${Math.round(metrics.averageConstructiveness * 100)}% випадків.`,
       impact: 'low' as const
     }
   ];
