@@ -182,6 +182,17 @@ def build(text, sentiment_name, source_type, source_name='', q=None):
     r = risk.compute(text, sentiment_name, source_type, source_name, cause, q)
     risk_score = int(round(r['score'] * 10))       # контракт №6 чекає 0-100
 
+    # Намір піти від оператора. F3 = 4.0 це "особистий намір" за шкалою,
+    # нижче — просто незадоволення без планів.
+    churn_score = r['factors']['f3']
+    churn_intent = churn_score >= 4.0
+
+    # Резонанс: релевантність, помножена на охоплення джерела.
+    # Скарга в каналі на 300 тисяч вимагає реакції раніше за таку саму
+    # у відгуку, який побачать одиниці.
+    reach_weight = r['factors']['f1']
+    resonance = round(rel_score * reach_weight, 2)
+
     return {
         'isRelevant': rel_score >= 0.5,
         'relevanceScore': rel_score,
@@ -200,6 +211,10 @@ def build(text, sentiment_name, source_type, source_name='', q=None):
                      if location else None),
         'problemType': problem_type(text, cause),
         'reputationalRiskScore': risk_score,
+        'churnIntent': churn_intent,
+        'churnScore': churn_score,
+        'reachWeight': reach_weight,
+        'resonance': resonance,
         'riskFactors': r['factors'],
         'recommendedAction': r['action'],
     }

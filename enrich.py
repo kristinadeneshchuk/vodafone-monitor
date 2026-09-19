@@ -62,6 +62,10 @@ CREATE TABLE IF NOT EXISTS analysis (
     sentiment_enum    INTEGER,          -- 0 positive, 1 neutral, 2 negative
     problem_type      INTEGER,          -- 0 no_signal .. 3 other
     risk_score        INTEGER,          -- 0..100
+    churn_intent      INTEGER,
+    churn_score       REAL,
+    reach_weight      REAL,
+    resonance         REAL,
     lat               REAL,
     lng               REAL,
     address_name      TEXT,
@@ -163,6 +167,7 @@ def enrich_batch(rows):
             int(c['isRelevant']), c['relevanceScore'],
             int(c['isConstructive']), c['constructiveScore'],
             c['importance'], c['sentiment'], c['problemType'], c['reputationalRiskScore'],
+            int(c['churnIntent']), c['churnScore'], c['reachWeight'], c['resonance'],
             loc['lat'] if loc else None,
             loc['lng'] if loc else None,
             loc['addressName'] if loc else None,
@@ -195,7 +200,7 @@ def run(redo=False):
         if not rows:
             break
         con.executemany(
-            "INSERT OR REPLACE INTO analysis VALUES (" + ",".join("?"*23) + ")",
+            "INSERT OR REPLACE INTO analysis VALUES (" + ",".join("?"*27) + ")",
             enrich_batch(rows))
         con.commit()
         done += len(rows)

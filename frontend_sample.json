@@ -3380,6 +3380,58 @@
   "trust": "highest"
  },
  {
+  "id": 9000,
+  "publishedAt": "2026-09-03T11:48:18+00:00",
+  "source": {
+   "type": "review",
+   "name": "google_play",
+   "url": "play_store_com.kyivstar.mykyivstar_8e9d724e-f5b2-48e9-9b19-63cb855b0fe1"
+  },
+  "brand": "kyivstar",
+  "text": "прошу запропонувати тариф який не об'єднаний з домашнім інтернетом,не можуть, треба від'єднати дом.нет,ІДІОТИ.НЕ РЕКОМЕНДУЮ,пишу опературу місяцями толку немає,зайшов в застосунок не знайшов інфу про пін код,написав в підтримку там не вкурсі що таке пін-код від сім карти,олені, показує 4G+ Інтернет в застосунок не заходе,пише немає мережі, рахітна чипуха, київстар-невсирайся!не існує мережі на якій без глюків-тормозів працював би київстар,spase x зв'язок (чи як воно) не працює",
+  "isRelevant": true,
+  "relevanceScore": 0.95,
+  "isConstructive": true,
+  "constructiveScore": 0.8,
+  "importance": 0,
+  "sentiment": 2,
+  "problemType": 1,
+  "reputationalRiskScore": 30,
+  "location": {
+   "lat": 50.4501,
+   "lng": 30.5234,
+   "addressName": "Київ"
+  },
+  "cause": "internet",
+  "context": null,
+  "tonality": "constructive_negative",
+  "trust": "high"
+ },
+ {
+  "id": 13290,
+  "publishedAt": "2025-12-09T13:24:00+00:00",
+  "source": {
+   "type": "review",
+   "name": "google_play",
+   "url": "play_store_com.kyivstar.mykyivstar_1c85abf6-e655-4764-9466-a4a41c8b07a1"
+  },
+  "brand": "kyivstar",
+  "text": "Безлім інтернет в Kyivstar фейковий. Після використання 40 ГБ обмеження швидкості Інтернету встановлюється на рівні 0,8 Мб (мегабіт). Наприклад, 0,8 Мб - це повільне завантаження простої сторінки в Інтернеті. Не рекомендую як тариф с безлім, так і Kyivstar. UPD 09.11.2025: інтернету немає цілий тиждень а ціну тарифу збільшили на 75 грн.",
+  "isRelevant": true,
+  "relevanceScore": 0.85,
+  "isConstructive": true,
+  "constructiveScore": 0.4,
+  "importance": 0,
+  "sentiment": 2,
+  "problemType": 1,
+  "reputationalRiskScore": 30,
+  "location": null,
+  "cause": "internet",
+  "context": null,
+  "tonality": "constructive_negative",
+  "trust": "high"
+ },
+ {
   "id": 19349,
   "publishedAt": "2026-08-04T06:30:05+00:00",
   "source": {
@@ -3432,6 +3484,126 @@
   "trust": "high"
  },
  {
+  "id": 14828,
+  "publishedAt": "2026-09-09T20:22:58+00:00",
+  "source": {
+   "type": "review",
+   "name": "google_play",
+   "url": "play_store_com.life.my_056d5b81-13d1-4f4b-a260-d1433dcaff0f"
+  },
+  "brand": "lifecell",
+  "text": "інтернету просто немає. фіксують звернення, чекають, поки завершиться тариф на місяць, а потім просять поповнити тариф, бо проблему вирішено. фактично — брехня, мобільного інтернету немає. просто жеруть гроші з студента, крім того що скасували знижку для студентів. тоді починають писати інструкції, наче я маю з бубном танці проводити. не рекомендую, краще уже водафон, і зв'язок, і інтернет, покриття всюди",
+  "isRelevant": true,
+  "relevanceScore": 0.85,
+  "isConstructive": false,
+  "constructiveScore": 0.25,
+  "importance": 0,
+  "sentiment": 2,
+  "problemType": 0,
+  "reputationalRiskScore": 27,
+  "location": null,
+  "cause": "internet",
+  "context": null,
+  "tonality": "negative",
+  "trust": "medium"
+ },
+ {
+  "id": 15678,
+  "publishedAt": "2026-03-07T09:28:30+00:00",
+  "source": {
+   "type": "review",
+   "name": "google_play",
+   "url": "play_store_com.life.my_7af35b2a-5ced-4d20-9588-6dbea1416f2c"
+  },
+  "brand": "lifecell",
+  "text": "Інтернет жахливий 2-3 Мбіт/с , часто показують повну мережу , зв'язок 4G ,а насправді інтернету та мережі немає зовсім , НЕ РЕКОМЕНДУЮ",
+  "isRelevant": true,
+  "relevanceScore": 0.85,
+  "isConstructive": false,
+  "constructiveScore": 0.3,
+  "importance": 0,
+  "sentiment": 2,
+  "problemType": 0,
+  "reputationalRiskScore": 27,
+  "location": null,
+  "cause": "internet",
+  "context": null,
+  "tonality": "negative",
+  "trust": "medium"
+ },
+ {
+  "id": 11875,
+  "publishedAt": "2026-02-02T17:38:49+00:00",
+  "source": {
+   "type": "review",
+   "name": "google_play",
+   "url": "play_store_com.kyivstar.mykyivstar_00b8d23a-c1c4-41ab-92a9-be4a95d346a5"
+  },
+  "brand": "kyivstar",
+  "text": "не рекомендую як оператора. зв'язок останнім часом відсутній. мобільний Інтернет не працює! постійно лишаємо заявку , к відповідь повний ігнор. НЕ РЕКОМЕНДУЮ! Перейдіть на іншого оператора",
+  "isRelevant": true,
+  "relevanceScore": 0.85,
+  "isConstructive": false,
+  "constructiveScore": 0.25,
+  "importance": 0,
+  "sentiment": 2,
+  "problemType": 0,
+  "reputationalRiskScore": 27,
+  "location": null,
+  "cause": "internet",
+  "context": null,
+  "tonality": "negative",
+  "trust": "medium"
+ },
+ {
+  "id": 12034,
+  "publishedAt": "2026-01-27T07:34:23+00:00",
+  "source": {
+   "type": "review",
+   "name": "google_play",
+   "url": "play_store_com.kyivstar.mykyivstar_aa9a69ee-02fb-4b39-84de-f87febbeb92e"
+  },
+  "brand": "kyivstar",
+  "text": "Скамери, я в програмі міняю тариф каже плавність (тариф Тільки що поміняв) кидаю гроші приходить повідомлення посеред ночі поповнення за старий тариф і ваш тариф помінялл в ту хвилину висновку вкрали 175грн і без інтернету через криву програму. 1/10 скам не рекомендую",
+  "isRelevant": true,
+  "relevanceScore": 0.85,
+  "isConstructive": false,
+  "constructiveScore": 0.2,
+  "importance": 0,
+  "sentiment": 2,
+  "problemType": 1,
+  "reputationalRiskScore": 27,
+  "location": null,
+  "cause": "internet",
+  "context": null,
+  "tonality": "negative",
+  "trust": "medium"
+ },
+ {
+  "id": 5459,
+  "publishedAt": "2026-01-21T18:07:37+00:00",
+  "source": {
+   "type": "review",
+   "name": "google_play",
+   "url": "play_store_ua.vodafone.myvodafone_4b744326-2a0f-4cac-ae91-9862ff0a9bcd"
+  },
+  "brand": "vodafone",
+  "text": "Я живу у Павлограді та Інтернет у вас найгірший у світі тільки но вимикають світло (а ще навіть коли ж світло зв'язку немає) і все немає зв'язку тільки іноді пробиває та я сиджу тільки на роумінгу так як на вашому сидіти просто неможливо (хоча якщо мазохіст то можна сидіти на вашому інтернеті бо це мука а не інтернет) а навіть коли є інтернет то просто капець воно стрибає так що може бути 10 КБ на секунду а потім різко 0 КБ на секунду! Я переходжу на іншого оператора бо тільки роумінг працює👋",
+  "isRelevant": true,
+  "relevanceScore": 0.9,
+  "isConstructive": false,
+  "constructiveScore": 0.1,
+  "importance": 0,
+  "sentiment": 2,
+  "problemType": 0,
+  "reputationalRiskScore": 27,
+  "location": null,
+  "cause": "internet",
+  "context": "blackout",
+  "tonality": "negative",
+  "trust": "medium"
+ },
+ {
   "id": 19348,
   "publishedAt": "2026-07-31T20:00:24+00:00",
   "source": {
@@ -3456,6 +3628,34 @@
   },
   "cause": "coverage",
   "context": null,
+  "tonality": "constructive_negative",
+  "trust": "high"
+ },
+ {
+  "id": 5288,
+  "publishedAt": "2026-01-27T18:34:47+00:00",
+  "source": {
+   "type": "review",
+   "name": "google_play",
+   "url": "play_store_ua.vodafone.myvodafone_48782d0d-4062-4d71-ba21-72f91f34260c"
+  },
+  "brand": "vodafone",
+  "text": "якби можна було поставити 0 зірок, поставив би 0. Абсолютно не клієнто орієнтована компанія. Жодна скарга на відсутність інтернет покриття та низьку якість зв'язку не опрацьована. Скаргу на повернення коштів за не надану послугу навіть приймати не хочуть )оператори скидають дзвінок). Усі підняття тарифів з 2022 аргументовували витратами на акумулятори та генератори. При цьому, в моєму районі в Києві, інтернет покриття зникає разом з електрикою, як в 2022 так і в 2026. НЕ РЕКОМЕНДУЮ! ОБМАНЮЮТЬ.",
+  "isRelevant": true,
+  "relevanceScore": 1.0,
+  "isConstructive": true,
+  "constructiveScore": 0.8,
+  "importance": 0,
+  "sentiment": 2,
+  "problemType": 3,
+  "reputationalRiskScore": 26,
+  "location": {
+   "lat": 50.4501,
+   "lng": 30.5234,
+   "addressName": "Київ"
+  },
+  "cause": "blackout",
+  "context": "blackout",
   "tonality": "constructive_negative",
   "trust": "high"
  },
@@ -3488,29 +3688,77 @@
   "trust": "high"
  },
  {
-  "id": 9000,
-  "publishedAt": "2026-09-03T11:48:18+00:00",
+  "id": 6862,
+  "publishedAt": "2025-12-08T10:19:48+00:00",
   "source": {
    "type": "review",
    "name": "google_play",
-   "url": "play_store_com.kyivstar.mykyivstar_8e9d724e-f5b2-48e9-9b19-63cb855b0fe1"
+   "url": "play_store_ua.vodafone.myvodafone_a5614eda-e917-4599-81ec-3614ef336899"
   },
-  "brand": "kyivstar",
-  "text": "прошу запропонувати тариф який не об'єднаний з домашнім інтернетом,не можуть, треба від'єднати дом.нет,ІДІОТИ.НЕ РЕКОМЕНДУЮ,пишу опературу місяцями толку немає,зайшов в застосунок не знайшов інфу про пін код,написав в підтримку там не вкурсі що таке пін-код від сім карти,олені, показує 4G+ Інтернет в застосунок не заходе,пише немає мережі, рахітна чипуха, київстар-невсирайся!не існує мережі на якій без глюків-тормозів працював би київстар,spase x зв'язок (чи як воно) не працює",
+  "brand": "vodafone",
+  "text": "Не рекомендую цього оператора, під час відключень, і навіть як електроенергія є мережі немає взагалі ! Зате тарифи дорожчають часто, і несправедливо платити за те, чого немає. Переходжу до іншого оператора, бо Vodafon це дно !!!!!!! Не зручно бо немає зв'язку 2 дні !!!",
+  "isRelevant": true,
+  "relevanceScore": 0.85,
+  "isConstructive": false,
+  "constructiveScore": 0.1,
+  "importance": 0,
+  "sentiment": 2,
+  "problemType": 0,
+  "reputationalRiskScore": 25,
+  "location": null,
+  "cause": "coverage",
+  "context": null,
+  "tonality": "hysterical_negative",
+  "trust": "low"
+ },
+ {
+  "id": 14832,
+  "publishedAt": "2026-09-09T09:55:36+00:00",
+  "source": {
+   "type": "review",
+   "name": "google_play",
+   "url": "play_store_com.life.my_64049819-8ceb-4cb8-affc-3f174564193a"
+  },
+  "brand": "lifecell",
+  "text": "Нікому не раджу зв'язуватися з ними ті є самі помилки, що в в інших операторів нашої країни, окрім того втратили свою фішку, а ще не найкраще покриття, міркуйте чи варто. На мою думку ні!",
+  "isRelevant": true,
+  "relevanceScore": 0.85,
+  "isConstructive": false,
+  "constructiveScore": 0.1,
+  "importance": 0,
+  "sentiment": 2,
+  "problemType": 0,
+  "reputationalRiskScore": 24,
+  "location": null,
+  "cause": "coverage",
+  "context": null,
+  "tonality": "negative",
+  "trust": "medium"
+ },
+ {
+  "id": 1518,
+  "publishedAt": "2026-07-04T07:30:03+00:00",
+  "source": {
+   "type": "review",
+   "name": "google_play",
+   "url": "play_store_ua.vodafone.myvodafone_d56e3f81-9d4b-45ed-98de-95c7fd3ee339"
+  },
+  "brand": "vodafone",
+  "text": "Кончені уроди. Тупо немає мережі і це в Києві, а тех підтримка брехню вже 5 днів розказує. За пакет гроші взяли, а послуги зв'язку не надали. НІКОМУ НЕ РАДЖУ!",
   "isRelevant": true,
   "relevanceScore": 0.95,
   "isConstructive": true,
-  "constructiveScore": 0.8,
+  "constructiveScore": 0.45,
   "importance": 0,
   "sentiment": 2,
-  "problemType": 1,
+  "problemType": 0,
   "reputationalRiskScore": 24,
   "location": {
    "lat": 50.4501,
    "lng": 30.5234,
    "addressName": "Київ"
   },
-  "cause": "internet",
+  "cause": "coverage",
   "context": null,
   "tonality": "constructive_negative",
   "trust": "high"
@@ -3596,6 +3844,30 @@
   "trust": "high"
  },
  {
+  "id": 12389,
+  "publishedAt": "2026-01-14T14:35:55+00:00",
+  "source": {
+   "type": "review",
+   "name": "google_play",
+   "url": "play_store_com.kyivstar.mykyivstar_7eca23fa-45e2-4b83-8fde-7434e91c6c2f"
+  },
+  "brand": "kyivstar",
+  "text": "Домашній інтернет, є в них така послуга , але самого інтернету немає. Є світло чи немає це ні на що не впливає , постійні тех.роботи . Зателефонувати і залишити скаргу просто не реально . Не рекомендують даного оператора , дно.",
+  "isRelevant": true,
+  "relevanceScore": 0.9,
+  "isConstructive": false,
+  "constructiveScore": 0.1,
+  "importance": 0,
+  "sentiment": 2,
+  "problemType": 0,
+  "reputationalRiskScore": 24,
+  "location": null,
+  "cause": "internet",
+  "context": "blackout",
+  "tonality": "negative",
+  "trust": "medium"
+ },
+ {
   "id": 16152,
   "publishedAt": "2025-12-20T07:54:31+00:00",
   "source": {
@@ -3624,28 +3896,28 @@
   "trust": "high"
  },
  {
-  "id": 13290,
-  "publishedAt": "2025-12-09T13:24:00+00:00",
+  "id": 7622,
+  "publishedAt": "2025-11-10T16:35:28+00:00",
   "source": {
    "type": "review",
    "name": "google_play",
-   "url": "play_store_com.kyivstar.mykyivstar_1c85abf6-e655-4764-9466-a4a41c8b07a1"
+   "url": "play_store_ua.vodafone.myvodafone_f85fbb21-96d5-4bb4-bb2a-89ee0b983dd3"
   },
-  "brand": "kyivstar",
-  "text": "Безлім інтернет в Kyivstar фейковий. Після використання 40 ГБ обмеження швидкості Інтернету встановлюється на рівні 0,8 Мб (мегабіт). Наприклад, 0,8 Мб - це повільне завантаження простої сторінки в Інтернеті. Не рекомендую як тариф с безлім, так і Kyivstar. UPD 09.11.2025: інтернету немає цілий тиждень а ціну тарифу збільшили на 75 грн.",
+  "brand": "vodafone",
+  "text": "жахливий сервіс , дотак не працює , з оператором зв'язку немає , не рекомендую!",
   "isRelevant": true,
   "relevanceScore": 0.85,
-  "isConstructive": true,
-  "constructiveScore": 0.4,
+  "isConstructive": false,
+  "constructiveScore": 0.0,
   "importance": 0,
   "sentiment": 2,
-  "problemType": 1,
+  "problemType": 0,
   "reputationalRiskScore": 24,
   "location": null,
-  "cause": "internet",
+  "cause": "coverage",
   "context": null,
-  "tonality": "constructive_negative",
-  "trust": "high"
+  "tonality": "negative",
+  "trust": "medium"
  },
  {
   "id": 19354,
@@ -3754,30 +4026,6 @@
   "context": null,
   "tonality": "constructive_negative",
   "trust": "high"
- },
- {
-  "id": 14828,
-  "publishedAt": "2026-09-09T20:22:58+00:00",
-  "source": {
-   "type": "review",
-   "name": "google_play",
-   "url": "play_store_com.life.my_056d5b81-13d1-4f4b-a260-d1433dcaff0f"
-  },
-  "brand": "lifecell",
-  "text": "інтернету просто немає. фіксують звернення, чекають, поки завершиться тариф на місяць, а потім просять поповнити тариф, бо проблему вирішено. фактично — брехня, мобільного інтернету немає. просто жеруть гроші з студента, крім того що скасували знижку для студентів. тоді починають писати інструкції, наче я маю з бубном танці проводити. не рекомендую, краще уже водафон, і зв'язок, і інтернет, покриття всюди",
-  "isRelevant": true,
-  "relevanceScore": 0.85,
-  "isConstructive": false,
-  "constructiveScore": 0.25,
-  "importance": 0,
-  "sentiment": 2,
-  "problemType": 0,
-  "reputationalRiskScore": 22,
-  "location": null,
-  "cause": "internet",
-  "context": null,
-  "tonality": "negative",
-  "trust": "medium"
  },
  {
   "id": 8953,
@@ -4252,30 +4500,6 @@
   "trust": "medium"
  },
  {
-  "id": 15678,
-  "publishedAt": "2026-03-07T09:28:30+00:00",
-  "source": {
-   "type": "review",
-   "name": "google_play",
-   "url": "play_store_com.life.my_7af35b2a-5ced-4d20-9588-6dbea1416f2c"
-  },
-  "brand": "lifecell",
-  "text": "Інтернет жахливий 2-3 Мбіт/с , часто показують повну мережу , зв'язок 4G ,а насправді інтернету та мережі немає зовсім , НЕ РЕКОМЕНДУЮ",
-  "isRelevant": true,
-  "relevanceScore": 0.85,
-  "isConstructive": false,
-  "constructiveScore": 0.3,
-  "importance": 0,
-  "sentiment": 2,
-  "problemType": 0,
-  "reputationalRiskScore": 22,
-  "location": null,
-  "cause": "internet",
-  "context": null,
-  "tonality": "negative",
-  "trust": "medium"
- },
- {
   "id": 4411,
   "publishedAt": "2026-02-26T18:31:35+00:00",
   "source": {
@@ -4344,54 +4568,6 @@
   "location": null,
   "cause": "internet",
   "context": "blackout",
-  "tonality": "negative",
-  "trust": "medium"
- },
- {
-  "id": 11875,
-  "publishedAt": "2026-02-02T17:38:49+00:00",
-  "source": {
-   "type": "review",
-   "name": "google_play",
-   "url": "play_store_com.kyivstar.mykyivstar_00b8d23a-c1c4-41ab-92a9-be4a95d346a5"
-  },
-  "brand": "kyivstar",
-  "text": "не рекомендую як оператора. зв'язок останнім часом відсутній. мобільний Інтернет не працює! постійно лишаємо заявку , к відповідь повний ігнор. НЕ РЕКОМЕНДУЮ! Перейдіть на іншого оператора",
-  "isRelevant": true,
-  "relevanceScore": 0.85,
-  "isConstructive": false,
-  "constructiveScore": 0.25,
-  "importance": 0,
-  "sentiment": 2,
-  "problemType": 0,
-  "reputationalRiskScore": 22,
-  "location": null,
-  "cause": "internet",
-  "context": null,
-  "tonality": "negative",
-  "trust": "medium"
- },
- {
-  "id": 12034,
-  "publishedAt": "2026-01-27T07:34:23+00:00",
-  "source": {
-   "type": "review",
-   "name": "google_play",
-   "url": "play_store_com.kyivstar.mykyivstar_aa9a69ee-02fb-4b39-84de-f87febbeb92e"
-  },
-  "brand": "kyivstar",
-  "text": "Скамери, я в програмі міняю тариф каже плавність (тариф Тільки що поміняв) кидаю гроші приходить повідомлення посеред ночі поповнення за старий тариф і ваш тариф помінялл в ту хвилину висновку вкрали 175грн і без інтернету через криву програму. 1/10 скам не рекомендую",
-  "isRelevant": true,
-  "relevanceScore": 0.85,
-  "isConstructive": false,
-  "constructiveScore": 0.2,
-  "importance": 0,
-  "sentiment": 2,
-  "problemType": 1,
-  "reputationalRiskScore": 22,
-  "location": null,
-  "cause": "internet",
-  "context": null,
   "tonality": "negative",
   "trust": "medium"
  },
@@ -4904,30 +5080,6 @@
   "trust": "medium"
  },
  {
-  "id": 14832,
-  "publishedAt": "2026-09-09T09:55:36+00:00",
-  "source": {
-   "type": "review",
-   "name": "google_play",
-   "url": "play_store_com.life.my_64049819-8ceb-4cb8-affc-3f174564193a"
-  },
-  "brand": "lifecell",
-  "text": "Нікому не раджу зв'язуватися з ними ті є самі помилки, що в в інших операторів нашої країни, окрім того втратили свою фішку, а ще не найкраще покриття, міркуйте чи варто. На мою думку ні!",
-  "isRelevant": true,
-  "relevanceScore": 0.85,
-  "isConstructive": false,
-  "constructiveScore": 0.1,
-  "importance": 0,
-  "sentiment": 2,
-  "problemType": 0,
-  "reputationalRiskScore": 19,
-  "location": null,
-  "cause": "coverage",
-  "context": null,
-  "tonality": "negative",
-  "trust": "medium"
- },
- {
   "id": 8965,
   "publishedAt": "2026-09-06T17:34:45+00:00",
   "source": {
@@ -5410,34 +5562,6 @@
   "context": null,
   "tonality": "negative",
   "trust": "medium"
- },
- {
-  "id": 1518,
-  "publishedAt": "2026-07-04T07:30:03+00:00",
-  "source": {
-   "type": "review",
-   "name": "google_play",
-   "url": "play_store_ua.vodafone.myvodafone_d56e3f81-9d4b-45ed-98de-95c7fd3ee339"
-  },
-  "brand": "vodafone",
-  "text": "Кончені уроди. Тупо немає мережі і це в Києві, а тех підтримка брехню вже 5 днів розказує. За пакет гроші взяли, а послуги зв'язку не надали. НІКОМУ НЕ РАДЖУ!",
-  "isRelevant": true,
-  "relevanceScore": 0.95,
-  "isConstructive": true,
-  "constructiveScore": 0.45,
-  "importance": 0,
-  "sentiment": 2,
-  "problemType": 0,
-  "reputationalRiskScore": 19,
-  "location": {
-   "lat": 50.4501,
-   "lng": 30.5234,
-   "addressName": "Київ"
-  },
-  "cause": "coverage",
-  "context": null,
-  "tonality": "constructive_negative",
-  "trust": "high"
  },
  {
   "id": 9817,
@@ -7020,30 +7144,6 @@
   "trust": "medium"
  },
  {
-  "id": 5459,
-  "publishedAt": "2026-01-21T18:07:37+00:00",
-  "source": {
-   "type": "review",
-   "name": "google_play",
-   "url": "play_store_ua.vodafone.myvodafone_4b744326-2a0f-4cac-ae91-9862ff0a9bcd"
-  },
-  "brand": "vodafone",
-  "text": "Я живу у Павлограді та Інтернет у вас найгірший у світі тільки но вимикають світло (а ще навіть коли ж світло зв'язку немає) і все немає зв'язку тільки іноді пробиває та я сиджу тільки на роумінгу так як на вашому сидіти просто неможливо (хоча якщо мазохіст то можна сидіти на вашому інтернеті бо це мука а не інтернет) а навіть коли є інтернет то просто капець воно стрибає так що може бути 10 КБ на секунду а потім різко 0 КБ на секунду! Я переходжу на іншого оператора бо тільки роумінг працює👋",
-  "isRelevant": true,
-  "relevanceScore": 0.9,
-  "isConstructive": false,
-  "constructiveScore": 0.1,
-  "importance": 0,
-  "sentiment": 2,
-  "problemType": 0,
-  "reputationalRiskScore": 19,
-  "location": null,
-  "cause": "internet",
-  "context": "blackout",
-  "tonality": "negative",
-  "trust": "medium"
- },
- {
   "id": 12266,
   "publishedAt": "2026-01-19T09:33:17+00:00",
   "source": {
@@ -7168,30 +7268,6 @@
   "location": null,
   "cause": "internet",
   "context": null,
-  "tonality": "negative",
-  "trust": "medium"
- },
- {
-  "id": 12389,
-  "publishedAt": "2026-01-14T14:35:55+00:00",
-  "source": {
-   "type": "review",
-   "name": "google_play",
-   "url": "play_store_com.kyivstar.mykyivstar_7eca23fa-45e2-4b83-8fde-7434e91c6c2f"
-  },
-  "brand": "kyivstar",
-  "text": "Домашній інтернет, є в них така послуга , але самого інтернету немає. Є світло чи немає це ні на що не впливає , постійні тех.роботи . Зателефонувати і залишити скаргу просто не реально . Не рекомендують даного оператора , дно.",
-  "isRelevant": true,
-  "relevanceScore": 0.9,
-  "isConstructive": false,
-  "constructiveScore": 0.1,
-  "importance": 0,
-  "sentiment": 2,
-  "problemType": 0,
-  "reputationalRiskScore": 19,
-  "location": null,
-  "cause": "internet",
-  "context": "blackout",
   "tonality": "negative",
   "trust": "medium"
  },
@@ -7776,30 +7852,6 @@
   "trust": "medium"
  },
  {
-  "id": 7622,
-  "publishedAt": "2025-11-10T16:35:28+00:00",
-  "source": {
-   "type": "review",
-   "name": "google_play",
-   "url": "play_store_ua.vodafone.myvodafone_f85fbb21-96d5-4bb4-bb2a-89ee0b983dd3"
-  },
-  "brand": "vodafone",
-  "text": "жахливий сервіс , дотак не працює , з оператором зв'язку немає , не рекомендую!",
-  "isRelevant": true,
-  "relevanceScore": 0.85,
-  "isConstructive": false,
-  "constructiveScore": 0.0,
-  "importance": 0,
-  "sentiment": 2,
-  "problemType": 0,
-  "reputationalRiskScore": 19,
-  "location": null,
-  "cause": "coverage",
-  "context": null,
-  "tonality": "negative",
-  "trust": "medium"
- },
- {
   "id": 16412,
   "publishedAt": "2025-11-01T00:14:05+00:00",
   "source": {
@@ -7974,30 +8026,6 @@
   "context": null,
   "tonality": "constructive_negative",
   "trust": "high"
- },
- {
-  "id": 6862,
-  "publishedAt": "2025-12-08T10:19:48+00:00",
-  "source": {
-   "type": "review",
-   "name": "google_play",
-   "url": "play_store_ua.vodafone.myvodafone_a5614eda-e917-4599-81ec-3614ef336899"
-  },
-  "brand": "vodafone",
-  "text": "Не рекомендую цього оператора, під час відключень, і навіть як електроенергія є мережі немає взагалі ! Зате тарифи дорожчають часто, і несправедливо платити за те, чого немає. Переходжу до іншого оператора, бо Vodafon це дно !!!!!!! Не зручно бо немає зв'язку 2 дні !!!",
-  "isRelevant": true,
-  "relevanceScore": 0.85,
-  "isConstructive": false,
-  "constructiveScore": 0.1,
-  "importance": 0,
-  "sentiment": 2,
-  "problemType": 0,
-  "reputationalRiskScore": 18,
-  "location": null,
-  "cause": "coverage",
-  "context": null,
-  "tonality": "hysterical_negative",
-  "trust": "low"
  },
  {
   "id": 4249,
@@ -18186,34 +18214,6 @@
   "context": null,
   "tonality": "positive",
   "trust": "medium"
- },
- {
-  "id": 5288,
-  "publishedAt": "2026-01-27T18:34:47+00:00",
-  "source": {
-   "type": "review",
-   "name": "google_play",
-   "url": "play_store_ua.vodafone.myvodafone_48782d0d-4062-4d71-ba21-72f91f34260c"
-  },
-  "brand": "vodafone",
-  "text": "якби можна було поставити 0 зірок, поставив би 0. Абсолютно не клієнто орієнтована компанія. Жодна скарга на відсутність інтернет покриття та низьку якість зв'язку не опрацьована. Скаргу на повернення коштів за не надану послугу навіть приймати не хочуть )оператори скидають дзвінок). Усі підняття тарифів з 2022 аргументовували витратами на акумулятори та генератори. При цьому, в моєму районі в Києві, інтернет покриття зникає разом з електрикою, як в 2022 так і в 2026. НЕ РЕКОМЕНДУЮ! ОБМАНЮЮТЬ.",
-  "isRelevant": true,
-  "relevanceScore": 1.0,
-  "isConstructive": true,
-  "constructiveScore": 0.8,
-  "importance": 0,
-  "sentiment": 2,
-  "problemType": 3,
-  "reputationalRiskScore": 0,
-  "location": {
-   "lat": 50.4501,
-   "lng": 30.5234,
-   "addressName": "Київ"
-  },
-  "cause": "blackout",
-  "context": "blackout",
-  "tonality": "constructive_negative",
-  "trust": "high"
  },
  {
   "id": 18729,
