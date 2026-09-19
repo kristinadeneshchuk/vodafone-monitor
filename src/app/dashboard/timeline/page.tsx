@@ -43,7 +43,11 @@ export default function TimelinePage() {
   // ----------------------------------------------------
   const [allFeedbacks, setAllFeedbacks] = useState<FeedbackRecord[]>([]);
   const [loadingData, setLoadingData] = useState<boolean>(true);
-  const [dayIndex, setDayIndex] = useState<number>(29); // 29 = Today
+  // Не сьогодні: поточна доба ще не зібрана повністю, і повзунок
+  // відкривався на дні з нулями. Ставимо останній день, у якому
+  // дані реально є, — його обчислюємо нижче, коли дані завантажились.
+  const [dayIndex, setDayIndex] = useState<number>(29);
+  const [dayIndexTouched, setDayIndexTouched] = useState<boolean>(false);
   const [isDayPlaying, setIsDayPlaying] = useState<boolean>(false);
   const dayPlayIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -122,6 +126,17 @@ export default function TimelinePage() {
     return days;
   }, [allFeedbacks]);
 
+  // Перший показ: стаємо на останню добу з даними, а не на сьогодні.
+  useEffect(() => {
+    if (dayIndexTouched || daysData.length === 0) return;
+    for (let i = daysData.length - 1; i >= 0; i--) {
+      if (daysData[i].count > 0) {
+        setDayIndex(i);
+        return;
+      }
+    }
+  }, [daysData, dayIndexTouched]);
+
   const selectedDay = daysData[dayIndex] || daysData[daysData.length - 1];
 
   // Auto-play for 30 days slider
@@ -145,6 +160,8 @@ export default function TimelinePage() {
   }, [isDayPlaying]);
 
   const handleDaySliderChange = (value: number | readonly number[]) => {
+    // користувач узяв повзунок у руки — автопідбір дня більше не втручається
+    setDayIndexTouched(true);
     if (Array.isArray(value)) setDayIndex(value[0]);
     else if (typeof value === 'number') setDayIndex(value);
   };
