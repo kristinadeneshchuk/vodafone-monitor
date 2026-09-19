@@ -19,11 +19,20 @@ export class RealFeedbackService implements IFeedbackService {
     let result = [...this.data];
     if (!filters) return result;
 
-    if (filters.importance?.length) {
-      result = result.filter(f => filters.importance!.includes(f.importance));
-    }
     if (filters.problemType?.length) {
       result = result.filter(f => filters.problemType!.includes(f.problemType));
+    }
+    if (filters.isRelevant !== undefined) {
+      result = result.filter(f => f.isRelevant === filters.isRelevant);
+    }
+    if (filters.isConstructive !== undefined) {
+      result = result.filter(f => f.isConstructive === filters.isConstructive);
+    }
+    if (filters.minRelevance !== undefined) {
+      result = result.filter(f => f.relevanceScore >= filters.minRelevance!);
+    }
+    if (filters.minConstructiveness !== undefined) {
+      result = result.filter(f => f.constructivenessScore >= filters.minConstructiveness!);
     }
     if (filters.location) {
       result = result.filter(f => f.locationName === filters.location);
@@ -57,7 +66,8 @@ export class RealFeedbackService implements IFeedbackService {
     const feedbacks = await this.getFeedbacks(filters);
     if (feedbacks.length === 0) {
       return {
-        totalComplaints: 0, averageRiskScore: 0, criticalIssuesCount: 0,
+        totalComplaints: 0, averageRiskScore: 0, highRiskIssuesCount: 0,
+        averageRelevance: 0, averageConstructiveness: 0,
         sentimentDistribution: { positive: 0, neutral: 0, negative: 0 },
         topLocations: [], timelineData: [],
       };
@@ -71,7 +81,9 @@ export class RealFeedbackService implements IFeedbackService {
     const locationMap: Record<string, number> = {};
     const timelineMap: Record<string, { count: number; totalRisk: number }> = {};
     let totalRisk = 0;
-    let criticalIssuesCount = 0;
+    let highRiskIssuesCount = 0;
+    let totalRelevance = 0;
+    let totalConstructiveness = 0;
 
     for (const f of feedbacks) {
       sentimentDistribution[f.sentiment] += 1;
@@ -79,9 +91,11 @@ export class RealFeedbackService implements IFeedbackService {
         totalRisk += f.reputationalRiskScore;
         riskyCount += 1;
       }
-      // "Критичні" — це high і critical за шкалою інтерпретації ризику.
-      // Окрема криза видно не тут, а в алертах детектора (getAlerts).
-      if (f.importance === 'critical' || f.importance === 'high') criticalIssuesCount += 1;
+      // Поріг 70 — рівень "високий" за шкалою інтерпретації ризику.
+      // Окрема криза видна не тут, а в алертах детектора (getAlerts).
+      if (f.reputationalRiskScore >= 70) highRiskIssuesCount += 1;
+      totalRelevance += f.relevanceScore;
+      totalConstructiveness += f.constructivenessScore;
 
       // "Невідомо" у топ локацій не показуємо: це не місце.
       if (f.locationName && f.locationName !== 'Невідомо') {
@@ -97,7 +111,9 @@ export class RealFeedbackService implements IFeedbackService {
     return {
       totalComplaints: feedbacks.length,
       averageRiskScore: riskyCount ? Math.round(totalRisk / riskyCount) : 0,
-      criticalIssuesCount,
+      highRiskIssuesCount,
+      averageRelevance: Math.round((totalRelevance / feedbacks.length) * 100) / 100,
+      averageConstructiveness: Math.round((totalConstructiveness / feedbacks.length) * 100) / 100,
       sentimentDistribution,
       topLocations: Object.entries(locationMap)
         .map(([name, count]) => ({ name, count }))

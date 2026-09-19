@@ -42,7 +42,8 @@ def fetch(relevant_only=False, limit=None, days=None):
         SELECT m.id, m.source_type, m.url, m.text, m.published_at, m.brand_query,
                a.is_relevant, a.is_constructive, a.importance, a.sentiment_enum,
                a.problem_type, a.risk_score, a.address_name, a.lat, a.lng,
-               a.relevance_score, a.constructive_score, a.cause, a.context
+               a.relevance_score, a.constructive_score, a.cause, a.context,
+               a.churn_intent, a.churn_score, a.reach_weight, a.resonance
         FROM analysis a JOIN mentions m ON m.id = a.mention_id
         WHERE {' AND '.join(conds)}
         ORDER BY m.published_at DESC
@@ -60,7 +61,8 @@ def fetch(relevant_only=False, limit=None, days=None):
 
             'isRelevant': bool(r['is_relevant']),
             'isConstructive': bool(r['is_constructive']),
-            'importance': IMPORTANCE.get(r['importance'], 'low'),
+            'relevanceScore': r['relevance_score'],
+            'constructivenessScore': r['constructive_score'],
             'sentiment': SENTIMENT.get(r['sentiment_enum'], 'neutral'),
 
             # у типах поле рядкове; "Невідомо" замість порожнього,
@@ -74,10 +76,12 @@ def fetch(relevant_only=False, limit=None, days=None):
             'brand': r['brand_query'],
             'lat': r['lat'],
             'lng': r['lng'],
-            'relevanceScore': r['relevance_score'],
-            'constructiveScore': r['constructive_score'],
             'cause': r['cause'],
             'context': r['context'],
+            'churnIntent': bool(r['churn_intent']),
+            'churnScore': r['churn_score'],
+            'reachWeight': r['reach_weight'],
+            'resonance': r['resonance'],
         })
     return out
 

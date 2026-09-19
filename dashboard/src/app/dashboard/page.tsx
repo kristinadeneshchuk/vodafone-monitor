@@ -50,11 +50,11 @@ export default function DashboardOverview() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">Критичні проблеми</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-500">Високий ризик (&gt;70)</CardTitle>
             <AlertTriangle className="w-4 h-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{metrics.criticalIssuesCount}</div>
+            <div className="text-2xl font-bold text-red-600">{metrics.highRiskIssuesCount}</div>
             <p className="text-xs text-slate-500 mt-1">вимагають негайної реакції</p>
           </CardContent>
         </Card>
