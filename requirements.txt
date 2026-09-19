@@ -1,3 +1,6 @@
 telethon>=1.36
+beautifulsoup4>=4.12
+lxml>=5.0
+requests>=2.31
 feedparser>=6.0
 google-play-scraper>=1.2
