@@ -1,52 +1,52 @@
 [
  {
-  "name": "Київ",
-  "lat": 50.4501,
-  "lng": 30.5234,
-  "complaints": 166,
-  "praise": 57,
-  "negativityShare": 74.4,
-  "daysWithComplaints": 207,
-  "intensity": 0.8,
-  "gridShare": 25.3,
-  "chronicGapShare": 3.6,
-  "pattern": "chronic",
-  "topCause": "internet",
-  "byBrand": {
-   "kyivstar": 236,
-   "vodafone": 78,
-   "unknown": 38,
-   "lifecell": 17
-  },
-  "samples": [
-   "Київстар дає змогу зекономити на мобільному інтернеті: як скористатися - ТехноФан. Київстар дає змогу зекономити на мобі",
-   "Людину залишили без зв'язку! Швидкість обробки скарг бажає виправлення! Вже три дні як подана заявка оператору на віднов",
-   "Київстар, Водафон, Лайфселл - куди скаржитися на поганий зв'язок - informator.ua. Київстар, Водафон, Лайфселл - куди ска"
-  ]
- },
- {
   "name": "Львів",
   "lat": 49.8397,
   "lng": 24.0297,
-  "complaints": 35,
-  "praise": 7,
-  "negativityShare": 83.3,
-  "daysWithComplaints": 42,
-  "intensity": 0.83,
-  "gridShare": 22.9,
-  "chronicGapShare": 20.0,
-  "pattern": "chronic",
+  "complaints": 56,
+  "praise": 10,
+  "negativityShare": 84.8,
+  "daysWithComplaints": 71,
+  "intensity": 0.79,
+  "gridShare": 53.6,
+  "chronicGapShare": 14.3,
+  "pattern": "grid",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 50,
-   "vodafone": 8,
-   "kyivstar": 3,
-   "lifecell": 1
+   "unknown": 79,
+   "kyivstar": 18,
+   "vodafone": 10,
+   "lifecell": 2
   },
   "samples": [
    "На Львівщині перевіряють готовність мобільного зв’язку до тривалих відключень: передали понад 73% генераторів - lvnews.o",
    "На Львівщині понад 73% станцій звʼязку уже забезпечили генераторами на випадок знеструмлень - lviv.media. На Львівщині п",
    "Оператори мобільного зв’язку готуються до знеструмлень на Львівщині - Львівський портал. Оператори мобільного зв’язку го"
+  ]
+ },
+ {
+  "name": "Київ",
+  "lat": 50.4501,
+  "lng": 30.5234,
+  "complaints": 23,
+  "praise": 19,
+  "negativityShare": 54.8,
+  "daysWithComplaints": 38,
+  "intensity": 0.61,
+  "gridShare": 8.7,
+  "chronicGapShare": 17.4,
+  "pattern": "chronic",
+  "topCause": "internet",
+  "byBrand": {
+   "unknown": 33,
+   "vodafone": 28,
+   "kyivstar": 14,
+   "lifecell": 9
+  },
+  "samples": [
+   "у Київській обл. 4g працює дуже нестабільно.раніше рятував 3g але зараз він взагалі відсутній.тому не розумію за що ці ш",
+   "**россия получит покрытие спутниковой связи на всей территории Украины в течение следующего года, и это приведёт к нашем",
+   "Додаток подобається, а покриття мережі ні. Під Києвом ловлю мережу на даху будинку. Як в 90тих"
   ]
  },
  {
@@ -70,6 +70,29 @@
    "Блекаути та мобільний зв’язок: на Полтавщині сотні станцій готують до роботи без світла - Кременчуцький Телеграф. Блекау",
    "Полтава відстає у забезпеченні станцій мобільного зв'язку генераторами: що кажуть в ОВА - Суспільне | Новини. Полтава ві",
    "У Полтаві 14 вересня за низкою адрес немає світла: перелік вулиць і будинків - Суспільне | Новини. У Полтаві 14 вересня "
+  ]
+ },
+ {
+  "name": "Хмельницький",
+  "lat": 49.4229,
+  "lng": 26.9871,
+  "complaints": 13,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 15,
+  "intensity": 0.87,
+  "gridShare": 7.7,
+  "chronicGapShare": 7.7,
+  "pattern": "chronic",
+  "topCause": "coverage",
+  "byBrand": {
+   "unknown": 16,
+   "vodafone": 1
+  },
+  "samples": [
+   "**У парку Мершавцева будують сучасний дитмайданчик з м’яким покриттям на твердій основі**. Усі дерева залишаться. Про це",
+   "**У мікрорайоні Дубове на 10 днів ускладнять рух** Із 4 по 14 серпня щодня з 07:00 до 19:00 обмеження діятимуть на вулиц",
+   "**Головне за день:** **▪️**У [Хмельницькому](https://t.me/khmlv/36777) на полігоні військової частини стався вибух із по"
   ]
  },
  {
@@ -103,14 +126,15 @@
   "complaints": 11,
   "praise": 0,
   "negativityShare": 100.0,
-  "daysWithComplaints": 16,
-  "intensity": 0.69,
+  "daysWithComplaints": 17,
+  "intensity": 0.65,
   "gridShare": 9.1,
   "chronicGapShare": 27.3,
   "pattern": "chronic",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 16
+   "unknown": 16,
+   "vodafone": 1
   },
   "samples": [
    "🚧 Черкаси Замковий узвіз, роботи тривають. Наразі відбулося фрезерування старого асфальтобетонного покриття, та зробили ",
@@ -119,44 +143,23 @@
   ]
  },
  {
-  "name": "Хмельницький",
-  "lat": 49.4229,
-  "lng": 26.9871,
-  "complaints": 6,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 7,
-  "intensity": 0.86,
-  "gridShare": 0.0,
-  "chronicGapShare": 0.0,
-  "pattern": "sporadic",
-  "topCause": "coverage",
-  "byBrand": {
-   "unknown": 9
-  },
-  "samples": [
-   "**У парку Мершавцева будують сучасний дитмайданчик з м’яким покриттям на твердій основі**. Усі дерева залишаться. Про це",
-   "**У мікрорайоні Дубове на 10 днів ускладнять рух** Із 4 по 14 серпня щодня з 07:00 до 19:00 обмеження діятимуть на вулиц",
-   "**Головне за день:** **▪️**У [Хмельницькому](https://t.me/khmlv/36777) на полігоні військової частини стався вибух із по"
-  ]
- },
- {
   "name": "Запоріжжя",
   "lat": 47.8388,
   "lng": 35.1396,
-  "complaints": 4,
+  "complaints": 8,
   "praise": 0,
   "negativityShare": 100.0,
-  "daysWithComplaints": 6,
-  "intensity": 0.67,
+  "daysWithComplaints": 8,
+  "intensity": 1.0,
   "gridShare": 25.0,
-  "chronicGapShare": 25.0,
+  "chronicGapShare": 12.5,
   "pattern": "sporadic",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 3,
+   "unknown": 4,
    "vodafone": 2,
-   "lifecell": 1
+   "kyivstar": 2,
+   "lifecell": 2
   },
   "samples": [
    "👷‍♂️РОБОТА В ЗАПОРІЖЖІ ❗️СТАБІЛЬНА ЗАРПЛАТА ❗️БРОНЮВАННЯ 👷‍♂️Найбільша українська будівельна компанія пропонує чоловікам",
@@ -168,25 +171,25 @@
   "name": "Харків",
   "lat": 49.9935,
   "lng": 36.2304,
-  "complaints": 4,
+  "complaints": 6,
   "praise": 0,
   "negativityShare": 100.0,
-  "daysWithComplaints": 7,
-  "intensity": 0.57,
-  "gridShare": 25.0,
+  "daysWithComplaints": 9,
+  "intensity": 0.67,
+  "gridShare": 16.7,
   "chronicGapShare": 0.0,
   "pattern": "sporadic",
-  "topCause": "coverage",
+  "topCause": "internet",
   "byBrand": {
+   "kyivstar": 4,
    "unknown": 3,
-   "kyivstar": 2,
    "lifecell": 1,
    "vodafone": 1
   },
   "samples": [
-   "**☔️Дощ з ГРАДОМ накрив Харків.** На дорогах можливе погіршення видимості та слизьке покриття. Зняли негоду на відео? На",
-   "**❗️Так виглядає вщент зруйнована залізнична станція та центр Козачої Лопані. ** Попри надскладні умови, без світла, газ",
-   "клас, у харківській області, окрім харкова, практично ніде немає покриття, для відправки повідомлення в 41 кілобайт, між"
+   "**#меніпишуть**** 5G з’явився у користувачів «Київстару» в Харкові 🛜** Відпишіть, яка обстановка в інших 👇🏻 [ㅤ](https://",
+   "**Київстар утричі розширив тестову 5G-зону у Харкові: відтепер покриття охоплює майже весь центр міста** Завдяки будівни",
+   "**☔️Дощ з ГРАДОМ накрив Харків.** На дорогах можливе погіршення видимості та слизьке покриття. Зняли негоду на відео? На"
   ]
  },
  {
@@ -194,23 +197,24 @@
   "lat": 46.4825,
   "lng": 30.7233,
   "complaints": 2,
-  "praise": 12,
-  "negativityShare": 14.3,
-  "daysWithComplaints": 5,
-  "intensity": 0.4,
+  "praise": 16,
+  "negativityShare": 11.1,
+  "daysWithComplaints": 4,
+  "intensity": 0.5,
   "gridShare": 0.0,
   "chronicGapShare": 0.0,
   "pattern": "healthy",
   "topCause": "internet",
   "byBrand": {
    "unknown": 17,
-   "vodafone": 3,
+   "vodafone": 9,
+   "kyivstar": 4,
    "lifecell": 2
   },
   "samples": [
-   "5G в Одесі: де вже працює новий мобільний зв’язок - Ukr.net. 5G в Одесі: де вже працює новий мобільний зв’язок Ukr.net",
-   "В Одесі розпочався ремонт покриття на вулиці Чорноморського козацтва - Ukr.net. В Одесі розпочався ремонт покриття на ву",
-   "В Одесі запустили 5G: швидкість понад 1 Гбіт/с, але мережа покриває не все місто - Знай.ua. В Одесі запустили 5G: швидкі"
+   "5G в Одесі без доплати: локації lifecell, Київстар, Vodafone - Ukr.net. 5G в Одесі без доплати: локації lifecell, Київст",
+   "Київстар, Vodafone та lifecell запустили відкрите тестування 5G в Одесі - Ukr.net. Київстар, Vodafone та lifecell запуст",
+   "Київстар, Vodafone та lifecell запустили відкрите тестування 5G в Одесі - Ukr.net. Київстар, Vodafone та lifecell запуст"
   ]
  },
  {
@@ -282,6 +286,27 @@
   ]
  },
  {
+  "name": "Рівне",
+  "lat": 50.6199,
+  "lng": 26.2516,
+  "complaints": 2,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 2,
+  "intensity": 1.0,
+  "gridShare": 0.0,
+  "chronicGapShare": 0.0,
+  "pattern": "sporadic",
+  "topCause": "internet",
+  "byBrand": {
+   "kyivstar": 2
+  },
+  "samples": [
+   "**Бізнесу у Рівному потрібен надійний інтернет ****😎** ☕️ Маєте кав’ярню, магазин, салон чи офіс у багатоповерхівці? Інт",
+   "Самий рагульний оператор. Підключив інтернет супер гіг за 350 грн, немає різниці коли я підключаю він повинен діяти міся"
+  ]
+ },
+ {
   "name": "Миколаїв",
   "lat": 46.975,
   "lng": 31.9946,
@@ -323,23 +348,43 @@
   ]
  },
  {
-  "name": "Рівне",
-  "lat": 50.6199,
-  "lng": 26.2516,
+  "name": "Суми",
+  "lat": 50.9077,
+  "lng": 34.7981,
   "complaints": 1,
   "praise": 0,
   "negativityShare": 100.0,
   "daysWithComplaints": 1,
   "intensity": 1.0,
-  "gridShare": 0.0,
+  "gridShare": 100.0,
   "chronicGapShare": 0.0,
-  "pattern": "sporadic",
+  "pattern": "grid",
   "topCause": "internet",
   "byBrand": {
    "kyivstar": 1
   },
   "samples": [
-   "Самий рагульний оператор. Підключив інтернет супер гіг за 350 грн, немає різниці коли я підключаю він повинен діяти міся"
+   "Суцільне розчарування, зателефонувати у підтримку неможливо,Зоряна не налаштована на інфу про безлад співробітників.Дома"
+  ]
+ },
+ {
+  "name": "Чернігів",
+  "lat": 51.4982,
+  "lng": 31.2893,
+  "complaints": 1,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 1,
+  "intensity": 1.0,
+  "gridShare": 100.0,
+  "chronicGapShare": 0.0,
+  "pattern": "grid",
+  "topCause": "internet",
+  "byBrand": {
+   "kyivstar": 1
+  },
+  "samples": [
+   "«Київстар» скасував планове відключення 3G у Чернігові - mediasat.info. «Київстар» скасував планове відключення 3G у Чер"
   ]
  },
  {
@@ -371,16 +416,19 @@
   "complaints": 0,
   "praise": 1,
   "negativityShare": 0.0,
-  "daysWithComplaints": 1,
+  "daysWithComplaints": 3,
   "intensity": 0.0,
   "gridShare": 0.0,
   "chronicGapShare": 0.0,
   "pattern": "healthy",
   "topCause": "internet",
   "byBrand": {
+   "kyivstar": 2,
    "vodafone": 1
   },
   "samples": [
+   "3G вимикає «Київстар» у Вінницькій області | Всі Новини Вінниці - vinbazar.com. 3G вимикає «Київстар» у Вінницькій облас",
+   "Домашній інтернет без дротів: у Вінниці доступний 4G-сервіс від Київстар (Новини компаній) - 20 хвилин - Новини Вінниці.",
    "Доброго дня. Сільська місцевіть. Жмеринський р-н. Вінницька область. Дзвонити можна, інтернет бажає кращого. 4 G тримає "
   ]
  }
