@@ -1,4 +1,78 @@
 {
+ "complaintsAllTopics": {
+  "kyivstar": {
+   "total": 2420,
+   "coverage": 418,
+   "byCause": {
+    "app": 688,
+    "billing": 133,
+    "blackout": 36,
+    "calls": 1,
+    "coverage": 82,
+    "esim": 2,
+    "internet": 280,
+    "number": 5,
+    "other": 774,
+    "outage": 19,
+    "roaming": 15,
+    "support": 56,
+    "tariffs": 329
+   }
+  },
+  "lifecell": {
+   "total": 610,
+   "coverage": 53,
+   "byCause": {
+    "app": 171,
+    "billing": 49,
+    "blackout": 6,
+    "calls": 2,
+    "coverage": 10,
+    "esim": 2,
+    "internet": 33,
+    "number": 4,
+    "other": 182,
+    "outage": 2,
+    "roaming": 6,
+    "support": 29,
+    "tariffs": 114
+   }
+  },
+  "unknown": {
+   "total": 420,
+   "coverage": 87,
+   "byCause": {
+    "app": 17,
+    "billing": 2,
+    "blackout": 16,
+    "coverage": 33,
+    "esim": 2,
+    "internet": 14,
+    "other": 264,
+    "outage": 24,
+    "roaming": 3,
+    "support": 7,
+    "tariffs": 38
+   }
+  },
+  "vodafone": {
+   "total": 1106,
+   "coverage": 234,
+   "byCause": {
+    "app": 239,
+    "billing": 58,
+    "blackout": 32,
+    "coverage": 60,
+    "internet": 118,
+    "number": 4,
+    "other": 357,
+    "outage": 24,
+    "roaming": 8,
+    "support": 43,
+    "tariffs": 163
+   }
+  }
+ },
  "problemLocations": 16,
  "gridDriven": 7,
  "chronicLocations": 1,

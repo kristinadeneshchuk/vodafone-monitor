@@ -22,6 +22,7 @@ import { feedbackService } from '@/lib/data/feedback-service';
 import { DashboardMetrics, DailyBriefing } from '@/lib/data/types';
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { useRouter } from 'next/navigation';
+import summary from '@/lib/data/real-summary.json';
 
 export default function DashboardOverview() {
   const router = useRouter();
@@ -340,6 +341,11 @@ export default function DashboardOverview() {
           </span>
         </div>
 
+        {/* Масштаб і фокус в одному рядку. Дашборд показує лише скарги
+            на звʼязок — це рішення продукту, — але без загального числа
+            незрозуміло, чи це багато. Дані за весь рік, не за період. */}
+        <ScopeStrip />
+
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-3.5">
           {/* 1. Complaints Count */}
           <div className={`p-3 sm:p-4 rounded-xl border shadow-2xs transition-all flex flex-col justify-between ${
@@ -574,6 +580,48 @@ export default function DashboardOverview() {
             )}
           </CardContent>
         </Card>
+      </div>
+    </div>
+  );
+}
+
+const CAUSE_UA: Record<string, string> = {
+  internet: 'мобільний інтернет', coverage: 'покриття і сигнал', calls: 'дзвінки',
+  blackout: 'відключення світла', outage: 'масовий збій', billing: 'списання коштів',
+  tariffs: 'тарифи', app: 'застосунок', support: 'підтримка', roaming: 'роумінг',
+  number: 'номер', other: 'не класифіковано',
+};
+
+const COVERAGE_CAUSES = ['coverage', 'internet', 'calls', 'outage', 'blackout'];
+
+/** Скарги на бренд за рік: усі теми проти тих, що показує дашборд. */
+function ScopeStrip() {
+  const all = (summary as any).complaintsAllTopics?.vodafone;
+  if (!all) return null;
+
+  const share = Math.round((100 * all.coverage) / Math.max(all.total, 1));
+  const others = Object.entries(all.byCause as Record<string, number>)
+    .filter(([c]) => !COVERAGE_CAUSES.includes(c))
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4);
+
+  return (
+    <div className="mb-3 p-3 rounded-xl border border-slate-200 bg-slate-50/60">
+      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
+        <span className="text-slate-500">За рік на Vodafone</span>
+        <span className="font-bold text-slate-900">{all.total}</span>
+        <span className="text-slate-500">скарг, з них про звʼязок</span>
+        <span className="font-bold text-red-700">{all.coverage}</span>
+        <span className="text-slate-500">({share}%) — саме вони на цьому дашборді.</span>
+      </div>
+      <div className="flex flex-wrap gap-1.5 mt-2">
+        <span className="text-[11px] text-slate-400 mr-1">Решта тем:</span>
+        {others.map(([cause, n]) => (
+          <Badge key={cause} variant="outline"
+                 className="text-[11px] font-normal text-slate-600 bg-white">
+            {CAUSE_UA[cause] ?? cause}: {n}
+          </Badge>
+        ))}
       </div>
     </div>
   );
