@@ -28,6 +28,21 @@ const CAUSE_UA: Record<string, string> = {
   number: 'номер', other: 'інше',
 };
 
+const OPERATOR_LABELS: Record<string, string> = {
+  all: 'Усі оператори',
+  vodafone: 'Vodafone',
+  kyivstar: 'Київстар',
+  lifecell: 'lifecell',
+};
+
+const MAP_PROBLEM_LABELS: Record<string, string> = {
+  all: 'Усі типи',
+  no_signal: 'Немає сигналу',
+  slow_internet: 'Повільний інтернет',
+  dropped_calls: 'Обриви дзвінків',
+  other: 'Інше',
+};
+
 export default function MapPage() {
   const [records, setRecords] = useState<FeedbackRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -122,7 +137,7 @@ export default function MapPage() {
           <span className="text-xs font-semibold text-slate-600">Оператор:</span>
           <Select value={brand} onValueChange={(v) => setBrand(v ?? 'all')}>
             <SelectTrigger className="w-[170px] h-9 bg-slate-50 border-slate-200 text-xs">
-              <SelectValue placeholder="Оператор" />
+              <SelectValue placeholder="Оператор" labelMap={OPERATOR_LABELS} />
             </SelectTrigger>
             <SelectContent className="z-[9999]">
               <SelectItem value="all">Усі оператори</SelectItem>
@@ -137,7 +152,7 @@ export default function MapPage() {
           <span className="text-xs font-semibold text-slate-600">Проблема:</span>
           <Select value={problem} onValueChange={(v) => setProblem(v ?? 'all')}>
             <SelectTrigger className="w-[190px] h-9 bg-slate-50 border-slate-200 text-xs">
-              <SelectValue placeholder="Тип проблеми" />
+              <SelectValue placeholder="Тип проблеми" labelMap={MAP_PROBLEM_LABELS} />
             </SelectTrigger>
             <SelectContent className="z-[9999]">
               <SelectItem value="all">Усі типи</SelectItem>

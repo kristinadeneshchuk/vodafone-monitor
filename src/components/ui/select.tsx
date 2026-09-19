@@ -17,13 +17,45 @@ function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   )
 }
 
-function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
+const SYSTEM_LANGVARS: Record<string, string> = {
+  all: 'Усі',
+  true: 'Так',
+  false: 'Ні',
+  no_signal: 'Немає сигналу',
+  slow_internet: 'Повільний інтернет',
+  dropped_calls: 'Обриви дзвінків',
+  other: 'Інше',
+  vodafone: 'Vodafone',
+  kyivstar: 'Київстар',
+  lifecell: 'lifecell',
+};
+
+export interface SelectValueProps extends Omit<SelectPrimitive.Value.Props, 'children'> {
+  children?: React.ReactNode | ((value: any) => React.ReactNode);
+  labelMap?: Record<string, string>;
+}
+
+function SelectValue({ className, children, labelMap, ...props }: SelectValueProps) {
+  const mergedMap = labelMap ? { ...SYSTEM_LANGVARS, ...labelMap } : SYSTEM_LANGVARS;
+
   return (
     <SelectPrimitive.Value
       data-slot="select-value"
       className={cn("flex flex-1 text-left", className)}
       {...props}
-    />
+    >
+      {typeof children === 'function' ? (
+        children
+      ) : children !== undefined ? (
+        children
+      ) : (
+        (val: any) => {
+          if (val === null || val === undefined || val === '') return props.placeholder || null;
+          const key = String(val);
+          return mergedMap[key] || val;
+        }
+      )}
+    </SelectPrimitive.Value>
   )
 }
 

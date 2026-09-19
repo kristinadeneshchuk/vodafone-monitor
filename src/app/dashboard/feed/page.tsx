@@ -37,6 +37,31 @@ import {
 type SortField = 'timestamp' | 'reputationalRiskScore' | 'relevanceScore' | 'constructivenessScore';
 type SortOrder = 'asc' | 'desc';
 
+const PROBLEM_LABELS: Record<string, string> = {
+  all: 'Усі проблеми',
+  no_signal: 'Немає сигналу',
+  slow_internet: 'Повільний інтернет',
+  dropped_calls: 'Обриви дзвінків',
+  other: 'Інше',
+};
+
+const RELEVANCE_LABELS: Record<string, string> = {
+  all: 'Уся релевантність',
+  true: 'Релевантні (Так)',
+  false: 'Нерелевантні (Ні)',
+};
+
+const CONSTRUCTIVE_LABELS: Record<string, string> = {
+  all: 'Будь-який відгук',
+  true: 'Конструктивні (Так)',
+  false: 'Емоційні / Без фактів',
+};
+
+const CHURN_LABELS: Record<string, string> = {
+  all: 'Усі відгуки',
+  true: '🚨 Тільки Churn (погрози)',
+};
+
 function FeedPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -268,7 +293,7 @@ function FeedPageContent() {
                   <Select value={problemFilter} onValueChange={(val) => { if (val) setProblemFilter(val); }}>
                     <SelectTrigger className="w-[170px] bg-slate-50/50">
                       <Filter className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
-                      <SelectValue placeholder="Тип проблеми" />
+                      <SelectValue placeholder="Тип проблеми" labelMap={PROBLEM_LABELS} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Усі проблеми</SelectItem>
@@ -282,7 +307,7 @@ function FeedPageContent() {
                   <Select value={relevantFilter} onValueChange={(val) => { if (val) setRelevantFilter(val); }}>
                     <SelectTrigger className="w-[170px] bg-slate-50/50">
                       <Target className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
-                      <SelectValue placeholder="Релевантність" />
+                      <SelectValue placeholder="Релевантність" labelMap={RELEVANCE_LABELS} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Уся релевантність</SelectItem>
@@ -294,7 +319,7 @@ function FeedPageContent() {
                   <Select value={constructiveFilter} onValueChange={(val) => { if (val) setConstructiveFilter(val); }}>
                     <SelectTrigger className="w-[180px] bg-slate-50/50">
                       <Sparkles className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
-                      <SelectValue placeholder="Конструктивність" />
+                      <SelectValue placeholder="Конструктивність" labelMap={CONSTRUCTIVE_LABELS} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Будь-який відгук</SelectItem>
@@ -306,7 +331,7 @@ function FeedPageContent() {
                   <Select value={churnFilter} onValueChange={(val) => { if (val) setChurnFilter(val); }}>
                     <SelectTrigger className="w-[170px] bg-slate-50/50">
                       <UserX className="w-3.5 h-3.5 mr-1.5 text-rose-600" />
-                      <SelectValue placeholder="Загроза відтоку" />
+                      <SelectValue placeholder="Загроза відтоку" labelMap={CHURN_LABELS} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Усі відгуки</SelectItem>
@@ -319,6 +344,44 @@ function FeedPageContent() {
                   </Button>
                 </div>
               </div>
+
+              {(problemFilter !== 'all' || relevantFilter !== 'all' || constructiveFilter !== 'all' || churnFilter !== 'all') && (
+                <div className="flex flex-wrap items-center gap-1.5 pt-1 text-xs">
+                  <span className="text-slate-400 text-[11px]">Активні фільтри:</span>
+                  {problemFilter !== 'all' && (
+                    <Badge variant="secondary" className="gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer text-xs" onClick={() => setProblemFilter('all')}>
+                      Проблема: {PROBLEM_LABELS[problemFilter]} ×
+                    </Badge>
+                  )}
+                  {relevantFilter !== 'all' && (
+                    <Badge variant="secondary" className="gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer text-xs" onClick={() => setRelevantFilter('all')}>
+                      Релевантність: {RELEVANCE_LABELS[relevantFilter]} ×
+                    </Badge>
+                  )}
+                  {constructiveFilter !== 'all' && (
+                    <Badge variant="secondary" className="gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer text-xs" onClick={() => setConstructiveFilter('all')}>
+                      Конструктив: {CONSTRUCTIVE_LABELS[constructiveFilter]} ×
+                    </Badge>
+                  )}
+                  {churnFilter !== 'all' && (
+                    <Badge variant="secondary" className="gap-1 bg-rose-100 text-rose-800 hover:bg-rose-200 cursor-pointer text-xs" onClick={() => setChurnFilter('all')}>
+                      Відтік: {CHURN_LABELS[churnFilter]} ×
+                    </Badge>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProblemFilter('all');
+                      setRelevantFilter('all');
+                      setConstructiveFilter('all');
+                      setChurnFilter('all');
+                    }}
+                    className="text-[11px] text-red-600 hover:underline ml-1 cursor-pointer"
+                  >
+                    Скинути всі
+                  </button>
+                </div>
+              )}
             </form>
           </CardContent>
         </Card>
