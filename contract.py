@@ -29,6 +29,7 @@ import re
 import geo
 import keywords
 import quality
+import risk
 
 # ------------------------------------------------------------------ enum
 
@@ -158,7 +159,7 @@ def reputational_risk(sentiment_name, q, cause, source_type, has_location):
     return int(max(0, min(100, round(score))))
 
 
-def build(text, sentiment_name, source_type, q=None):
+def build(text, sentiment_name, source_type, source_name='', q=None):
     """
     Повний набір полів для №6.
 
@@ -175,15 +176,21 @@ def build(text, sentiment_name, source_type, q=None):
     con_score = q['actionability']
     is_constructive = con_score >= 0.4 and q['emotional_noise'] < 0.6
 
-    risk = reputational_risk(sentiment_name, q, cause, source_type, has_location)
+    # Ризик за формулою чотирьох факторів (risk.py), шкала 0-10.
+    # Стара евристика reputational_risk лишена нижче для порівняння,
+    # у розрахунку не бере участі.
+    r = risk.compute(text, sentiment_name, source_type, source_name, cause, q)
+    risk_score = int(round(r['score'] * 10))       # контракт №6 чекає 0-100
 
     return {
         'isRelevant': rel_score >= 0.5,
         'relevanceScore': rel_score,
         'isConstructive': is_constructive,
         'constructiveScore': con_score,
-        'importance': importance(sentiment_name, risk, is_constructive,
-                                 source_type, cause in COVERAGE_CAUSES),
+        # Важливість більше не рахується окремо: вона і є рівнем зі шкали
+        # інтерпретації ризику (0-2.9 low, 3-5.9 medium, 6-7.9 high, 8+ critical).
+        # Дві різні шкали для одного й того ж давали б суперечливі підказки.
+        'importance': IMPORTANCE[r['grade']],
         # У нас є ще клас 'mixed' — для №6 зводимо його до негативу:
         # змішаний відгук містить скаргу, і репутаційно це не позитив.
         'sentiment': SENTIMENT.get(
@@ -192,7 +199,9 @@ def build(text, sentiment_name, source_type, q=None):
                       'addressName': location['addressName']}
                      if location else None),
         'problemType': problem_type(text, cause),
-        'reputationalRiskScore': risk,
+        'reputationalRiskScore': risk_score,
+        'riskFactors': r['factors'],
+        'recommendedAction': r['action'],
     }
 
 

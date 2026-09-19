@@ -124,12 +124,12 @@ def classify_tonality(sentiment, q):
 
 
 def enrich_batch(rows):
-    """rows: [(id, text, rating, source_type)] -> кортежі для вставки."""
+    """rows: [(id, text, rating, source_type, source_name)] -> кортежі."""
     texts = [r[1] or '' for r in rows]
     preds = sentiment_model.predict_hybrid(texts)
 
     out = []
-    for (mid, text, rating, source_type), (sent, conf) in zip(rows, preds):
+    for (mid, text, rating, source_type, source_name), (sent, conf) in zip(rows, preds):
         text = text or ''
 
         # Якщо зірки є — вони важливіші за модель. Це пряма оцінка автора,
@@ -151,7 +151,7 @@ def enrich_batch(rows):
         cities = q['cities']
         tonality, trust = classify_tonality(sent, q)
 
-        c = contract.build(text, sent, source_type, q=q)
+        c = contract.build(text, sent, source_type, source_name, q=q)
         loc = c['location']
 
         out.append((
@@ -189,7 +189,7 @@ def run(redo=False):
     done = 0
     while True:
         rows = con.execute(
-            "SELECT id, text, rating, source_type FROM mentions "
+            "SELECT id, text, rating, source_type, source_name FROM mentions "
             "WHERE id NOT IN (SELECT mention_id FROM analysis) LIMIT ?", (BATCH,)
         ).fetchall()
         if not rows:
