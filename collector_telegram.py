@@ -33,6 +33,7 @@ from telethon.tl.functions.channels import GetFullChannelRequest
 from telethon.tl.functions.contacts import SearchRequest
 
 import channels as channels_cfg
+import keywords
 
 # ---------------------------------------------------------------- налаштування
 
@@ -47,54 +48,46 @@ CHANNELS = channels_cfg.CHANNELS
 MAX_MESSAGES_PER_CHANNEL = 3000   # запобіжник, щоб не висіти годинами
 SLEEP_BETWEEN_CHANNELS = 1.0      # секунди, бережемо rate limit
 
-# ---------------------------------------------------------------- пошук брендів
+# ------------------------------------------------- пошук брендів і проблем
 
-# \w* дає всі відмінки: водафон / водафону / водафоні / водафонівський.
-# re.IGNORECASE + re.UNICODE обов'язкові для кирилиці.
-BRAND_PATTERNS = {
-    'vodafone': [
-        r'vodafone\w*',
-        r'водафон\w*',
-        r'водофон\w*',      # часта помилка в написанні
-    ],
-    'kyivstar': [
-        r'kyivstar\w*',
-        r'київстар\w*',
-        r'киевстар\w*',
-    ],
-    'lifecell': [
-        r'lifecell\w*',
-        r'life\s?cell\w*',
-        r'лайфсел\w*',
-        r'лайфцел\w*',
-    ],
-}
+# Словники живуть у keywords.py — ними користується і веб-збирач, і №4.
+build_matchers = keywords.build_brand_matchers
+detect_brands = keywords.detect_brands
 
-# Ці варіанти дають багато шуму ("ВФ" = "Верховна Феда"? ні, але збігів вистачає).
-# Вмикаються прапорцем --loose; відсів лишається на is_relevant у №4.
-LOOSE_PATTERNS = {
-    'vodafone': [r'\bвф\b', r'\bvf\b'],
-    'lifecell': [r'\bлайф\b'],
-}
-
-MIN_TEXT_LEN = 15   # коротші за це — здебільшого підписи до фото
+MIN_TEXT_LEN = 15   # коротші — здебільшого підписи до фото
 
 
-def build_matchers(loose=False):
-    """Компілює по одному регексу на бренд."""
-    matchers = {}
-    for brand, patterns in BRAND_PATTERNS.items():
-        all_patterns = list(patterns)
-        if loose:
-            all_patterns += LOOSE_PATTERNS.get(brand, [])
-        joined = '|'.join(f'(?:{p})' for p in all_patterns)
-        matchers[brand] = re.compile(joined, re.IGNORECASE | re.UNICODE)
-    return matchers
+def build_mentions(text, source_name, url, published_at, matchers):
+    """
+    Перетворює один пост на згадки у форматі контракту.
 
+    Пост береться, якщо названо оператора АБО описано проблему зі звʼязком.
+    Скарга без назви бренду ("в потязі звʼязку нема") — теж наш сигнал,
+    інакше ми втрачаємо більшість скарг на покриття.
+    """
+    brands = detect_brands(text, matchers)
+    coverage = keywords.is_coverage_issue(text)
 
-def detect_brands(text, matchers):
-    """Повертає список брендів, згаданих у тексті. Порожній — згадки немає."""
-    return [brand for brand, rx in matchers.items() if rx.search(text)]
+    if not brands and not coverage:
+        return []
+
+    context = keywords.detect_context(text)
+
+    # Пост без назви оператора не приписуємо нікому: brand_query = 'unknown'.
+    # Кому саме не пощастило, вирішує №4 за контекстом, якщо взагалі зможе.
+    targets = brands or ['unknown']
+
+    return [{
+        'source_type': 'telegram',
+        'source_name': source_name,
+        'url': url,
+        'published_at': published_at,
+        'text': text,
+        'brand_query': brand,
+        # поля нижче в базу не йдуть, лишаються в JSON як підказка для №4 і №5
+        'coverage_hit': coverage,
+        'context_tags': context,
+    } for brand in targets]
 
 
 # ---------------------------------------------------------------- збір
@@ -135,21 +128,10 @@ async def collect_channel(client, channel, matchers, since, until):
             if len(text) < MIN_TEXT_LEN:
                 continue
 
-            brands = detect_brands(text, matchers)
-            if not brands:
-                continue
-
-            # Один пост може згадувати кількох операторів (порівняння тарифів).
-            # Тоді пишемо його стільки разів, скільки брендів — кожен у свій зріз.
-            for brand in brands:
-                mentions.append({
-                    'source_type': 'telegram',
-                    'source_name': channel,
-                    'url': f'https://t.me/{channel}/{msg.id}',
-                    'published_at': to_iso(msg.date),
-                    'text': text,
-                    'brand_query': brand,
-                })
+            mentions.extend(build_mentions(
+                text, channel, f'https://t.me/{channel}/{msg.id}',
+                to_iso(msg.date), matchers,
+            ))
 
     except FloodWaitError as e:
         print(f"  [!] {channel}: Telegram просить почекати {e.seconds} с. Зупиняю канал.")
@@ -287,13 +269,22 @@ async def check_channels(names):
 # ---------------------------------------------------------------- самоперевірка
 
 SELF_TEST_SAMPLES = [
+    # бренд названо
     ("Водафон третій день не ловить у Львові", ['vodafone']),
     ("У Vodafone знову проблеми з інтернетом", ['vodafone']),
     ("Порівняння тарифів Київстар і lifecell на 2024 рік", ['kyivstar', 'lifecell']),
     ("Дякую водафону за чудовий звязок, четвертий день без мережі", ['vodafone']),
-    ("Їду потягом Київ-Харків, зв'язку немає взагалі", []),
+
+    # бренду немає, але проблема з покриттям є -> unknown
+    ("Їду потягом Київ-Харків, зв'язку немає взагалі", ['unknown']),
+    ("В Карпатах взагалі не ловить, нема сигналу", ['unknown']),
+    ("Через відключення світла немає інтернету другу годину", ['unknown']),
+    ("В метро не працює мобільний інтернет", ['unknown']),
+    ("Нет связи в центре города", ['unknown']),
+
+    # не наше
     ("Купив новий телефон, все працює", []),
-    ("Підписуйтесь на канал", []),           # коротке — відсіється
+    ("Підписуйтесь на канал", []),
 ]
 
 
@@ -305,12 +296,14 @@ def self_test(loose=False):
         if len(text) < MIN_TEXT_LEN:
             found = []
         else:
-            found = sorted(detect_brands(text, matchers))
+            found = sorted(m['brand_query'] for m in
+                           build_mentions(text, 'test', '', '', matchers))
         passed = found == sorted(expected)
         ok += passed
         mark = 'OK ' if passed else 'ХИБА'
+        ctx = ', '.join(keywords.detect_context(text))
         shown = ', '.join(found) or '—'
-        print(f"  [{mark}] {shown:<28} | {text[:55]}")
+        print(f"  [{mark}] {shown:<22} {ctx:<12} | {text[:52]}")
     print(f"\nПройдено {ok} з {len(SELF_TEST_SAMPLES)}")
 
 

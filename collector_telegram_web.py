@@ -30,7 +30,7 @@ import channels as channels_cfg
 from collector_telegram import (
     MIN_TEXT_LEN,
     build_matchers,
-    detect_brands,
+    build_mentions,
     save_json,
     save_to_db,
     to_iso,
@@ -114,15 +114,10 @@ def collect_channel(channel, matchers, since, until):
             if len(text) < MIN_TEXT_LEN:
                 continue
 
-            for brand in detect_brands(text, matchers):
-                mentions.append({
-                    'source_type': 'telegram',
-                    'source_name': channel,
-                    'url': f'https://t.me/{channel}/{p["id"]}',
-                    'published_at': to_iso(p['published']),
-                    'text': text,
-                    'brand_query': brand,
-                })
+            mentions.extend(build_mentions(
+                text, channel, f'https://t.me/{channel}/{p["id"]}',
+                to_iso(p['published']), matchers,
+            ))
 
         # Найстаріший пост сторінки вже раніший за вікно — далі гортати нема сенсу.
         oldest = min(p['published'] for p in new_posts)
