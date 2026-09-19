@@ -1,19 +1,44 @@
 [
  {
+  "name": "Київ",
+  "lat": 50.4501,
+  "lng": 30.5234,
+  "complaints": 12,
+  "praise": 6,
+  "negativityShare": 66.7,
+  "daysWithComplaints": 22,
+  "intensity": 0.55,
+  "gridShare": 58.3,
+  "chronicGapShare": 25.0,
+  "pattern": "grid",
+  "topCause": "coverage",
+  "byBrand": {
+   "unknown": 9,
+   "vodafone": 9,
+   "kyivstar": 7,
+   "lifecell": 2
+  },
+  "samples": [
+   "у Київській обл. 4g працює дуже нестабільно.раніше рятував 3g але зараз він взагалі відсутній.тому не розумію за що ці ш",
+   "**россия получит покрытие спутниковой связи на всей территории Украины в течение следующего года, и это приведёт к нашем",
+   "Додаток подобається, а покриття мережі ні. Під Києвом ловлю мережу на даху будинку. Як в 90тих"
+  ]
+ },
+ {
   "name": "Полтава",
   "lat": 49.5883,
   "lng": 34.5514,
-  "complaints": 22,
+  "complaints": 10,
   "praise": 1,
-  "negativityShare": 95.7,
-  "daysWithComplaints": 25,
-  "intensity": 0.88,
-  "gridShare": 109.1,
-  "chronicGapShare": 4.5,
+  "negativityShare": 90.9,
+  "daysWithComplaints": 26,
+  "intensity": 0.38,
+  "gridShare": 240.0,
+  "chronicGapShare": 20.0,
   "pattern": "grid",
   "topCause": "blackout",
   "byBrand": {
-   "unknown": 27,
+   "unknown": 28,
    "vodafone": 1,
    "kyivstar": 1
   },
@@ -27,13 +52,13 @@
   "name": "Львів",
   "lat": 49.8397,
   "lng": 24.0297,
-  "complaints": 17,
-  "praise": 0,
-  "negativityShare": 100.0,
+  "complaints": 6,
+  "praise": 5,
+  "negativityShare": 54.5,
   "daysWithComplaints": 23,
-  "intensity": 0.74,
-  "gridShare": 94.1,
-  "chronicGapShare": 11.8,
+  "intensity": 0.26,
+  "gridShare": 266.7,
+  "chronicGapShare": 33.3,
   "pattern": "grid",
   "topCause": "blackout",
   "byBrand": {
@@ -48,45 +73,20 @@
   ]
  },
  {
-  "name": "Київ",
-  "lat": 50.4501,
-  "lng": 30.5234,
-  "complaints": 17,
-  "praise": 4,
-  "negativityShare": 81.0,
-  "daysWithComplaints": 21,
-  "intensity": 0.81,
-  "gridShare": 35.3,
-  "chronicGapShare": 17.6,
-  "pattern": "chronic",
-  "topCause": "coverage",
-  "byBrand": {
-   "vodafone": 9,
-   "unknown": 8,
-   "kyivstar": 7,
-   "lifecell": 2
-  },
-  "samples": [
-   "у Київській обл. 4g працює дуже нестабільно.раніше рятував 3g але зараз він взагалі відсутній.тому не розумію за що ці ш",
-   "**россия получит покрытие спутниковой связи на всей территории Украины в течение следующего года, и это приведёт к нашем",
-   "Додаток подобається, а покриття мережі ні. Під Києвом ловлю мережу на даху будинку. Як в 90тих"
-  ]
- },
- {
   "name": "Дніпро",
   "lat": 48.4647,
   "lng": 35.0462,
-  "complaints": 8,
+  "complaints": 6,
   "praise": 1,
-  "negativityShare": 88.9,
-  "daysWithComplaints": 11,
-  "intensity": 0.73,
-  "gridShare": 75.0,
-  "chronicGapShare": 12.5,
+  "negativityShare": 85.7,
+  "daysWithComplaints": 12,
+  "intensity": 0.5,
+  "gridShare": 100.0,
+  "chronicGapShare": 16.7,
   "pattern": "grid",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 8,
+   "unknown": 9,
    "kyivstar": 2,
    "vodafone": 1
   },
@@ -97,40 +97,17 @@
   ]
  },
  {
-  "name": "Тернопіль",
-  "lat": 49.5535,
-  "lng": 25.5948,
-  "complaints": 7,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 5,
-  "intensity": 1.4,
-  "gridShare": 14.3,
-  "chronicGapShare": 0.0,
-  "pattern": "sporadic",
-  "topCause": "coverage",
-  "byBrand": {
-   "unknown": 6,
-   "kyivstar": 1
-  },
-  "samples": [
-   "**Домашній Інтернет у Тернополі стабільно працює навіть без електроенергії** Для жителів Тернополя стабільний доступ до ",
-   "**Жінка втратила гроші через онлайн кохання.** 100 тисяч гривень [віддала](https://tp.npu.gov.ua/news/obitsianyi-podarun",
-   "**Жінка втратила гроші через онлайн кохання.** 100 тисяч гривень [віддала](https://tp.npu.gov.ua/news/obitsianyi-podarun"
-  ]
- },
- {
   "name": "Запоріжжя",
   "lat": 47.8388,
   "lng": 35.1396,
-  "complaints": 6,
-  "praise": 0,
-  "negativityShare": 100.0,
+  "complaints": 3,
+  "praise": 2,
+  "negativityShare": 60.0,
   "daysWithComplaints": 5,
-  "intensity": 1.2,
-  "gridShare": 33.3,
+  "intensity": 0.6,
+  "gridShare": 66.7,
   "chronicGapShare": 0.0,
-  "pattern": "sporadic",
+  "pattern": "grid",
   "topCause": "coverage",
   "byBrand": {
    "vodafone": 2,
@@ -145,17 +122,111 @@
   ]
  },
  {
+  "name": "Харків",
+  "lat": 49.9935,
+  "lng": 36.2304,
+  "complaints": 3,
+  "praise": 1,
+  "negativityShare": 75.0,
+  "daysWithComplaints": 6,
+  "intensity": 0.5,
+  "gridShare": 0.0,
+  "chronicGapShare": 0.0,
+  "pattern": "sporadic",
+  "topCause": "coverage",
+  "byBrand": {
+   "kyivstar": 2,
+   "unknown": 2,
+   "lifecell": 1,
+   "vodafone": 1
+  },
+  "samples": [
+   "**Київстар утричі розширив тестову 5G-зону у Харкові: відтепер покриття охоплює майже весь центр міста** Завдяки будівни",
+   "В місцевості де я знаходжуся в ЗСУ (Харківська область) Зв'язок Київстар Дуже Поганий, Вимушений Користуватися Послугами",
+   "Рух автомобільного транспорту греблею Печенізького водосховища на Харківщині, яку російські війська [атакували](https://"
+  ]
+ },
+ {
+  "name": "Херсон",
+  "lat": 46.6354,
+  "lng": 32.6169,
+  "complaints": 2,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 3,
+  "intensity": 0.67,
+  "gridShare": 50.0,
+  "chronicGapShare": 0.0,
+  "pattern": "grid",
+  "topCause": "coverage",
+  "byBrand": {
+   "unknown": 1,
+   "kyivstar": 1,
+   "vodafone": 1
+  },
+  "samples": [
+   "**У Сімферополі ідентифікували двох наглядачів СІЗО, яких звинувачують у катуваннях українців.** Журналісти відділу розс",
+   "відремонтуйте вишку будь ласка дуже погане покриття Херсонська область береславський район ✌️😁",
+   "Блокують/обмежують мобільний інтернет в Херсонській області, Милівська громада, на запити в додатку повне ігнорування, а"
+  ]
+ },
+ {
+  "name": "Черкаси",
+  "lat": 49.4444,
+  "lng": 32.0598,
+  "complaints": 2,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 5,
+  "intensity": 0.4,
+  "gridShare": 50.0,
+  "chronicGapShare": 50.0,
+  "pattern": "grid",
+  "topCause": "coverage",
+  "byBrand": {
+   "unknown": 5
+  },
+  "samples": [
+   "[​​](http://telegraph.controller.bot/files/952802234/BQACAgIAAxkBAAEEVBBqggPyDH4_RevzJCoZXuWGrWGVRQAC5aoAAjYxEEjQ8maWBx-",
+   "❗️Сьогодні КП «ЧЕЛУАШ» проводить поточні роботи на дорогах міста Черкаси У зв’язку з цим, рух транспорту на окремих діля",
+   "⚠️ У Черкасах триває ремонт дороги на вулиці Юрія Іллєнка. Працівники КП «ЧЕЛУАШ» ліквідовують аварійні вибоїни та відно"
+  ]
+ },
+ {
+  "name": "Рівне",
+  "lat": 50.6199,
+  "lng": 26.2516,
+  "complaints": 2,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 3,
+  "intensity": 0.67,
+  "gridShare": 50.0,
+  "chronicGapShare": 0.0,
+  "pattern": "grid",
+  "topCause": "internet",
+  "byBrand": {
+   "kyivstar": 2,
+   "unknown": 1
+  },
+  "samples": [
+   "**Бізнесу у Рівному потрібен надійний інтернет ****😎** ☕️ Маєте кав’ярню, магазин, салон чи офіс у багатоповерхівці? Інт",
+   "😱 **Страшна ДТП у Рівному на вул. Залізничній ** **Жахливі наслідки:** машина розбита вщент, люди залишились без інтерне",
+   "Самий рагульний оператор. Підключив інтернет супер гіг за 350 грн, немає різниці коли я підключаю він повинен діяти міся"
+  ]
+ },
+ {
   "name": "Одеса",
   "lat": 46.4825,
   "lng": 30.7233,
-  "complaints": 5,
-  "praise": 3,
-  "negativityShare": 62.5,
+  "complaints": 1,
+  "praise": 6,
+  "negativityShare": 14.3,
   "daysWithComplaints": 7,
-  "intensity": 0.71,
-  "gridShare": 40.0,
-  "chronicGapShare": 20.0,
-  "pattern": "sporadic",
+  "intensity": 0.14,
+  "gridShare": 200.0,
+  "chronicGapShare": 100.0,
+  "pattern": "healthy",
   "topCause": "coverage",
   "byBrand": {
    "unknown": 5,
@@ -170,65 +241,16 @@
   ]
  },
  {
-  "name": "Харків",
-  "lat": 49.9935,
-  "lng": 36.2304,
-  "complaints": 4,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 5,
-  "intensity": 0.8,
-  "gridShare": 0.0,
-  "chronicGapShare": 0.0,
-  "pattern": "sporadic",
-  "topCause": "coverage",
-  "byBrand": {
-   "kyivstar": 2,
-   "lifecell": 1,
-   "unknown": 1,
-   "vodafone": 1
-  },
-  "samples": [
-   "**Київстар утричі розширив тестову 5G-зону у Харкові: відтепер покриття охоплює майже весь центр міста** Завдяки будівни",
-   "В місцевості де я знаходжуся в ЗСУ (Харківська область) Зв'язок Київстар Дуже Поганий, Вимушений Користуватися Послугами",
-   "клас, у харківській області, окрім харкова, практично ніде немає покриття, для відправки повідомлення в 41 кілобайт, між"
-  ]
- },
- {
-  "name": "Херсон",
-  "lat": 46.6354,
-  "lng": 32.6169,
-  "complaints": 3,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 3,
-  "intensity": 1.0,
-  "gridShare": 33.3,
-  "chronicGapShare": 0.0,
-  "pattern": "sporadic",
-  "topCause": "coverage",
-  "byBrand": {
-   "unknown": 1,
-   "kyivstar": 1,
-   "vodafone": 1
-  },
-  "samples": [
-   "**У Сімферополі ідентифікували двох наглядачів СІЗО, яких звинувачують у катуваннях українців.** Журналісти відділу розс",
-   "відремонтуйте вишку будь ласка дуже погане покриття Херсонська область береславський район ✌️😁",
-   "Блокують/обмежують мобільний інтернет в Херсонській області, Милівська громада, на запити в додатку повне ігнорування, а"
-  ]
- },
- {
   "name": "Вінниця",
   "lat": 49.2331,
   "lng": 28.4682,
-  "complaints": 3,
+  "complaints": 1,
   "praise": 1,
-  "negativityShare": 75.0,
+  "negativityShare": 50.0,
   "daysWithComplaints": 5,
-  "intensity": 0.6,
+  "intensity": 0.2,
   "gridShare": 0.0,
-  "chronicGapShare": 66.7,
+  "chronicGapShare": 200.0,
   "pattern": "sporadic",
   "topCause": "coverage",
   "byBrand": {
@@ -243,38 +265,15 @@
   ]
  },
  {
-  "name": "Рівне",
-  "lat": 50.6199,
-  "lng": 26.2516,
-  "complaints": 3,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 3,
-  "intensity": 1.0,
-  "gridShare": 33.3,
-  "chronicGapShare": 0.0,
-  "pattern": "sporadic",
-  "topCause": "internet",
-  "byBrand": {
-   "kyivstar": 2,
-   "unknown": 1
-  },
-  "samples": [
-   "**Бізнесу у Рівному потрібен надійний інтернет ****😎** ☕️ Маєте кав’ярню, магазин, салон чи офіс у багатоповерхівці? Інт",
-   "😱 **Страшна ДТП у Рівному на вул. Залізничній ** **Жахливі наслідки:** машина розбита вщент, люди залишились без інтерне",
-   "Самий рагульний оператор. Підключив інтернет супер гіг за 350 грн, немає різниці коли я підключаю він повинен діяти міся"
-  ]
- },
- {
   "name": "Миколаїв",
   "lat": 46.975,
   "lng": 31.9946,
-  "complaints": 2,
+  "complaints": 1,
   "praise": 0,
   "negativityShare": 100.0,
   "daysWithComplaints": 3,
-  "intensity": 0.67,
-  "gridShare": 50.0,
+  "intensity": 0.33,
+  "gridShare": 100.0,
   "chronicGapShare": 0.0,
   "pattern": "grid",
   "topCause": "coverage",
@@ -285,51 +284,6 @@
    "😱**18 днів без звʼязку та зі зламаними ребрами: з Миколаївського обласного ТЦК довелося рятувати людей**, – омбудсман Лу",
    "😱**18 днів без звʼязку зі зламаними ребрами провів чоловік у Миколаївському ТЦК.** Звільнено шістьох чоловіків, яких не ",
    "На Миколаївщині «лягає» мобільний зв’язок: 30% базових станцій знеструмлені - Миколаївська Правда. На Миколаївщині «ляга"
-  ]
- },
- {
-  "name": "Черкаси",
-  "lat": 49.4444,
-  "lng": 32.0598,
-  "complaints": 2,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 4,
-  "intensity": 0.5,
-  "gridShare": 50.0,
-  "chronicGapShare": 0.0,
-  "pattern": "grid",
-  "topCause": "coverage",
-  "byBrand": {
-   "unknown": 4
-  },
-  "samples": [
-   "❗️Сьогодні КП «ЧЕЛУАШ» проводить поточні роботи на дорогах міста Черкаси У зв’язку з цим, рух транспорту на окремих діля",
-   "⚠️ У Черкасах триває ремонт дороги на вулиці Юрія Іллєнка. Працівники КП «ЧЕЛУАШ» ліквідовують аварійні вибоїни та відно",
-   "⚠️ Увага, водії! Обмеження руху в Черкасах 12 червня за інформацією КП «ЧЕЛУАШ» проводитимуть поточні роботи на дорогах "
-  ]
- },
- {
-  "name": "Карпати",
-  "lat": 48.55,
-  "lng": 24.3,
-  "complaints": 2,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 3,
-  "intensity": 0.67,
-  "gridShare": 50.0,
-  "chronicGapShare": 150.0,
-  "pattern": "grid",
-  "topCause": "coverage",
-  "byBrand": {
-   "unknown": 2,
-   "vodafone": 1
-  },
-  "samples": [
-   "**Скандал довкола смерті мобілізованого з Волині на Франківщині,** – [ЗМІ.](https://kovel.media/tczk-prymusovo-mobilizuv",
-   "На Прикарпатті базові станції «Київстар» і Vodafone підключатимуть до генераторів - PRAVDA.IF.UA. На Прикарпатті базові ",
-   "**На перевалах Прикарпаття організували чергування дорожніх служб.** Через вологу на Буковецьких, Вишківських, Кривопіль"
   ]
  },
  {
@@ -355,23 +309,26 @@
   ]
  },
  {
-  "name": "Маріуполь",
-  "lat": 47.0951,
-  "lng": 37.5413,
+  "name": "Карпати",
+  "lat": 48.55,
+  "lng": 24.3,
   "complaints": 1,
   "praise": 0,
   "negativityShare": 100.0,
-  "daysWithComplaints": 1,
-  "intensity": 1.0,
+  "daysWithComplaints": 3,
+  "intensity": 0.33,
   "gridShare": 100.0,
-  "chronicGapShare": 0.0,
+  "chronicGapShare": 300.0,
   "pattern": "grid",
-  "topCause": "blackout",
+  "topCause": "coverage",
   "byBrand": {
-   "unknown": 1
+   "unknown": 2,
+   "vodafone": 1
   },
   "samples": [
-   "**На окупованому Донбасі масштабний блекаут**. Світла та зв'язку немає в Донецьку, Маріуполі, Макіївці та інших містах. "
+   "**Скандал довкола смерті мобілізованого з Волині на Франківщині,** – [ЗМІ.](https://kovel.media/tczk-prymusovo-mobilizuv",
+   "На Прикарпатті базові станції «Київстар» і Vodafone підключатимуть до генераторів - PRAVDA.IF.UA. На Прикарпатті базові ",
+   "**На перевалах Прикарпаття організували чергування дорожніх служб.** Через вологу на Буковецьких, Вишківських, Кривопіль"
   ]
  },
  {
@@ -395,23 +352,26 @@
   ]
  },
  {
-  "name": "Кривий Ріг",
-  "lat": 47.9105,
-  "lng": 33.3918,
-  "complaints": 1,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 1,
-  "intensity": 1.0,
-  "gridShare": 100.0,
+  "name": "Тернопіль",
+  "lat": 49.5535,
+  "lng": 25.5948,
+  "complaints": 0,
+  "praise": 1,
+  "negativityShare": 0.0,
+  "daysWithComplaints": 5,
+  "intensity": 0.0,
+  "gridShare": 0.0,
   "chronicGapShare": 0.0,
-  "pattern": "grid",
-  "topCause": "blackout",
+  "pattern": "healthy",
+  "topCause": "coverage",
   "byBrand": {
-   "unknown": 1
+   "unknown": 6,
+   "kyivstar": 1
   },
   "samples": [
-   "Кривий Ріг знову без світла: ГРАФІКИ відключень на 13 листопада - krivbass.city. Кривий Ріг знову без світла: ГРАФІКИ ві"
+   "**Домашній Інтернет у Тернополі стабільно працює навіть без електроенергії** Для жителів Тернополя стабільний доступ до ",
+   "**Жінка втратила гроші через онлайн кохання.** 100 тисяч гривень [віддала](https://tp.npu.gov.ua/news/obitsianyi-podarun",
+   "**Жінка втратила гроші через онлайн кохання.** 100 тисяч гривень [віддала](https://tp.npu.gov.ua/news/obitsianyi-podarun"
   ]
  }
 ]
