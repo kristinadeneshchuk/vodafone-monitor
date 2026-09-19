@@ -64,6 +64,6 @@ data_*.json
 export_for_frontend.json
 # frontend_sample.json навмисно КОМІТИТЬСЯ: №6 потрібні реальні дані,
 # а база 28 МБ у git не місце
-dashboard/node_modules/
-dashboard/.next/
 >>>>>>> fee986cf7489e67c02e4b01df97cb65bf76737cc
+node_modules/
+.next/

@@ -14,7 +14,7 @@ import os
 import sqlite3
 
 DB_PATH = 'mentions.db'
-OUT_JSON = 'dashboard/src/lib/data/real-data.json'
+OUT_JSON = 'src/lib/data/real-data.json'   # застосунок живе в корені репо
 
 IMPORTANCE = {0: 'low', 1: 'medium', 2: 'high', 3: 'critical'}
 SENTIMENT = {0: 'positive', 1: 'neutral', 2: 'negative'}

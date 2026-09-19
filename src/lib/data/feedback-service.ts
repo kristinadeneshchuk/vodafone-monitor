@@ -119,4 +119,7 @@ export class MockFeedbackService implements IFeedbackService {
 }
 
 // Global instance for DI
-export const feedbackService: IFeedbackService = new MockFeedbackService();
+// Реальні дані замість мок-даних. Щоб повернути мок — заміни на
+// new MockFeedbackService(). Інтерфейс однаковий.
+import { RealFeedbackService } from './real-service';
+export const feedbackService: IFeedbackService = new RealFeedbackService();
