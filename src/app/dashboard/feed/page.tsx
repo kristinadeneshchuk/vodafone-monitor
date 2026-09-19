@@ -182,6 +182,7 @@ function FeedPageContent() {
         topLocation: '-',
         topLocationCount: 0,
         complaintCount: 0,
+        locatedComplaintCount: 0,
         churnCount: 0,
         churnRate: '0.0'
       };
@@ -194,6 +195,7 @@ function FeedPageContent() {
     // Намір піти рахується від СКАРГ, а не від усіх згадок: ділити
     // девʼять погроз на 1246 згадок разом із похвалами безглуздо.
     const complaints = feedbacks.filter(f => f.sentiment === 'negative');
+    const locatedComplaintCount = complaints.filter(f => f.locationName !== 'Невідомо').length;
     const churnCount = complaints.filter(f => f.churnIntent).length;
     const churnRate = complaints.length > 0
       ? ((churnCount / complaints.length) * 100).toFixed(1) : '0.0';
@@ -215,6 +217,7 @@ function FeedPageContent() {
       topLocation,
       topLocationCount,
       complaintCount: complaints.length,
+      locatedComplaintCount,
       churnCount,
       churnRate
     };
@@ -484,7 +487,7 @@ function FeedPageContent() {
               <Card className="bg-rose-50/40 border-rose-200 shadow-none">
                 <CardContent className="p-3.5">
                   <div className="text-xs text-rose-700 font-medium mb-1 flex items-center gap-1">
-                    <UserX className="w-3 h-3 text-rose-600" /> Ризик Churn
+                    <UserX className="w-3 h-3 text-rose-600" /> Ризик відтоку
                   </div>
                   <div className="flex items-baseline gap-1">
                     <span className="text-xl font-bold text-rose-700">
@@ -498,15 +501,13 @@ function FeedPageContent() {
               <Card className="bg-slate-50/60 border-slate-200 shadow-none col-span-2 md:col-span-1">
                 <CardContent className="p-3.5">
                   <div className="text-xs text-slate-500 mb-1 flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-slate-400" /> Найбільше скарг у локації
+                    <MapPin className="w-3 h-3 text-slate-400" /> Географічні дані
                   </div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-sm font-bold text-slate-800 truncate" title={analytics.topLocation}>
-                      {analytics.topLocation}
-                    </span>
-                    {analytics.topLocationCount > 0 && (
-                      <span className="text-xs text-slate-400">({analytics.topLocationCount})</span>
-                    )}
+                  <div className="text-sm font-bold text-slate-800">
+                    Недостатньо для висновку
+                  </div>
+                  <div className="text-xs text-slate-400 mt-1">
+                    {analytics.locatedComplaintCount} із {analytics.complaintCount} скарг називають місце
                   </div>
                 </CardContent>
               </Card>
@@ -613,7 +614,7 @@ function FeedPageContent() {
                           className="cursor-pointer hover:bg-slate-100 transition-colors text-right w-[110px]"
                           onClick={() => handleSort('relevanceScore')}
                         >
-                          До покриття (0-1) {renderSortIndicator('relevanceScore')}
+                          Релевантність до зв’язку (0-1) {renderSortIndicator('relevanceScore')}
                         </TableHead>
                         <TableHead 
                           className="cursor-pointer hover:bg-slate-100 transition-colors text-right w-[110px]"
