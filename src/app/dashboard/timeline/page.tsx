@@ -578,7 +578,10 @@ export default function TimelinePage() {
           </CardContent>
           <div className="p-3 border-t bg-slate-50/80 flex justify-between items-center text-xs">
             <span className="text-slate-500 font-medium">
-              {selectedDay?.records.length || 0} скарг за {selectedDay?.label}
+              {/* records — це ВСІ згадки дня, разом із нейтральними
+                  й позитивними. Скарги рахуються окремо полем count. */}
+              {selectedDay?.records.length || 0} згадок, з них {selectedDay?.count || 0} скарг
+              {' '}за {selectedDay?.label}
             </span>
             <Button 
               size="sm" 

@@ -212,7 +212,7 @@ function FeedPageContent() {
                 <div className="flex items-center justify-between px-3 py-2 bg-red-50/90 border border-red-200 rounded-lg text-xs text-red-800 font-medium">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-red-600" />
-                    <span>Фільтр за дату з таймлайну: <strong>{activeDate}</strong> (знайдено: {feedbacks.length} скарг)</span>
+                    <span>Фільтр за дату з таймлайну: <strong>{activeDate}</strong> (знайдено: {feedbacks.length} згадок, з них {feedbacks.filter(f => f.sentiment === 'negative').length} скарг)</span>
                   </div>
                   <Button 
                     type="button" 
@@ -232,7 +232,7 @@ function FeedPageContent() {
                 <div className="relative flex-1 w-full">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
                   <Input 
-                    placeholder="Пошук за текстом скарги або локацією..." 
+                    placeholder="Пошук за текстом згадки або локацією..." 
                     className="pl-9 bg-slate-50/50"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -305,7 +305,8 @@ function FeedPageContent() {
         <div className="flex-none px-6 py-3 border-b bg-slate-50/80 flex flex-wrap justify-between items-center text-xs text-slate-600 rounded-t-xl gap-2">
           <div className="flex items-center gap-4">
             <span className="font-semibold text-slate-800">
-              Всього знайдено: <span className="text-red-600">{feedbacks.length}</span>
+              Всього згадок: <span className="text-slate-900">{feedbacks.length}</span>
+              {' '}· скарг: <span className="text-red-600">{feedbacks.filter(f => f.sentiment === 'negative').length}</span>
             </span>
             <span>Показано в таблиці: {displayedFeedbacks.length}</span>
           </div>
