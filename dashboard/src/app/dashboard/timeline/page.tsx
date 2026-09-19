@@ -70,7 +70,7 @@ export default function TimelinePage() {
               value={sliderValue}
               max={30} 
               step={1} 
-              onValueChange={handleSliderChange}
+              onValueChange={(v) => handleSliderChange(Array.isArray(v) ? [...v] : [v as number])}
               className="w-full"
             />
             <div className="flex justify-between text-xs text-slate-400 mt-2">

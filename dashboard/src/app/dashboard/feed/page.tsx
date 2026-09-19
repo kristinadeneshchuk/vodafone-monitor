@@ -83,7 +83,7 @@ export default function FeedPage() {
               </div>
               
               <div className="flex gap-4 w-full md:w-auto">
-                <Select value={importanceFilter} onValueChange={setImportanceFilter}>
+                <Select value={importanceFilter} onValueChange={(v) => setImportanceFilter(v ?? 'all')}>
                   <SelectTrigger className="w-[180px]">
                     <Filter className="w-4 h-4 mr-2" />
                     <SelectValue placeholder="Важливість" />
@@ -97,7 +97,7 @@ export default function FeedPage() {
                   </SelectContent>
                 </Select>
 
-                <Select value={problemFilter} onValueChange={setProblemFilter}>
+                <Select value={problemFilter} onValueChange={(v) => setProblemFilter(v ?? 'all')}>
                   <SelectTrigger className="w-[180px]">
                     <Filter className="w-4 h-4 mr-2" />
                     <SelectValue placeholder="Тип проблеми" />
