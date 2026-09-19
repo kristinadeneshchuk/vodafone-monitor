@@ -91,9 +91,10 @@ export class RealFeedbackService implements IFeedbackService {
         totalRisk += f.reputationalRiskScore;
         riskyCount += 1;
       }
-      // Поріг 70 — рівень "високий" за шкалою інтерпретації ризику.
-      // Окрема криза видна не тут, а в алертах детектора (getAlerts).
-      if (f.reputationalRiskScore >= 70) highRiskIssuesCount += 1;
+      // Поріг 60, а не 70: шкала інтерпретації формули ризику каже
+      // "високий = 6.0-7.9", тобто 60-79 на сотні. З порогом 70
+      // лічильник показував нуль, бо після воріт наш максимум ~60.
+      if (f.reputationalRiskScore >= 60) highRiskIssuesCount += 1;
       totalRelevance += f.relevanceScore;
       totalConstructiveness += f.constructivenessScore;
 
