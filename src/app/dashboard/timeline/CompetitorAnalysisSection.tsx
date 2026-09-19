@@ -27,9 +27,9 @@ interface CompetitorAnalysisSectionProps {
 }
 
 const BRANDS = [
-  { key: 'vodafone', name: 'Vodafone', dot: 'bg-red-500', bar: 'bg-red-500', head: 'border-t-red-500' },
-  { key: 'kyivstar', name: 'Київстар', dot: 'bg-sky-500', bar: 'bg-sky-500', head: 'border-t-sky-500' },
-  { key: 'lifecell', name: 'lifecell', dot: 'bg-amber-500', bar: 'bg-amber-500', head: 'border-t-amber-500' },
+  { key: 'vodafone', name: 'Vodafone', dot: 'bg-red-500' },
+  { key: 'kyivstar', name: 'Київстар', dot: 'bg-sky-500' },
+  { key: 'lifecell', name: 'lifecell', dot: 'bg-amber-500' },
 ];
 
 const CAUSE_UA: Record<string, string> = {
@@ -88,10 +88,6 @@ export default function CompetitorAnalysisSection({
     }));
   }, [allMarketRecords]);
 
-  const best = stats.reduce((a, b) => (a.negativeShare <= b.negativeShare ? a : b));
-  const worst = stats.reduce((a, b) => (a.negativeShare >= b.negativeShare ? a : b));
-  const vf = stats.find(s => s.key === 'vodafone');
-
   if (!allMarketRecords.length) return null;
 
   return (
@@ -99,59 +95,54 @@ export default function CompetitorAnalysisSection({
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
           <Scale className="w-4 h-4 text-slate-500" />
-          Порівняння операторів
+          Ринковий контекст: якість зв’язку
           <Badge variant="outline" className="text-[10px] font-normal text-slate-500">
             весь період спостереження
           </Badge>
         </CardTitle>
         <CardDescription className="text-xs">
-          Не за обраний день: скарг про звʼязок близько двох на добу на всіх
-          трьох операторів разом, і на одному дні порівняння міряє шум.
-          Головна цифра — частка негативу, бо абсолютні числа залежать від
-          розміру абонентської бази, а не від якості звʼязку.
+          Порівняння за весь доступний період, а не за обраний день: на малих
+          денних вибірках висновки були б шумом. Це індикатор репутаційного
+          навантаження у відкритих джерелах, а не вимір якості мережі чи абонентської бази.
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-4">
-        {stats.map(s => (
-          <div key={s.key} className="space-y-1.5">
-            <div className="flex items-baseline justify-between gap-2 text-sm">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${s.dot}`} />
-                <span className="font-semibold text-slate-800">{s.name}</span>
-                <span className="text-xs text-slate-400 truncate">
-                  {s.complaints} скарг / {s.praise} похвал
-                </span>
-              </div>
-              <span className="font-bold tabular-nums text-slate-900 shrink-0">
-                {s.negativeShare}%
-              </span>
-            </div>
-            <div className="h-2.5 w-full rounded bg-slate-100 overflow-hidden">
-              <div className={`h-full ${s.bar}`} style={{ width: `${s.negativeShare}%` }} />
-            </div>
-            <div className="flex justify-between text-[11px] text-slate-400">
-              <span>головна причина: {s.topCause} ({s.topCauseCount})</span>
-              <span>{s.voiceShare}% усіх згадок про звʼязок</span>
-            </div>
-          </div>
-        ))}
-
-        <div className="rounded-lg bg-slate-50 border border-slate-200 p-3 text-sm text-slate-700">
-          <b>Що це означає.</b>{' '}
-          {vf && (
-            <>
-              У Vodafone {vf.negativeShare}% згадок про звʼязок — негативні,
-              у {worst.name} — {worst.negativeShare}%, у {best.name} — {best.negativeShare}%.
-              {vf.key !== worst.key && (
-                <> Тобто звʼязком Vodafone незадоволені рідше, ніж у {worst.name},
-                  і це аргумент для маркетингу, а не лише для інженерів.</>
-              )}
-            </>
-          )}
-          {' '}Порівнювати абсолютні числа не можна: у Київстару більша база,
-          тому більше і скарг, і згадок.
+      <CardContent className="space-y-3">
+        <div className="overflow-x-auto rounded-lg border border-slate-200">
+          <table className="w-full min-w-[620px] text-sm">
+            <thead className="bg-slate-50 text-[11px] uppercase tracking-wide text-slate-500">
+              <tr>
+                <th className="px-4 py-2.5 text-left font-semibold">Оператор</th>
+                <th className="px-4 py-2.5 text-right font-semibold">Згадки про зв’язок</th>
+                <th className="px-4 py-2.5 text-right font-semibold">Негативні</th>
+                <th className="px-4 py-2.5 text-right font-semibold">Частка негативу</th>
+                <th className="px-4 py-2.5 text-left font-semibold">Головна причина</th>
+              </tr>
+            </thead>
+            <tbody>
+              {stats.map(s => (
+                <tr key={s.key} className={s.key === 'vodafone' ? 'bg-red-50/40' : 'border-t border-slate-100'}>
+                  <td className="px-4 py-3 font-semibold text-slate-800">
+                    <span className="inline-flex items-center gap-2">
+                      <span className={`w-2.5 h-2.5 rounded-full ${s.dot}`} />
+                      {s.name}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right tabular-nums text-slate-700">{s.mentions}</td>
+                  <td className="px-4 py-3 text-right tabular-nums text-slate-700">
+                    {s.complaints}<span className="text-slate-400"> / {s.praise} похвал</span>
+                  </td>
+                  <td className="px-4 py-3 text-right font-bold tabular-nums text-slate-900">{s.negativeShare}%</td>
+                  <td className="px-4 py-3 text-slate-600">{s.topCause} <span className="text-slate-400">({s.topCauseCount})</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+
+        <p className="text-[11px] leading-relaxed text-slate-500">
+          Методика: частка негативу = негативні згадки ÷ усі згадки про зв’язок у вибірці. Абсолютні числа не порівнюємо як якість мережі: вони залежать від розміру аудиторії та покриття джерел.
+        </p>
       </CardContent>
     </Card>
   );

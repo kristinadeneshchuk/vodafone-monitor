@@ -574,7 +574,7 @@ export default function DashboardOverview() {
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Топ проблемних ділянок за рік</CardTitle>
             <CardDescription className="text-xs">
-              Місце названо лише в 6% скарг, тому за 30 днів на карті лишалась
+              Місце названо лише в 4% скарг, тому за 30 днів на карті лишалась
               одна точка. Рішення «куди ставити станцію» ухвалюють на горизонті
               кварталу, тож тут увесь період спостереження.
             </CardDescription>
@@ -633,14 +633,34 @@ function ScopeStrip() {
     .slice(0, 4);
 
   return (
-    <div className="mb-3 p-3 rounded-xl border border-slate-200 bg-slate-50/60">
-      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
-        <span className="text-slate-500">За рік на Vodafone</span>
-        <span className="font-bold text-slate-900">{all.total}</span>
-        <span className="text-slate-500">скарг, з них про звʼязок</span>
-        <span className="font-bold text-red-700">{all.coverage}</span>
-        <span className="text-slate-500">({share}%) — саме вони на цьому дашборді.</span>
+    <div className="mb-3 p-3 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2.5">
+      <div className="flex items-center gap-2">
+        <Database className="w-3.5 h-3.5 text-slate-500" />
+        <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
+          Воронка даних і межі висновків
+        </p>
       </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
+        <div className="rounded-lg bg-white border border-slate-200 px-2.5 py-2">
+          <div className="font-bold text-slate-900">20 627</div>
+          <div className="text-slate-500">відкритих згадок у повній базі</div>
+        </div>
+        <div className="rounded-lg bg-white border border-slate-200 px-2.5 py-2">
+          <div className="font-bold text-slate-900">9 610</div>
+          <div className="text-slate-500">згадок Vodafone</div>
+        </div>
+        <div className="rounded-lg bg-white border border-slate-200 px-2.5 py-2">
+          <div className="font-bold text-slate-900">{all.total.toLocaleString()}</div>
+          <div className="text-slate-500">скарг Vodafone за всіма темами</div>
+        </div>
+        <div className="rounded-lg bg-red-50/60 border border-red-100 px-2.5 py-2">
+          <div className="font-bold text-red-700">{all.coverage.toLocaleString()} ({share}%)</div>
+          <div className="text-slate-500">скарг про зв’язок — фокус дашборда</div>
+        </div>
+      </div>
+      <p className="text-[11px] text-slate-500 leading-relaxed">
+        Повний корпус: 1 вересня 2025 — 19 вересня 2026 (383 дні). На екранах — лише якість зв’язку, бо для неї є конкретна дія: перевірка мережі, покриття або резервного живлення.
+      </p>
       <div className="flex flex-wrap gap-1.5 mt-2">
         <span className="text-[11px] text-slate-400 mr-1">Решта тем:</span>
         {others.map(([cause, n]) => (
@@ -650,6 +670,9 @@ function ScopeStrip() {
           </Badge>
         ))}
       </div>
+      <p className="text-[11px] text-slate-400 leading-relaxed">
+        Обмеження: автоматичний планувальник ще не налаштований; геолокація показується лише там, де місце прямо назване у тексті (10 із 251 скарги Vodafone про зв’язок, 4%).
+      </p>
     </div>
   );
 }
