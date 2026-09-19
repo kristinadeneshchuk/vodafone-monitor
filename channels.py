@@ -26,17 +26,42 @@ TECH = [
 # Регіональні. ГОЛОВНЕ джерело локальних скарг на звʼязок.
 # Саме вони дають сигнал "у Львові не працює інтернет".
 REGIONAL = [
-    'lvivtp',            # Типовий Львів
-    'lvivych_news',      # Львівич
-    'lvivtruexa',        # Труха Львів
-    'truexakharkiv',     # Труха Харків
-    'dnepr_operativ',    # Дніпро Оперативний
-    'odessa_infonews',   # Одеса INFO
-    'info_zp',           # Запоріжжя.Інфо
-    'khmlives',          # Хмельницький LIVE
-    'rivne_golovne',     # Рівне Головне
-    'truexafrankivsk',   # Труха Івано-Франківськ
-    'svoiKR',            # СВОЇ Кривий Ріг
+    'chernihiv_info',
+    'chernihiv_online',
+    'dnepr_operativ',
+    'dnipro_news',
+    'info_cherkasy',
+    'info_chernivtsi',
+    'info_zp',
+    'khmlives',
+    'lutsk_info',
+    'lvivtp',
+    'lvivtruexa',
+    'lvivych_news',
+    'news_mariupol',
+    'news_rivne',
+    'novyny_odessa',
+    'novyny_vinnytsia',
+    'odesatruexa',
+    'odessa_infonews',
+    'odessa_online',
+    'poltava_online',
+    'rivne_golovne',
+    'rivnetruexa',
+    'svoiKR',
+    'ternopiltruexa',
+    'truexadnepr',
+    'truexafrankivsk',
+    'truexakharkiv',
+    'truexakyiv',
+    'truexalutsk',
+    'truexanikolaev',
+    'truexapoltava',
+    'truexarivne',
+    'truexaternopil',
+    'truexavinnica',
+    'typicalvinnytsia',
+    'vinnicatruexa',
 ]
 
 CHANNELS = NATIONAL + TECH + REGIONAL
