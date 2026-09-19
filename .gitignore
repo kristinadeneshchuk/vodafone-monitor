@@ -7,7 +7,11 @@ __pycache__/
 *.session-journal
 
 # база і вивантаження — у кожного свої
-mentions.db
+# mentions.db КОМІТИТЬСЯ свідомо (25 МБ): щоб уся команда мала
+# однакові дані й могла запускати enrich, detector і analytics одразу,
+# без повторного збору. Персональних даних у ній немає — авторів
+# не зберігаємо, а тексти проходять затирання (db.scrub).
+# mentions.db
 telegram_mentions.json
 *.json.bak
 
