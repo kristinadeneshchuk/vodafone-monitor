@@ -117,7 +117,16 @@ export class RealFeedbackService implements IFeedbackService {
     }
 
     // 3. Всі інші метрики розраховуємо СУВОРО за вчорашній день (Morning Briefing)
-    const dayFeedbacks = feedbacks.filter(f => f.timestamp.startsWith(effectiveDayStr));
+    // ВІКНО ЗВІТУ — 7 ДНІВ, а не одна доба.
+    // Медіана скарг на звʼязок — 2 на добу, і 41 день на рік має нуль.
+    // Порівнювати "вчора проти норми" на таких числах означає міряти шум:
+    // дашборд показував усюди нулі просто тому, що 18 вересня випало 0.
+    // Тиждень дає 14-20 скарг — на цьому вже видно динаміку.
+    const WINDOW_DAYS = 7;
+    const windowStart = format(subDays(parseISO(effectiveDayStr), WINDOW_DAYS - 1), 'yyyy-MM-dd');
+    const dayFeedbacks = feedbacks.filter(
+      f => f.timestamp.slice(0, 10) >= windowStart
+        && f.timestamp.slice(0, 10) <= effectiveDayStr);
     const sentimentDistribution = { positive: 0, neutral: 0, negative: 0 };
 
     let riskyCount = 0;
@@ -168,9 +177,12 @@ export class RealFeedbackService implements IFeedbackService {
       negativesByDay[d] = (negativesByDay[d] ?? 0) + 1;
     }
     const dailyCounts = Object.values(negativesByDay).sort((a, b) => a - b);
-    const baseline = dailyCounts.length
-      ? dailyCounts[Math.floor(dailyCounts.length / 2)]   // медіана
+    // Норма теж тижнева: порівнювати тижневу суму з добовою медіаною
+    // означало б отримувати семикратний "сплеск" щотижня.
+    const dailyMedian = dailyCounts.length
+      ? dailyCounts[Math.floor(dailyCounts.length / 2)]
       : 1;
+    const baseline = Math.max(1, dailyMedian * WINDOW_DAYS);
 
     const alerts = realAlerts as unknown as CrisisAlert[];
     const dayAlerts = alerts.filter(a =>

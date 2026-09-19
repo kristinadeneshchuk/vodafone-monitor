@@ -86,9 +86,9 @@ export function generateHeuristicBriefing(
     // Порожній звіт — теж результат. Кейс просить прямо: коли за добу
     // нічого не сталося, так і писати, а не вигадувати драму.
     const vsNorm = metrics.totalComplaints < baseline
-      ? `це нижче за звичайний рівень (${baseline} на добу)`
-      : `це в межах звичайного рівня (${baseline} на добу)`;
-    executiveSummary = `Штатний режим. За добу ${metrics.totalComplaints} негативних згадок із ${metrics.totalMentions ?? metrics.totalComplaints} загалом — ${vsNorm}. Сплесків, що потребують реакції, не зафіксовано.`;
+      ? `це нижче за звичайний рівень (${baseline} за 7 днів)`
+      : `це в межах звичайного рівня (${baseline} за 7 днів)`;
+    executiveSummary = `Штатний режим. За 7 днів ${metrics.totalComplaints} негативних згадок із ${metrics.totalMentions ?? metrics.totalComplaints} загалом — ${vsNorm}. Сплесків, що потребують реакції, не зафіксовано.`;
   }
 
   const keyDrivers = [
@@ -207,7 +207,7 @@ export async function generateBriefingWithGemini(
     const prompt = `Ти — провідний AI-радник із репутаційного ризик-менеджменту телеком-оператора Vodafone Україна.
 Твоє завдання — скласти офіційний ранковий аналітичний бриф (Morning Briefing) для топ-менеджменту компанії за минулу добу (${dateLabel}).
 
-Вхідні метрики за добу:
+Вхідні метрики за 7 днів:
 - Всього звернень/скарг: ${metrics.totalComplaints}
 - Середній репутаційний ризик: ${metrics.averageRiskScore} / 100
 - Кількість критичних звернень (>50 ризику): ${metrics.highRiskIssuesCount}
@@ -217,7 +217,7 @@ export async function generateBriefingWithGemini(
 - Топ проблемна локація: ${metrics.topLocations[0]?.name || 'Штатний стан'} (${metrics.topLocations[0]?.count || 0} згадок)
 - Тональність: позитив: ${metrics.sentimentDistribution.positive}, нейтрально: ${metrics.sentimentDistribution.neutral}, негатив: ${metrics.sentimentDistribution.negative}
 
-Приклади звернень за добу:
+Приклади звернень за 7 днів:
 ${JSON.stringify(sampleFeedbacks, null, 2)}
 
 Сформуй чіткий, професійний, діловий звіт українською мовою. Поверни виключно валідний JSON у наступному форматі без зайвого тексту чи markdown-обгорток:

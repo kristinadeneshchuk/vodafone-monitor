@@ -133,7 +133,7 @@ export default function DashboardOverview() {
               <Sun className="w-3.5 h-3.5" /> MORNING BRIEFING
             </Badge>
             <Badge variant="outline" className="text-slate-600 border-slate-300 text-xs">
-              Підсумки за вчора
+              Підсумки за тиждень
             </Badge>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
@@ -167,7 +167,7 @@ export default function DashboardOverview() {
             className="bg-red-600 hover:bg-red-700 text-white font-medium text-xs h-8 gap-1.5 shadow-xs"
             onClick={() => router.push(`/dashboard/feed?date=${metrics.date}`)}
           >
-            Стрічка за вчора <ArrowRight className="w-3 h-3" />
+            Стрічка за тиждень <ArrowRight className="w-3 h-3" />
           </Button>
         </div>
       </div>
@@ -238,7 +238,7 @@ export default function DashboardOverview() {
               {/* Key Problem Drivers */}
               <div>
                 <div className="text-xs uppercase font-bold tracking-wider text-slate-400 mb-3">
-                  🔍 Ключові фактори та драйвери скарг за добу
+                  🔍 Ключові фактори та драйвери скарг за тиждень
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {briefing.keyDrivers.map((driver, idx) => (
@@ -338,7 +338,7 @@ export default function DashboardOverview() {
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
             <Activity className="w-4 h-4 text-red-600" />
-            Операційні показники за вчора ({metrics.dateLabel})
+            Операційні показники за 7 днів ({metrics.dateLabel})
           </h2>
           <span className="text-xs text-slate-500">Фактичні цифри попередньої доби</span>
         </div>
@@ -346,7 +346,7 @@ export default function DashboardOverview() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="border-slate-200 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-slate-500">Скарг за вчора</CardTitle>
+              <CardTitle className="text-sm font-medium text-slate-500">Скарг за 7 днів</CardTitle>
               <Users className="w-4 h-4 text-slate-400" />
             </CardHeader>
             <CardContent>
@@ -376,7 +376,7 @@ export default function DashboardOverview() {
               }`}>
                 {metrics.averageRiskScore}
               </div>
-              <p className="text-xs text-slate-500 mt-1">індекс загрози за добу</p>
+              <p className="text-xs text-slate-500 mt-1">індекс загрози за 7 днів</p>
             </CardContent>
           </Card>
 
@@ -389,7 +389,7 @@ export default function DashboardOverview() {
               <div className={`text-2xl font-bold ${metrics.highRiskIssuesCount > 0 ? 'text-red-600' : 'text-slate-700'}`}>
                 {metrics.highRiskIssuesCount}
               </div>
-              <p className="text-xs text-slate-500 mt-1">вимагали реакції вчора</p>
+              <p className="text-xs text-slate-500 mt-1">вимагали реакції за 7 днів</p>
             </CardContent>
           </Card>
 
@@ -403,7 +403,7 @@ export default function DashboardOverview() {
                 {metrics.topLocations[0]?.name || 'Штатний стан'}
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                {metrics.topLocations[0] ? `${metrics.topLocations[0].count} згадок за добу` : 'аномалій не виявлено'}
+                {metrics.topLocations[0] ? `${metrics.topLocations[0].count} згадок за 7 днів` : 'аномалій не виявлено'}
               </p>
             </CardContent>
           </Card>
@@ -433,7 +433,7 @@ export default function DashboardOverview() {
                 {metrics.churnIntentRate}%
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                <span className="font-semibold text-slate-700">{metrics.churnIntentCount}</span> погроз змінити оператора за вчора
+                <span className="font-semibold text-slate-700">{metrics.churnIntentCount}</span> погроз змінити оператора за 7 днів
               </p>
             </CardContent>
           </Card>
@@ -448,7 +448,7 @@ export default function DashboardOverview() {
                 {metrics.averageResonance}x
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                середня вага джерел за добу
+                середня вага джерел за 7 днів
               </p>
             </CardContent>
           </Card>
@@ -521,7 +521,7 @@ export default function DashboardOverview() {
         {/* Top Locations for Yesterday */}
         <Card className="col-span-1 border-slate-200 shadow-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Топ проблемних ділянок за вчора</CardTitle>
+            <CardTitle className="text-base">Топ проблемних ділянок за 7 днів</CardTitle>
             <CardDescription className="text-xs">
               Локації з найбільшою кількістю звернень за звітну добу ({metrics.dateLabel})
             </CardDescription>
@@ -546,7 +546,7 @@ export default function DashboardOverview() {
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center text-slate-400 text-sm space-y-2">
                 <MapPin className="w-8 h-8 text-slate-300" />
-                <p className="font-medium text-slate-600">Локальних аномалій за вчора не виявлено</p>
+                <p className="font-medium text-slate-600">Локальних аномалій за тиждень не виявлено</p>
                 <p className="text-xs text-slate-400 max-w-xs">
                   Усі базові станції та ділянки мережі працювали у штатному режимі без скупчень скарг
                 </p>
