@@ -15,3 +15,5 @@ telegram_mentions.json
 .ruff_cache/
 data_*.json
 export_for_frontend.json
+# frontend_sample.json навмисно КОМІТИТЬСЯ: №6 потрібні реальні дані,
+# а база 28 МБ у git не місце
