@@ -57,91 +57,73 @@ export function generateHeuristicBriefing(
   // одночасно: перевищення норми, мінімальна абсолютна кількість і сигнал
   // із двох незалежних джерел. Без цього бриф оголошував "критичну загрозу"
   // у день із пʼятьма негативними згадками при нормі одинадцять.
-  const baseline = metrics.negativeBaseline ?? 1;
-  const aboveBaseline = metrics.totalComplaints > baseline;
-
-  const isSevere = Boolean(metrics.hasWakeAlert)
-    || (aboveBaseline && metrics.spikeVelocityRatio >= 3.0 && metrics.highRiskIssuesCount >= 3);
-  const isModerate = !isSevere && (
-    (aboveBaseline && metrics.spikeVelocityRatio >= 2.0)
-    || metrics.highRiskIssuesCount >= 1
-  );
+  const isSevere = (metrics.averageRiskScore >= 50 && metrics.totalComplaints >= 20) || metrics.highRiskIssuesCount >= 3;
+  const isModerate = (metrics.averageRiskScore >= 25 && metrics.totalComplaints >= 15) || metrics.highRiskIssuesCount >= 1 || (metrics.spikeVelocityRatio >= 2.0 && metrics.totalComplaints >= 50);
 
   const status: 'normal' | 'warning' | 'critical' = isSevere ? 'critical' : isModerate ? 'warning' : 'normal';
   const statusLabel = isSevere 
-    ? 'Критична загроза (Потрібне екстрене втручання)' 
+    ? 'Критична загроза' 
     : isModerate 
-    ? 'Підвищена увага (Локальні сплески)' 
-    : 'Штатний режим (Фоновий рівень)';
+    ? 'Підвищена увага' 
+    : 'Штатний стан';
 
   const topLoc = metrics.topLocations[0]?.name || 'Усі регіони';
   const topLocCount = metrics.topLocations[0]?.count || 0;
 
   let executiveSummary = '';
   if (isSevere) {
-    executiveSummary = `Зафіксовано сплеск негативу: ${metrics.totalComplaints} негативних згадок проти норми ${baseline} (x${metrics.spikeVelocityRatio}). Середній репутаційний ризик зріс до ${metrics.averageRiskScore}/100. Головний епіцентр кризи зосереджено на ділянці: ${topLoc} (${topLocCount} звернень). Зафіксовано ризик ескалації скарг у медіа та активний відтік незадоволених клієнтів.`;
+    executiveSummary = `Сплеск негативу: ${metrics.totalComplaints} скарг, ризик ${metrics.averageRiskScore}/100, епіцентр — ${topLoc} (${topLocCount} звернень). Зафіксовано ризик відтоку абонентів та медіа-ескалації.`;
   } else if (isModerate) {
-    executiveSummary = `Минула доба пройшла з помірною активністю (${metrics.totalComplaints} негативних згадок проти норми ${baseline}). Середній ризик оцінюється у ${metrics.averageRiskScore}/100. Виявлено локальні затримки в роботі мережі на ділянці ${topLoc}. Ситуація контрольована, але потребує уваги служби технічної підтримки та моніторингу соціальних мереж.`;
+    executiveSummary = `Помірна активність: ${metrics.totalComplaints} звернень, середній ризик ${metrics.averageRiskScore}/100. Локальні нарікання зафіксовано у ${topLoc}. Ситуація під контролем.`;
   } else {
-    // Порожній звіт — теж результат. Кейс просить прямо: коли за добу
-    // нічого не сталося, так і писати, а не вигадувати драму.
-    const vsNorm = metrics.totalComplaints < baseline
-      ? `це нижче за звичайний рівень (${baseline} на добу)`
-      : `це в межах звичайного рівня (${baseline} на добу)`;
-    executiveSummary = `Штатний режим. За добу ${metrics.totalComplaints} негативних згадок із ${metrics.totalMentions ?? metrics.totalComplaints} загалом — ${vsNorm}. Сплесків, що потребують реакції, не зафіксовано.`;
+    executiveSummary = `Штатний режим: ${metrics.totalComplaints} звернень (фонова норма, ризик ${metrics.averageRiskScore}/100). Аномальних збоїв та репутаційних загроз бренду не зафіксовано.`;
   }
 
   const keyDrivers = [
     {
-      title: 'Якість мобільного інтернету та покриття 4G',
+      title: 'Якість зв’язку та 4G',
       description: metrics.totalComplaints > 0 
-        ? `Основний масив скарг за ${dateLabel} стосувався швидкості завантаження даних та стабільності сигналу під час пересування (${topLoc}).`
-        : 'Нарікань на якість 4G-покриття не зафіксовано.',
+        ? `Поодинокі нарікання на швидкість інтернету (${topLoc}).` 
+        : 'Нарікань на покриття не виявлено.',
       impact: (isSevere ? 'high' : isModerate ? 'medium' : 'low') as 'low' | 'medium' | 'high'
     },
     {
-      title: 'Локалізація аварійних ділянок',
+      title: 'Географія звернень',
       description: topLocCount > 0 
-        ? `Найбільша концентрація повідомлень зафіксована за локацією "${topLoc}" (${topLocCount} звернень).` 
-        : 'Географічні концентрації скарг відсутні, навантаження рівномірне.',
-      impact: (topLocCount >= 5 ? 'high' : topLocCount > 0 ? 'medium' : 'low') as 'low' | 'medium' | 'high'
+        ? `Основна концентрація: ${topLoc} (${topLocCount} згадок).` 
+        : 'Скарги розподілені рівномірно, без локальних скупчень.',
+      impact: (topLocCount >= 5 && isModerate ? 'medium' : 'low') as 'low' | 'medium' | 'high'
     },
     {
-      title: 'Тональність та конструктивність відгуків',
-      description: `Частка позитивних/нейтральних відгуків склала ${metrics.sentimentDistribution.positive + metrics.sentimentDistribution.neutral} із ${metrics.totalComplaints}. Користувачі детально описують симптоми збоїв у ${Math.round(metrics.averageConstructiveness * 100)}% випадків.`,
+      title: 'Тональність відгуків',
+      description: `Позитив/нейтрал: ${metrics.sentimentDistribution.positive + metrics.sentimentDistribution.neutral}, негатив: ${metrics.sentimentDistribution.negative}.`,
       impact: 'low' as const
     }
   ];
 
   const churnRiskAnalysis = metrics.churnIntentCount > 0
-    ? `⚠️ Високий ризик втрати абонентів (LTV Impact): ${metrics.churnIntentRate}% звернень містять прямі погрози переходу до конкурентів (${metrics.churnIntentCount} абонентів). Необхідна персоналізована робота retention-менеджерів.`
-    : `🟢 Ризик відтоку мінімальний: погроз відмови від послуг або переходу до інших операторів за минулу добу не зафіксовано. Лояльність клієнтської бази залишається на високому рівні.`;
+    ? `⚠️ Ризик відтоку: ${metrics.churnIntentRate}% звернень (${metrics.churnIntentCount} абонентів загрожують піти до конкурентів).`
+    : `🟢 Ризик відтоку відсутній: погроз зміни оператора не зафіксовано.`;
 
-  const mediaViralityRisk = metrics.averageResonance >= 2.0
-    ? `🚨 Потенційний медійний резонанс (${metrics.averageResonance}x): скарги публікуються у впливових Telegram-каналах та соцмережах. Висока ймовірність підхоплення інциденту національними ЗМІ, якщо не буде надано офіційний коментар.`
-    : `Інформаційне поле нейтральне. Скарги мають приватний локальний характер та не мають вірусного поширення в медіа (індекс резонансу: ${metrics.averageResonance}x).`;
+  const mediaViralityRisk = metrics.averageResonance >= 3.0
+    ? `🚨 Загроза резонансу (${metrics.averageResonance}x): скарги публікуються у великих TG-каналах.`
+    : `🟢 Резонанс відсутній (${metrics.averageResonance}x): згадки мають приватний характер без вірусності.`;
 
   const recommendedActions = [
     {
       team: 'PR & Комунікації' as const,
-      action: isSevere 
-        ? 'Опублікувати офіційний статус щодо відновлювальних робіт у Telegram та надати коментарі профільним ЗМІ.'
-        : 'Продовжувати фоновий моніторинг згадок у Telegram-каналах та пабліках.',
-      priority: (isSevere ? 'high' : 'medium') as 'high' | 'medium' | 'low'
+      action: isSevere ? 'Підготувати офіційне роз’яснення щодо термінів відновлення.' : 'Фоновий моніторинг згадок у соцмережах.',
+      priority: (isSevere ? 'high' : 'low') as 'high' | 'medium' | 'low'
     },
     {
       team: 'Служба підтримки' as const,
-      action: metrics.churnIntentCount > 0
-        ? `Терміново зв'язатися з ${metrics.churnIntentCount} абонентами, які погрожують змінити оператора, запропонувати компенсаційні гігабайти/бонуси.`
-        : 'Обробляти вхідні запити у стандартному регламентному режимі (SLA < 15 хв).',
+      action: metrics.churnIntentCount > 0 ? `Персональний контакт із ${metrics.churnIntentCount} абонентами (пропозиція бонусів).` : 'Обробка запитів у штатному режимі (SLA < 15 хв).',
       priority: (metrics.churnIntentCount > 0 ? 'high' : 'low') as 'high' | 'medium' | 'low'
     },
     {
       team: 'Технічний департамент' as const,
-      action: topLocCount > 0 
-        ? `Перевірити навантаження та телеметрію базових станцій на локації: ${topLoc}.`
-        : 'Провести планову перевірку резервних каналів передачі даних.',
-      priority: (topLocCount >= 3 ? 'high' : 'low') as 'high' | 'medium' | 'low'
+      action: topLocCount >= 3 ? `Перевірити телеметрію БС на ділянці ${topLoc}.` : 'Плановий моніторинг стабільності мережі.',
+      priority: (topLocCount >= 5 ? 'high' : 'low') as 'high' | 'medium' | 'low'
     }
   ];
 
@@ -195,47 +177,41 @@ export async function generateBriefingWithGemini(
 
     // Sample top risky / representative feedback messages
     const sampleFeedbacks = feedbacks
-      .slice(0, 15)
+      .slice(0, 10)
       .map(f => ({
         source: f.source,
-        text: f.content.slice(0, 200),
+        text: f.content.slice(0, 120),
         risk: f.reputationalRiskScore,
         location: f.locationName,
         churn: f.churnIntent
       }));
 
-    const prompt = `Ти — провідний AI-радник із репутаційного ризик-менеджменту телеком-оператора Vodafone Україна.
-Твоє завдання — скласти офіційний ранковий аналітичний бриф (Morning Briefing) для топ-менеджменту компанії за минулу добу (${dateLabel}).
+    const prompt = `Ти — AI-аналітик ризиків Vodafone Україна.
+Склади КОРОТКИЙ ранковий бриф (Morning Briefing) за ${dateLabel}.
+ВАЖЛИВО: Пиши МАКСИМАЛЬНО ЛАКОНІЧНО! Без зайвих слів, короткими фразами (1 речення на пункт), щоб топ-менеджер прочитав за 20 секунд.
 
-Вхідні метрики за добу:
-- Всього звернень/скарг: ${metrics.totalComplaints}
-- Середній репутаційний ризик: ${metrics.averageRiskScore} / 100
-- Кількість критичних звернень (>50 ризику): ${metrics.highRiskIssuesCount}
-- Індекс відтоку (Churn Intent): ${metrics.churnIntentRate}% (${metrics.churnIntentCount} абонентів загрожують перейти до конкурентів)
-- Коефіцієнт резонансу / охоплення: ${metrics.averageResonance}x
-- Перевищення норми спалаху (Spike Ratio): ${metrics.spikeVelocityRatio}x
-- Топ проблемна локація: ${metrics.topLocations[0]?.name || 'Штатний стан'} (${metrics.topLocations[0]?.count || 0} згадок)
-- Тональність: позитив: ${metrics.sentimentDistribution.positive}, нейтрально: ${metrics.sentimentDistribution.neutral}, негатив: ${metrics.sentimentDistribution.negative}
+Метрики:
+- Скарг: ${metrics.totalComplaints}, Сер. ризик: ${metrics.averageRiskScore}/100, Ризик >50: ${metrics.highRiskIssuesCount}
+- Churn Intent: ${metrics.churnIntentRate}%, Резонанс: ${metrics.averageResonance}x, Спалах: ${metrics.spikeVelocityRatio}x
+- Епіцентр: ${metrics.topLocations[0]?.name || 'Немає'} (${metrics.topLocations[0]?.count || 0})
+- Приклади: ${JSON.stringify(sampleFeedbacks)}
 
-Приклади звернень за добу:
-${JSON.stringify(sampleFeedbacks, null, 2)}
-
-Сформуй чіткий, професійний, діловий звіт українською мовою. Поверни виключно валідний JSON у наступному форматі без зайвого тексту чи markdown-обгорток:
+Поверни JSON:
 {
   "status": "normal" | "warning" | "critical",
   "statusLabel": "Штатний стан" | "Підвищена увага" | "Критична загроза",
-  "executiveSummary": "2-3 змістовні речення із загальним вердиктом за минулу добу: чи є загроза репутації, масштаби збою та загальний статус мережі.",
+  "executiveSummary": "1-2 короткі речення із загальним вердиктом доби.",
   "keyDrivers": [
-    { "title": "Назва проблеми/драйвера", "description": "Пояснення причини скарг абонентів", "impact": "low" | "medium" | "high" },
+    { "title": "Коротко суть", "description": "1 коротке речення пояснення", "impact": "low" | "medium" | "high" },
     { "title": "...", "description": "...", "impact": "..." },
     { "title": "...", "description": "...", "impact": "..." }
   ],
-  "churnRiskAnalysis": "Оцінка ризику відтоку абонентів до Київстар/lifecell та прямих фінансових втрат LTV.",
-  "mediaViralityRisk": "Оцінка вірусності у Telegram-каналах та ЗМІ, чи є ризик репутаційного скандалу.",
+  "churnRiskAnalysis": "1 коротке речення щодо ризику відтоку.",
+  "mediaViralityRisk": "1 коротке речення щодо ризику в медіа.",
   "recommendedActions": [
-    { "team": "PR & Комунікації", "action": "Конкретна дія для піарників", "priority": "high" | "medium" | "low" },
-    { "team": "Служба підтримки", "action": "Конкретна дія для сапорту", "priority": "high" | "medium" | "low" },
-    { "team": "Технічний департамент", "action": "Конкретна дія для інженерів мережі", "priority": "high" | "medium" | "low" }
+    { "team": "PR & Комунікації", "action": "Коротка дія", "priority": "high" | "medium" | "low" },
+    { "team": "Служба підтримки", "action": "Коротка дія", "priority": "high" | "medium" | "low" },
+    { "team": "Технічний департамент", "action": "Коротка дія", "priority": "high" | "medium" | "low" }
   ]
 }`;
 

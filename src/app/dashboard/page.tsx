@@ -15,8 +15,6 @@ import {
   Calendar,
   Sparkles,
   RefreshCw,
-  CheckCircle2,
-  ShieldAlert,
   ArrowRight,
   Sun,
   Database
@@ -53,7 +51,6 @@ export default function DashboardOverview() {
     const fetchBriefing = async () => {
       setLoadingBriefing(true);
       try {
-        // First check local storage for instant render
         const localKey = `briefing_${metrics.date}`;
         const cachedLocal = typeof window !== 'undefined' ? localStorage.getItem(localKey) : null;
         if (cachedLocal) {
@@ -65,7 +62,6 @@ export default function DashboardOverview() {
           }
         }
 
-        // Request from server API
         const res = await fetch(`/api/briefing?date=${metrics.date}`);
         if (res.ok) {
           const json = await res.json();
@@ -123,6 +119,14 @@ export default function DashboardOverview() {
     );
   }
 
+  // Critical checks: metric is critical only under severe threat
+  const isComplaintsCrit = metrics.spikeVelocityRatio >= 2.0 && metrics.totalComplaints >= 50;
+  const isRiskCrit = metrics.averageRiskScore >= 50;
+  const isHighRiskCrit = metrics.highRiskIssuesCount > 0;
+  const isChurnCrit = metrics.churnIntentCount > 0;
+  const isReachCrit = metrics.averageResonance >= 3.0;
+  const isSpikeCrit = metrics.spikeVelocityRatio >= 2.0 && metrics.totalComplaints >= 50;
+
   return (
     <div className="space-y-6">
       {/* Morning Briefing Header */}
@@ -140,7 +144,7 @@ export default function DashboardOverview() {
             Ранковий аналітичний бриф
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            Звітний період: <span className="font-semibold text-slate-800">{metrics.dateLabel || 'Вчора'}</span> (повний 24-годинний зріз)
+            Звітний день: <span className="font-semibold text-slate-800">{metrics.dateLabel || 'Вчора'}</span> (24-годинний зріз)
           </p>
         </div>
 
@@ -156,10 +160,10 @@ export default function DashboardOverview() {
             size="sm"
             onClick={handleRefreshBriefing}
             disabled={isRefreshingBriefing}
-            className="gap-2 text-xs font-semibold h-8 border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800 transition-colors"
+            className="gap-2 text-xs font-semibold h-8 border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshingBriefing ? 'animate-spin' : ''}`} />
-            {isRefreshingBriefing ? 'Генерація Gemini...' : 'Оновити через Gemini API'}
+            {isRefreshingBriefing ? 'Генерація...' : 'Оновити бриф'}
           </Button>
 
           <Button
@@ -173,26 +177,26 @@ export default function DashboardOverview() {
       </div>
 
       {/* ========================================================================= */}
-      {/* 1. AI MORNING BRIEFING CARD (POWERED BY GEMINI) */}
+      {/* 1. AI MORNING BRIEFING CARD (WHITE BACKGROUND & CONCISE TEXT) */}
       {/* ========================================================================= */}
-      <Card className="border-slate-300 shadow-md bg-gradient-to-b from-slate-900 to-slate-950 text-white overflow-hidden">
-        <CardHeader className="border-b border-slate-800/80 pb-4 pt-5 px-6">
+      <Card className="border border-slate-200 shadow-sm bg-white text-slate-900 rounded-xl overflow-hidden">
+        <CardHeader className="border-b border-slate-100 bg-slate-50/60 pb-3.5 pt-4 px-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-red-600/20 border border-red-500/40 text-red-400">
-                <Sparkles className="w-5 h-5 text-red-400 animate-pulse" />
+              <div className="p-1.5 rounded-lg bg-red-50 border border-red-100 text-red-600">
+                <Sparkles className="w-4 h-4 text-red-600" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <CardTitle className="text-lg font-bold text-white tracking-wide flex items-center gap-2">
-                    AI Репутаційний вердикт доби
+                  <CardTitle className="text-base font-bold text-slate-900 tracking-tight">
+                    AI Резюме доби
                   </CardTitle>
-                  <Badge className="bg-red-600 text-white text-[10px] font-bold px-1.5 py-0">
-                    Gemini 2.5
+                  <Badge className="bg-slate-100 text-slate-600 hover:bg-slate-100 text-[10px] font-bold px-1.5 py-0 border border-slate-200">
+                    Gemini AI
                   </Badge>
                 </div>
-                <CardDescription className="text-slate-400 text-xs mt-0.5">
-                  Синтезовано штучним інтелектом на основі {metrics.totalComplaints} звернень та телеметрії за {metrics.dateLabel}
+                <CardDescription className="text-slate-500 text-xs mt-0.5">
+                  Стислий синтез на основі {metrics.totalComplaints} звернень за {metrics.dateLabel}
                 </CardDescription>
               </div>
             </div>
@@ -200,12 +204,12 @@ export default function DashboardOverview() {
             {briefing && (
               <Badge 
                 variant="outline"
-                className={`text-xs px-3 py-1 font-bold tracking-wide uppercase ${
+                className={`text-xs px-2.5 py-0.5 font-bold tracking-wide ${
                   briefing.status === 'critical'
-                    ? 'bg-red-950/80 text-red-300 border-red-700 shadow-red-900/50 shadow-sm'
+                    ? 'bg-red-50 text-red-700 border-red-300'
                     : briefing.status === 'warning'
-                    ? 'bg-amber-950/80 text-amber-300 border-amber-700'
-                    : 'bg-emerald-950/80 text-emerald-300 border-emerald-700'
+                    ? 'bg-amber-50 text-amber-700 border-amber-300'
+                    : 'bg-slate-100 text-slate-700 border-slate-300'
                 }`}
               >
                 {briefing.status === 'critical' && '🚨 '}
@@ -217,53 +221,51 @@ export default function DashboardOverview() {
           </div>
         </CardHeader>
 
-        <CardContent className="p-6 space-y-6">
+        <CardContent className="p-5 space-y-4">
           {loadingBriefing && !briefing ? (
-            <div className="flex items-center justify-center py-12 text-slate-400 text-sm gap-2">
-              <RefreshCw className="w-4 h-4 animate-spin text-red-400" />
-              <span>Формування стратегічного AI-висновку...</span>
+            <div className="flex items-center justify-center py-8 text-slate-400 text-sm gap-2">
+              <RefreshCw className="w-4 h-4 animate-spin text-slate-400" />
+              <span>Формування резюме...</span>
             </div>
           ) : briefing ? (
             <>
               {/* Executive Summary Callout */}
-              <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700/80 text-slate-100 text-sm leading-relaxed">
-                <div className="text-xs uppercase font-bold tracking-wider text-slate-400 mb-1 flex items-center gap-1.5">
-                  <Activity className="w-3.5 h-3.5 text-red-400" /> Головний висновок для керівництва
+              <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 text-slate-800 text-sm leading-relaxed">
+                <div className="text-[11px] uppercase font-bold tracking-wider text-slate-500 mb-1 flex items-center gap-1.5">
+                  <Activity className="w-3.5 h-3.5 text-slate-400" /> Вердикт для керівництва
                 </div>
-                <p className="font-normal text-slate-200 text-base">
+                <p className="font-normal text-slate-800 text-sm">
                   {briefing.executiveSummary}
                 </p>
               </div>
 
-              {/* Key Problem Drivers */}
+              {/* Key Problem Drivers (Short & Punchy) */}
               <div>
-                <div className="text-xs uppercase font-bold tracking-wider text-slate-400 mb-3">
-                  🔍 Ключові фактори та драйвери скарг за добу
+                <div className="text-[11px] uppercase font-bold tracking-wider text-slate-500 mb-2">
+                  Ключові фактори за добу
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
                   {briefing.keyDrivers.map((driver, idx) => (
                     <div 
                       key={idx} 
-                      className="p-3.5 rounded-lg bg-slate-800/50 border border-slate-700/60 hover:bg-slate-800/80 transition-colors"
+                      className="p-3 rounded-lg bg-slate-50 border border-slate-200/70"
                     >
-                      <div className="flex justify-between items-start gap-2 mb-1.5">
-                        <span className="font-semibold text-xs text-white line-clamp-1">
+                      <div className="flex justify-between items-center gap-2 mb-1">
+                        <span className="font-semibold text-xs text-slate-900 truncate">
                           {driver.title}
                         </span>
                         <Badge 
                           variant="outline"
                           className={`text-[9px] px-1.5 py-0 font-bold shrink-0 ${
                             driver.impact === 'high' 
-                              ? 'text-red-400 border-red-500/40 bg-red-950/40' 
-                              : driver.impact === 'medium'
-                              ? 'text-amber-400 border-amber-500/40 bg-amber-950/40'
-                              : 'text-slate-400 border-slate-600 bg-slate-800'
+                              ? 'text-red-700 border-red-200 bg-red-50' 
+                              : 'text-slate-600 border-slate-200 bg-slate-100'
                           }`}
                         >
-                          {driver.impact === 'high' ? 'Високий вплив' : driver.impact === 'medium' ? 'Помірний' : 'Низький'}
+                          {driver.impact === 'high' ? 'Критично' : 'Норма'}
                         </Badge>
                       </div>
-                      <p className="text-xs text-slate-300 leading-relaxed line-clamp-3">
+                      <p className="text-xs text-slate-600 leading-snug">
                         {driver.description}
                       </p>
                     </div>
@@ -271,57 +273,58 @@ export default function DashboardOverview() {
                 </div>
               </div>
 
-              {/* Churn & Media Virality Analysis */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-rose-950/30 border border-rose-800/40 space-y-1.5">
-                  <div className="flex items-center gap-2 text-rose-400 font-bold text-xs uppercase tracking-wider">
-                    <UserX className="w-4 h-4" /> Ризик відтоку клієнтів (Churn Intent & LTV)
+              {/* Churn & Media Virality Analysis (Concise) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className={`p-3 rounded-lg border text-xs leading-relaxed ${
+                  isChurnCrit ? 'bg-red-50/40 border-red-200 text-red-950' : 'bg-slate-50 border-slate-200 text-slate-700'
+                }`}>
+                  <div className={`flex items-center gap-1.5 font-bold text-xs mb-1 ${
+                    isChurnCrit ? 'text-red-700' : 'text-slate-600'
+                  }`}>
+                    <UserX className="w-3.5 h-3.5" /> Ризик відтоку (Churn Intent)
                   </div>
-                  <p className="text-xs text-slate-200 leading-relaxed">
-                    {briefing.churnRiskAnalysis}
-                  </p>
+                  <p>{briefing.churnRiskAnalysis}</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-blue-950/30 border border-blue-800/40 space-y-1.5">
-                  <div className="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-wider">
-                    <Share2 className="w-4 h-4" /> Медійний резонанс & Вірусність (Telegram / ЗМІ)
+                <div className={`p-3 rounded-lg border text-xs leading-relaxed ${
+                  isReachCrit ? 'bg-red-50/40 border-red-200 text-red-950' : 'bg-slate-50 border-slate-200 text-slate-700'
+                }`}>
+                  <div className={`flex items-center gap-1.5 font-bold text-xs mb-1 ${
+                    isReachCrit ? 'text-red-700' : 'text-slate-600'
+                  }`}>
+                    <Share2 className="w-3.5 h-3.5" /> Медійний резонанс (ЗМІ / Telegram)
                   </div>
-                  <p className="text-xs text-slate-200 leading-relaxed">
-                    {briefing.mediaViralityRisk}
-                  </p>
+                  <p>{briefing.mediaViralityRisk}</p>
                 </div>
               </div>
 
-              {/* Recommended Actions for Today */}
-              <div className="pt-2 border-t border-slate-800">
-                <div className="text-xs uppercase font-bold tracking-wider text-slate-400 mb-3 flex items-center justify-between">
-                  <span>🎯 Рекомендований план дій на сьогодні (Action Plan)</span>
-                  <span className="text-[10px] font-normal text-slate-500">Автоматичний розподіл за відділами</span>
+              {/* Action Plan for Today (Concise Bullets) */}
+              <div className="pt-2 border-t border-slate-100">
+                <div className="text-[11px] uppercase font-bold tracking-wider text-slate-500 mb-2">
+                  План дій на сьогодні
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
                   {briefing.recommendedActions.map((item, idx) => (
                     <div 
                       key={idx} 
-                      className="p-3.5 rounded-lg bg-slate-800/60 border border-slate-700/80 flex flex-col justify-between"
+                      className="p-3 rounded-lg bg-slate-50 border border-slate-200/70 text-xs"
                     >
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-red-400">{item.team}</span>
-                          <Badge 
-                            variant="outline" 
-                            className={`text-[9px] px-1 py-0 font-semibold ${
-                              item.priority === 'high' 
-                                ? 'text-red-300 border-red-700 bg-red-950/50' 
-                                : 'text-slate-400 border-slate-600'
-                            }`}
-                          >
-                            {item.priority === 'high' ? 'Пріоритет: Високий' : 'Пріоритет: Норма'}
-                          </Badge>
-                        </div>
-                        <p className="text-xs text-slate-200 leading-relaxed">
-                          {item.action}
-                        </p>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-bold text-slate-800">{item.team}</span>
+                        <Badge 
+                          variant="outline" 
+                          className={`text-[9px] px-1 py-0 font-semibold ${
+                            item.priority === 'high' 
+                              ? 'text-red-700 border-red-200 bg-red-50' 
+                              : 'text-slate-500 border-slate-200 bg-slate-100'
+                          }`}
+                        >
+                          {item.priority === 'high' ? 'Терміново' : 'Штатно'}
+                        </Badge>
                       </div>
+                      <p className="text-slate-600 leading-snug">
+                        {item.action}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -332,77 +335,77 @@ export default function DashboardOverview() {
       </Card>
 
       {/* ========================================================================= */}
-      {/* 2. OPERATIONAL KPIS (YESTERDAY'S COMPLETED 24H SUMMARY) */}
+      {/* 2. OPERATIONAL KPIS (GREY DEFAULT, RED ONLY WHEN CRITICAL) */}
       {/* ========================================================================= */}
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
-            <Activity className="w-4 h-4 text-red-600" />
+            <Activity className="w-4 h-4 text-slate-500" />
             Операційні показники за вчора ({metrics.dateLabel})
           </h2>
-          <span className="text-xs text-slate-500">Фактичні цифри попередньої доби</span>
+          <span className="text-xs text-slate-400">Фактичні дані за 24 години</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-slate-200 shadow-sm">
+          {/* Complaints Count */}
+          <Card className={`border shadow-sm transition-colors ${
+            isComplaintsCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
+          }`}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-slate-500">Скарг за вчора</CardTitle>
-              <Users className="w-4 h-4 text-slate-400" />
+              <Users className={`w-4 h-4 ${isComplaintsCrit ? 'text-red-600' : 'text-slate-400'}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900">{metrics.totalComplaints}</div>
-              <p className="text-xs text-slate-500 mt-1">завершені 24 години</p>
+              <div className={`text-2xl font-bold ${isComplaintsCrit ? 'text-red-600' : 'text-slate-600'}`}>
+                {metrics.totalComplaints}
+              </div>
+              <p className="text-xs text-slate-400 mt-1">завершені 24 години</p>
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200 shadow-sm">
+          {/* Average Risk */}
+          <Card className={`border shadow-sm transition-colors ${
+            isRiskCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
+          }`}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-slate-500">Середній ризик (0-100)</CardTitle>
-              <Activity className={`w-4 h-4 ${
-                metrics.averageRiskScore >= 50 
-                  ? 'text-red-600' 
-                  : metrics.averageRiskScore > 0 
-                  ? 'text-amber-500' 
-                  : 'text-slate-400'
-              }`} />
+              <Activity className={`w-4 h-4 ${isRiskCrit ? 'text-red-600' : 'text-slate-400'}`} />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold ${
-                metrics.averageRiskScore >= 50 
-                  ? 'text-red-600' 
-                  : metrics.averageRiskScore > 0 
-                  ? 'text-amber-600' 
-                  : 'text-slate-500'
-              }`}>
+              <div className={`text-2xl font-bold ${isRiskCrit ? 'text-red-600' : 'text-slate-600'}`}>
                 {metrics.averageRiskScore}
               </div>
-              <p className="text-xs text-slate-500 mt-1">індекс загрози за добу</p>
+              <p className="text-xs text-slate-400 mt-1">індекс загрози за добу</p>
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200 shadow-sm">
+          {/* High Risk Count */}
+          <Card className={`border shadow-sm transition-colors ${
+            isHighRiskCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
+          }`}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-slate-500">Високий ризик (&gt;50)</CardTitle>
-              <AlertTriangle className={`w-4 h-4 ${metrics.highRiskIssuesCount > 0 ? 'text-red-600' : 'text-slate-400'}`} />
+              <AlertTriangle className={`w-4 h-4 ${isHighRiskCrit ? 'text-red-600' : 'text-slate-400'}`} />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold ${metrics.highRiskIssuesCount > 0 ? 'text-red-600' : 'text-slate-700'}`}>
+              <div className={`text-2xl font-bold ${isHighRiskCrit ? 'text-red-600' : 'text-slate-600'}`}>
                 {metrics.highRiskIssuesCount}
               </div>
-              <p className="text-xs text-slate-500 mt-1">вимагали реакції вчора</p>
+              <p className="text-xs text-slate-400 mt-1">вимагали реакції вчора</p>
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200 shadow-sm">
+          {/* Top Location */}
+          <Card className="border-slate-200 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-slate-500">Головна локація проблем</CardTitle>
-              <MapPin className="w-4 h-4 text-slate-400" />
+              <MapPin className={`w-4 h-4 ${isRiskCrit ? 'text-red-600' : 'text-slate-400'}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-lg font-bold truncate text-slate-800">
+              <div className={`text-lg font-bold truncate ${isRiskCrit ? 'text-red-600' : 'text-slate-700'}`}>
                 {metrics.topLocations[0]?.name || 'Штатний стан'}
               </div>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-400 mt-1">
                 {metrics.topLocations[0] ? `${metrics.topLocations[0].count} згадок за добу` : 'аномалій не виявлено'}
               </p>
             </CardContent>
@@ -411,59 +414,70 @@ export default function DashboardOverview() {
       </div>
 
       {/* ========================================================================= */}
-      {/* 3. ENTERPRISE RISK METRICS (YESTERDAY) */}
+      {/* 3. ENTERPRISE RISK METRICS (GREY DEFAULT, RED ONLY WHEN CRITICAL) */}
       {/* ========================================================================= */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold text-slate-800 flex items-center gap-1.5 uppercase tracking-wide">
-            <Zap className="w-4 h-4 text-red-600" />
+            <Zap className="w-4 h-4 text-slate-500" />
             Глибокі бізнес-метрики загрози (Enterprise Risk) — Вчора
           </h2>
           <span className="text-xs text-slate-400">Аналіз впливу на LTV, вірусність та аварії</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="border-rose-100 bg-gradient-to-br from-white to-rose-50/30 shadow-sm">
+          {/* Churn Intent */}
+          <Card className={`border shadow-sm transition-colors ${
+            isChurnCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
+          }`}>
             <CardHeader className="flex flex-row items-center justify-between pb-1 pt-4 px-4">
               <CardTitle className="text-xs font-semibold text-slate-600">Індекс відтоку (Churn Intent)</CardTitle>
-              <UserX className="w-4 h-4 text-rose-600" />
+              <UserX className={`w-4 h-4 ${isChurnCrit ? 'text-red-600' : 'text-slate-400'}`} />
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <div className="text-2xl font-black text-rose-700">
+              <div className={`text-2xl font-bold ${isChurnCrit ? 'text-red-600' : 'text-slate-600'}`}>
                 {metrics.churnIntentRate}%
               </div>
-              <p className="text-xs text-slate-500 mt-1">
-                <span className="font-semibold text-slate-700">{metrics.churnIntentCount}</span> погроз змінити оператора за вчора
+              <p className="text-xs text-slate-400 mt-1">
+                <span className={isChurnCrit ? 'font-semibold text-red-700' : 'text-slate-600'}>
+                  {metrics.churnIntentCount}
+                </span> погроз змінити оператора
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-blue-100 bg-gradient-to-br from-white to-blue-50/30 shadow-sm">
+          {/* Resonance / Reach */}
+          <Card className={`border shadow-sm transition-colors ${
+            isReachCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
+          }`}>
             <CardHeader className="flex flex-row items-center justify-between pb-1 pt-4 px-4">
               <CardTitle className="text-xs font-semibold text-slate-600">Коефіцієнт резонансу (Reach)</CardTitle>
-              <Share2 className="w-4 h-4 text-blue-600" />
+              <Share2 className={`w-4 h-4 ${isReachCrit ? 'text-red-600' : 'text-slate-400'}`} />
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <div className="text-2xl font-black text-blue-700">
+              <div className={`text-2xl font-bold ${isReachCrit ? 'text-red-600' : 'text-slate-600'}`}>
                 {metrics.averageResonance}x
               </div>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-400 mt-1">
                 середня вага джерел за добу
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-amber-100 bg-gradient-to-br from-white to-amber-50/30 shadow-sm">
+          {/* Spike Velocity */}
+          <Card className={`border shadow-sm transition-colors ${
+            isSpikeCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
+          }`}>
             <CardHeader className="flex flex-row items-center justify-between pb-1 pt-4 px-4">
               <CardTitle className="text-xs font-semibold text-slate-600">Spike Velocity (Спалах)</CardTitle>
-              <Zap className="w-4 h-4 text-amber-600" />
+              <Zap className={`w-4 h-4 ${isSpikeCrit ? 'text-red-600' : 'text-slate-400'}`} />
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <div className="text-2xl font-black text-amber-700">
+              <div className={`text-2xl font-bold ${isSpikeCrit ? 'text-red-600' : 'text-slate-600'}`}>
                 {metrics.spikeVelocityRatio}x
               </div>
-              <p className="text-xs text-slate-500 mt-1">
-                перевищення добової норми baseline
+              <p className="text-xs text-slate-400 mt-1">
+                перевищення норми baseline
               </p>
             </CardContent>
           </Card>
@@ -475,16 +489,16 @@ export default function DashboardOverview() {
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Chart of recent 30 days */}
-        <Card className="col-span-1 border-slate-200 shadow-sm">
+        <Card className="col-span-1 border-slate-200 shadow-sm bg-white">
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center justify-between">
               <span>Динаміка скарг по днях</span>
-              <Badge variant="outline" className="text-[10px] font-normal">
+              <Badge variant="outline" className="text-[10px] font-normal text-slate-500">
                 Останні 30 днів
               </Badge>
             </CardTitle>
             <CardDescription className="text-xs">
-              Хронологія кількості звернень з підсвічуванням звітного періоду
+              Хронологія кількості звернень за останній місяць
             </CardDescription>
           </CardHeader>
           <CardContent className="h-[300px]">
@@ -519,25 +533,25 @@ export default function DashboardOverview() {
         </Card>
 
         {/* Top Locations for Yesterday */}
-        <Card className="col-span-1 border-slate-200 shadow-sm">
+        <Card className="col-span-1 border-slate-200 shadow-sm bg-white">
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Топ проблемних ділянок за вчора</CardTitle>
             <CardDescription className="text-xs">
-              Локації з найбільшою кількістю звернень за звітну добу ({metrics.dateLabel})
+              Локації звернень за звітну добу ({metrics.dateLabel})
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
             {metrics.topLocations.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {metrics.topLocations.map((loc, i) => (
                   <div key={loc.name} className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100/70 transition-colors">
                     <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-700 font-bold text-xs shadow-xs">
+                      <div className="w-6 h-6 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs shadow-xs">
                         {i + 1}
                       </div>
                       <span className="font-medium text-slate-800 text-sm">{loc.name}</span>
                     </div>
-                    <span className="text-slate-600 text-xs font-semibold bg-slate-200/60 px-2 py-0.5 rounded">
+                    <span className="text-slate-500 text-xs font-semibold bg-slate-200/60 px-2 py-0.5 rounded">
                       {loc.count} {loc.count === 1 ? 'згадка' : loc.count < 5 ? 'згадки' : 'згадок'}
                     </span>
                   </div>
@@ -548,7 +562,7 @@ export default function DashboardOverview() {
                 <MapPin className="w-8 h-8 text-slate-300" />
                 <p className="font-medium text-slate-600">Локальних аномалій за вчора не виявлено</p>
                 <p className="text-xs text-slate-400 max-w-xs">
-                  Усі базові станції та ділянки мережі працювали у штатному режимі без скупчень скарг
+                  Усі базові станції працювали у штатному режимі
                 </p>
               </div>
             )}

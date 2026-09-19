@@ -52,7 +52,8 @@ export default function MapView({ points }: { points: MapPoint[] }) {
       center={[48.9, 31.2]}
       zoom={6}
       scrollWheelZoom
-      style={{ height: '100%', width: '100%', borderRadius: '0.75rem' }}
+      className="relative z-0"
+      style={{ height: '100%', width: '100%', borderRadius: '0.75rem', zIndex: 0 }}
     >
       {/* Звичайний OpenStreetMap: безкоштовно й без ключа.
           Плитки CartoDB виглядають краще, але тепер вимагають API-ключ

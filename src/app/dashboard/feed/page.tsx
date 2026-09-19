@@ -41,10 +41,24 @@ function FeedPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const dateParam = searchParams.get('date');
+  const startDateParam = searchParams.get('startDate');
+  const endDateParam = searchParams.get('endDate');
+
   const [activeDate, setActiveDate] = useState<string | null>(dateParam);
+  const [activeRange, setActiveRange] = useState<{ start: string; end: string } | null>(
+    startDateParam && endDateParam ? { start: startDateParam, end: endDateParam } : null
+  );
 
   useEffect(() => {
-    setActiveDate(searchParams.get('date'));
+    const d = searchParams.get('date');
+    const s = searchParams.get('startDate');
+    const e = searchParams.get('endDate');
+    setActiveDate(d);
+    if (s && e) {
+      setActiveRange({ start: s, end: e });
+    } else {
+      setActiveRange(null);
+    }
   }, [searchParams]);
 
   const [feedbacks, setFeedbacks] = useState<FeedbackRecord[]>([]);
@@ -73,9 +87,14 @@ function FeedPageContent() {
     
     let data = await feedbackService.getFeedbacks(filters);
     
-    // Filter by specific date from timeline if present
+    // Filter by specific date or range from timeline if present
     if (activeDate) {
       data = data.filter(f => f.timestamp.startsWith(activeDate));
+    } else if (activeRange) {
+      data = data.filter(f => {
+        const day = f.timestamp.slice(0, 10);
+        return day >= activeRange.start && day <= activeRange.end;
+      });
     }
 
     // Client-side text search
@@ -95,7 +114,7 @@ function FeedPageContent() {
   useEffect(() => {
     fetchFeedbacks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [problemFilter, relevantFilter, constructiveFilter, churnFilter, activeDate]);
+  }, [problemFilter, relevantFilter, constructiveFilter, churnFilter, activeDate, activeRange]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

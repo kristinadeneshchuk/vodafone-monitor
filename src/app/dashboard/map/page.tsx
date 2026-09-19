@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { MapPin } from 'lucide-react';
 import { feedbackService } from '@/lib/data/feedback-service';
 import { FeedbackRecord } from '@/lib/data/types';
 import type { MapPoint } from './MapView';
@@ -95,44 +96,66 @@ export default function MapPage() {
     ? Math.round((100 * (totalNegative - withoutLocation)) / totalNegative) : 0;
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap gap-3 items-center">
-        <Select value={brand} onValueChange={(v) => setBrand(v ?? 'all')}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Оператор" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Усі оператори</SelectItem>
-            <SelectItem value="vodafone">Vodafone</SelectItem>
-            <SelectItem value="kyivstar">Київстар</SelectItem>
-            <SelectItem value="lifecell">lifecell</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={problem} onValueChange={(v) => setProblem(v ?? 'all')}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Тип проблеми" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Усі типи</SelectItem>
-            <SelectItem value="no_signal">Немає сигналу</SelectItem>
-            <SelectItem value="slow_internet">Повільний інтернет</SelectItem>
-            <SelectItem value="dropped_calls">Обриви дзвінків</SelectItem>
-            <SelectItem value="other">Інше</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Badge variant="outline">
-          Локацій на карті: {points.length}
-        </Badge>
-        <Badge variant="outline">
-          Локація визначена у {sharePct}% скарг
-        </Badge>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-2 border-b border-slate-200">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <MapPin className="w-6 h-6 text-red-600" />
+            Географія проблем
+          </h1>
+          <p className="text-sm text-slate-500">
+            Аналіз локалізації скарг абонентів та територіального розподілу репутаційних ризиків
+          </p>
+        </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <Card className="overflow-hidden">
-          <CardContent className="p-0 h-[560px]">
+      {/* Filter Bar */}
+      <div className="relative z-30 flex flex-wrap gap-4 items-center p-3.5 bg-white border border-slate-200 rounded-xl shadow-xs">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-slate-600">Оператор:</span>
+          <Select value={brand} onValueChange={(v) => setBrand(v ?? 'all')}>
+            <SelectTrigger className="w-[170px] h-9 bg-slate-50 border-slate-200 text-xs">
+              <SelectValue placeholder="Оператор" />
+            </SelectTrigger>
+            <SelectContent className="z-[9999]">
+              <SelectItem value="all">Усі оператори</SelectItem>
+              <SelectItem value="vodafone">Vodafone</SelectItem>
+              <SelectItem value="kyivstar">Київстар</SelectItem>
+              <SelectItem value="lifecell">lifecell</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-slate-600">Проблема:</span>
+          <Select value={problem} onValueChange={(v) => setProblem(v ?? 'all')}>
+            <SelectTrigger className="w-[190px] h-9 bg-slate-50 border-slate-200 text-xs">
+              <SelectValue placeholder="Тип проблеми" />
+            </SelectTrigger>
+            <SelectContent className="z-[9999]">
+              <SelectItem value="all">Усі типи</SelectItem>
+              <SelectItem value="no_signal">Немає сигналу</SelectItem>
+              <SelectItem value="slow_internet">Повільний інтернет</SelectItem>
+              <SelectItem value="dropped_calls">Обриви дзвінків</SelectItem>
+              <SelectItem value="other">Інше</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 ml-auto">
+          <Badge variant="outline" className="text-xs py-1 px-2.5 bg-slate-50 border-slate-200 font-medium text-slate-600">
+            Локацій на карті: <b className="ml-1 text-slate-900 font-bold">{points.length}</b>
+          </Badge>
+          <Badge variant="outline" className="text-xs py-1 px-2.5 bg-slate-50 border-slate-200 font-medium text-slate-600">
+            Гео-визначення: <b className="ml-1 text-slate-900 font-bold">{sharePct}% скарг</b>
+          </Badge>
+        </div>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+        <Card className="overflow-hidden relative z-0 border-slate-200 shadow-sm">
+          <CardContent className="p-0 h-[560px] relative z-0">
             {loading
               ? <div className="h-full flex items-center justify-center text-slate-400">
                   Завантаження даних...
