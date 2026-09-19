@@ -87,9 +87,12 @@ def flush(buffer, json_path):
 
 async def collect_channel(client, channel, matchers, since, until, state, json_path):
     """Один канал: від since до until, з контрольними точками."""
-    done = state.get(channel, {}).get('done')
-    if done:
-        print(f"  {channel}: вже зібрано ({done}), пропускаю")
+    # Пропускаємо канал лише якщо попередній прогін покрив НЕ ВУЖЧЕ вікно.
+    # Інакше прогін на 180 днів позначав би канал готовим, і наступний
+    # запуск на 365 днів мовчки не забирав би старішу половину року.
+    prev = state.get(channel, {})
+    if prev.get('done') and prev.get('since', '9999') <= to_iso(since):
+        print(f"  {channel}: вже зібрано ({prev['done']}), пропускаю")
         return 0
 
     try:
@@ -104,7 +107,8 @@ async def collect_channel(client, channel, matchers, since, until, state, json_p
         return 0
 
     # Продовжуємо з останнього обробленого id, якщо прогін уривався.
-    last_id = state.get(channel, {}).get('last_id', 0)
+    same_window = prev.get('since') == to_iso(since)
+    last_id = prev.get('last_id', 0) if same_window else 0
     buffer = []
     scanned = 0
     found = 0
@@ -154,7 +158,8 @@ async def collect_channel(client, channel, matchers, since, until, state, json_p
 
     flush(buffer, json_path)
     save_checkpoint(state, channel, last_id=last_id, scanned=scanned,
-                    found=found, done=f'{found} згадок з {scanned} постів')
+                    found=found, since=to_iso(since),
+                    done=f'{found} згадок з {scanned} постів')
     print(f"  {channel}: готово — {scanned} постів, {found} згадок, "
           f"{time.time() - started:.0f} с")
     return found
