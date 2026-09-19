@@ -3,20 +3,19 @@
   "name": "Львів",
   "lat": 49.8397,
   "lng": 24.0297,
-  "complaints": 56,
-  "praise": 10,
-  "negativityShare": 84.8,
-  "daysWithComplaints": 71,
-  "intensity": 0.79,
-  "gridShare": 53.6,
-  "chronicGapShare": 14.3,
+  "complaints": 27,
+  "praise": 9,
+  "negativityShare": 75.0,
+  "daysWithComplaints": 36,
+  "intensity": 0.75,
+  "gridShare": 70.4,
+  "chronicGapShare": 7.4,
   "pattern": "grid",
-  "topCause": "coverage",
+  "topCause": "internet",
   "byBrand": {
-   "unknown": 79,
-   "kyivstar": 18,
-   "vodafone": 10,
-   "lifecell": 2
+   "unknown": 36,
+   "kyivstar": 16,
+   "vodafone": 9
   },
   "samples": [
    "На Львівщині перевіряють готовність мобільного зв’язку до тривалих відключень: передали понад 73% генераторів - lvnews.o",
@@ -28,19 +27,19 @@
   "name": "Київ",
   "lat": 50.4501,
   "lng": 30.5234,
-  "complaints": 23,
-  "praise": 19,
-  "negativityShare": 54.8,
-  "daysWithComplaints": 38,
+  "complaints": 20,
+  "praise": 17,
+  "negativityShare": 54.1,
+  "daysWithComplaints": 33,
   "intensity": 0.61,
-  "gridShare": 8.7,
-  "chronicGapShare": 17.4,
+  "gridShare": 15.0,
+  "chronicGapShare": 20.0,
   "pattern": "chronic",
   "topCause": "internet",
   "byBrand": {
-   "unknown": 33,
-   "vodafone": 28,
-   "kyivstar": 14,
+   "unknown": 31,
+   "vodafone": 27,
+   "kyivstar": 11,
    "lifecell": 9
   },
   "samples": [
@@ -73,43 +72,20 @@
   ]
  },
  {
-  "name": "Хмельницький",
-  "lat": 49.4229,
-  "lng": 26.9871,
-  "complaints": 13,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 15,
-  "intensity": 0.87,
-  "gridShare": 7.7,
-  "chronicGapShare": 7.7,
-  "pattern": "chronic",
-  "topCause": "coverage",
-  "byBrand": {
-   "unknown": 16,
-   "vodafone": 1
-  },
-  "samples": [
-   "**У парку Мершавцева будують сучасний дитмайданчик з м’яким покриттям на твердій основі**. Усі дерева залишаться. Про це",
-   "**У мікрорайоні Дубове на 10 днів ускладнять рух** Із 4 по 14 серпня щодня з 07:00 до 19:00 обмеження діятимуть на вулиц",
-   "**Головне за день:** **▪️**У [Хмельницькому](https://t.me/khmlv/36777) на полігоні військової частини стався вибух із по"
-  ]
- },
- {
   "name": "Дніпро",
   "lat": 48.4647,
   "lng": 35.0462,
-  "complaints": 13,
+  "complaints": 10,
   "praise": 1,
-  "negativityShare": 92.9,
-  "daysWithComplaints": 16,
-  "intensity": 0.81,
-  "gridShare": 30.8,
-  "chronicGapShare": 23.1,
+  "negativityShare": 90.9,
+  "daysWithComplaints": 12,
+  "intensity": 0.83,
+  "gridShare": 40.0,
+  "chronicGapShare": 30.0,
   "pattern": "chronic",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 15,
+   "unknown": 11,
    "kyivstar": 1,
    "vodafone": 1
   },
@@ -123,40 +99,40 @@
   "name": "Черкаси",
   "lat": 49.4444,
   "lng": 32.0598,
-  "complaints": 11,
+  "complaints": 7,
   "praise": 0,
   "negativityShare": 100.0,
-  "daysWithComplaints": 17,
-  "intensity": 0.65,
-  "gridShare": 9.1,
-  "chronicGapShare": 27.3,
+  "daysWithComplaints": 11,
+  "intensity": 0.64,
+  "gridShare": 14.3,
+  "chronicGapShare": 28.6,
   "pattern": "chronic",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 16,
+   "unknown": 10,
    "vodafone": 1
   },
   "samples": [
-   "🚧 Черкаси Замковий узвіз, роботи тривають. Наразі відбулося фрезерування старого асфальтобетонного покриття, та зробили ",
-   "🛠 У Черкасах латають ями на вулиці В’ячеслава Чорновола ​Комунальники КП «ЧЕЛУАШ» проводиться аварійно-ямковий ремонт до",
-   "Пояснили, навіщо у Черкасах щоночі поливають водою дороги Такі роботи проводяться з метою: охолодження асфальтобетонного"
+   "🌱 У Черкасах облаштували першу «зелену» парковку \"Її особливість — спеціальна газонна решітка, яка дозволяє використовув",
+   "🌉 У Черкасах закриють Міст кохання - на два дні У Сосновому бору тимчасово обмежать доступ до Мосту кохання через заверш",
+   "❗️Сьогодні КП «ЧЕЛУАШ» проводить поточні роботи на дорогах міста Черкаси У зв’язку з цим, рух транспорту на окремих діля"
   ]
  },
  {
   "name": "Запоріжжя",
   "lat": 47.8388,
   "lng": 35.1396,
-  "complaints": 8,
+  "complaints": 6,
   "praise": 0,
   "negativityShare": 100.0,
-  "daysWithComplaints": 8,
+  "daysWithComplaints": 6,
   "intensity": 1.0,
-  "gridShare": 25.0,
-  "chronicGapShare": 12.5,
+  "gridShare": 33.3,
+  "chronicGapShare": 0.0,
   "pattern": "sporadic",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 4,
+   "unknown": 2,
    "vodafone": 2,
    "kyivstar": 2,
    "lifecell": 2
@@ -168,28 +144,76 @@
   ]
  },
  {
+  "name": "Тернопіль",
+  "lat": 49.5535,
+  "lng": 25.5948,
+  "complaints": 4,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 5,
+  "intensity": 0.8,
+  "gridShare": 0.0,
+  "chronicGapShare": 25.0,
+  "pattern": "sporadic",
+  "topCause": "internet",
+  "byBrand": {
+   "unknown": 3,
+   "lifecell": 2,
+   "vodafone": 1
+  },
+  "samples": [
+   "прийшов час видалити 5 зірок і поставити менше 2 за приємні спогади і адекватну тех підтримку, ставлю меншу оцінку через",
+   "lifecell припиняє роботу мережі 3G у Тернополі та області з 2 липня - Інтерфакс-Україна. lifecell припиняє роботу мережі",
+   "Lifecell припиняє роботу мережі 3G в Тернополі та області - що відомо - ZAXID.NET - Zaxid.net. Lifecell припиняє роботу "
+  ]
+ },
+ {
   "name": "Харків",
   "lat": 49.9935,
   "lng": 36.2304,
-  "complaints": 6,
+  "complaints": 4,
   "praise": 0,
   "negativityShare": 100.0,
-  "daysWithComplaints": 9,
-  "intensity": 0.67,
-  "gridShare": 16.7,
+  "daysWithComplaints": 7,
+  "intensity": 0.57,
+  "gridShare": 0.0,
   "chronicGapShare": 0.0,
   "pattern": "sporadic",
   "topCause": "internet",
   "byBrand": {
-   "kyivstar": 4,
-   "unknown": 3,
+   "kyivstar": 3,
+   "unknown": 2,
    "lifecell": 1,
    "vodafone": 1
   },
   "samples": [
-   "**#меніпишуть**** 5G з’явився у користувачів «Київстару» в Харкові 🛜** Відпишіть, яка обстановка в інших 👇🏻 [ㅤ](https://",
    "**Київстар утричі розширив тестову 5G-зону у Харкові: відтепер покриття охоплює майже весь центр міста** Завдяки будівни",
-   "**☔️Дощ з ГРАДОМ накрив Харків.** На дорогах можливе погіршення видимості та слизьке покриття. Зняли негоду на відео? На"
+   "**☔️Дощ з ГРАДОМ накрив Харків.** На дорогах можливе погіршення видимості та слизьке покриття. Зняли негоду на відео? На",
+   "клас, у харківській області, окрім харкова, практично ніде немає покриття, для відправки повідомлення в 41 кілобайт, між"
+  ]
+ },
+ {
+  "name": "Херсон",
+  "lat": 46.6354,
+  "lng": 32.6169,
+  "complaints": 3,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 3,
+  "intensity": 1.0,
+  "gridShare": 33.3,
+  "chronicGapShare": 0.0,
+  "pattern": "sporadic",
+  "topCause": "coverage",
+  "byBrand": {
+   "unknown": 1,
+   "kyivstar": 1,
+   "vodafone": 1
+  },
+  "samples": [
+   "**У Сімферополі ідентифікували двох наглядачів СІЗО, яких звинувачують у катуваннях українців.** Журналісти відділу розс",
+   "відремонтуйте вишку будь ласка дуже погане покриття Херсонська область береславський район ✌️😁",
+   "Блокують/обмежують мобільний інтернет в Херсонській області, Милівська громада, на запити в додатку повне ігнорування, а"
   ]
  },
  {
@@ -206,7 +230,7 @@
   "pattern": "healthy",
   "topCause": "internet",
   "byBrand": {
-   "unknown": 17,
+   "unknown": 16,
    "vodafone": 9,
    "kyivstar": 4,
    "lifecell": 2
@@ -215,74 +239,6 @@
    "5G в Одесі без доплати: локації lifecell, Київстар, Vodafone - Ukr.net. 5G в Одесі без доплати: локації lifecell, Київст",
    "Київстар, Vodafone та lifecell запустили відкрите тестування 5G в Одесі - Ukr.net. Київстар, Vodafone та lifecell запуст",
    "Київстар, Vodafone та lifecell запустили відкрите тестування 5G в Одесі - Ukr.net. Київстар, Vodafone та lifecell запуст"
-  ]
- },
- {
-  "name": "Херсон",
-  "lat": 46.6354,
-  "lng": 32.6169,
-  "complaints": 2,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 2,
-  "intensity": 1.0,
-  "gridShare": 0.0,
-  "chronicGapShare": 0.0,
-  "pattern": "sporadic",
-  "topCause": "coverage",
-  "byBrand": {
-   "kyivstar": 1,
-   "vodafone": 1
-  },
-  "samples": [
-   "відремонтуйте вишку будь ласка дуже погане покриття Херсонська область береславський район ✌️😁",
-   "Блокують/обмежують мобільний інтернет в Херсонській області, Милівська громада, на запити в додатку повне ігнорування, а"
-  ]
- },
- {
-  "name": "Тернопіль",
-  "lat": 49.5535,
-  "lng": 25.5948,
-  "complaints": 2,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 3,
-  "intensity": 0.67,
-  "gridShare": 0.0,
-  "chronicGapShare": 50.0,
-  "pattern": "sporadic",
-  "topCause": "internet",
-  "byBrand": {
-   "lifecell": 2,
-   "vodafone": 1,
-   "unknown": 1
-  },
-  "samples": [
-   "прийшов час видалити 5 зірок і поставити менше 2 за приємні спогади і адекватну тех підтримку, ставлю меншу оцінку через",
-   "lifecell припиняє роботу мережі 3G у Тернополі та області з 2 липня - Інтерфакс-Україна. lifecell припиняє роботу мережі",
-   "Lifecell припиняє роботу мережі 3G в Тернополі та області - що відомо - ZAXID.NET - Zaxid.net. Lifecell припиняє роботу "
-  ]
- },
- {
-  "name": "Кривий Ріг",
-  "lat": 47.9105,
-  "lng": 33.3918,
-  "complaints": 2,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 3,
-  "intensity": 0.67,
-  "gridShare": 50.0,
-  "chronicGapShare": 0.0,
-  "pattern": "grid",
-  "topCause": "coverage",
-  "byBrand": {
-   "unknown": 3
-  },
-  "samples": [
-   "🥵**Спека накриє Україну вже від сьогодні. **Найбільше вдарить у західних та південних областях – очікується до +37°C. У ",
-   "**Немає роботи через CBAM: АрселорМіттал Кривий Ріг починає масові звільнення працівників** АрселорМіттал Кривий Ріг пов",
-   "Кривий Ріг знову без світла: ГРАФІКИ відключень на 13 листопада - krivbass.city. Кривий Ріг знову без світла: ГРАФІКИ ві"
   ]
  },
  {
@@ -307,6 +263,47 @@
   ]
  },
  {
+  "name": "Кривий Ріг",
+  "lat": 47.9105,
+  "lng": 33.3918,
+  "complaints": 2,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 2,
+  "intensity": 1.0,
+  "gridShare": 50.0,
+  "chronicGapShare": 0.0,
+  "pattern": "grid",
+  "topCause": "coverage",
+  "byBrand": {
+   "unknown": 2
+  },
+  "samples": [
+   "**Немає роботи через CBAM: АрселорМіттал Кривий Ріг починає масові звільнення працівників** АрселорМіттал Кривий Ріг пов",
+   "Кривий Ріг знову без світла: ГРАФІКИ відключень на 13 листопада - krivbass.city. Кривий Ріг знову без світла: ГРАФІКИ ві"
+  ]
+ },
+ {
+  "name": "Хмельницький",
+  "lat": 49.4229,
+  "lng": 26.9871,
+  "complaints": 1,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 1,
+  "intensity": 1.0,
+  "gridShare": 0.0,
+  "chronicGapShare": 0.0,
+  "pattern": "sporadic",
+  "topCause": "coverage",
+  "byBrand": {
+   "unknown": 1
+  },
+  "samples": [
+   "**У парку Мершавцева будують сучасний дитмайданчик з м’яким покриттям на твердій основі**. Усі дерева залишаться. Про це"
+  ]
+ },
+ {
   "name": "Миколаїв",
   "lat": 46.975,
   "lng": 31.9946,
@@ -325,6 +322,49 @@
   "samples": [
    "😱**18 днів без звʼязку та зі зламаними ребрами: з Миколаївського обласного ТЦК довелося рятувати людей**, – омбудсман Лу",
    "На Миколаївщині «лягає» мобільний зв’язок: 30% базових станцій знеструмлені - Миколаївська Правда. На Миколаївщині «ляга"
+  ]
+ },
+ {
+  "name": "Івано-Франківськ",
+  "lat": 48.9226,
+  "lng": 24.7111,
+  "complaints": 1,
+  "praise": 1,
+  "negativityShare": 50.0,
+  "daysWithComplaints": 3,
+  "intensity": 0.33,
+  "gridShare": 0.0,
+  "chronicGapShare": 0.0,
+  "pattern": "sporadic",
+  "topCause": "coverage",
+  "byBrand": {
+   "unknown": 2,
+   "kyivstar": 1
+  },
+  "samples": [
+   "⚖ **П'ятьох поліцейських, які кришували порноофіси взяли під варту. ** Суд визначив запобіжний захід п’ятьом підозрювани",
+   "Міні Starlink для стабільного інтернету там, де звичайна мережа не витримує - Інформатор Івано-Франківськ. Міні Starlink",
+   "останній свій коментар був залишив 18го року і уже 26й пишу на далі сама по собі програма зручна і зрозуміла але от покр"
+  ]
+ },
+ {
+  "name": "Луцьк",
+  "lat": 50.7472,
+  "lng": 25.3254,
+  "complaints": 1,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 1,
+  "intensity": 1.0,
+  "gridShare": 0.0,
+  "chronicGapShare": 0.0,
+  "pattern": "sporadic",
+  "topCause": "coverage",
+  "byBrand": {
+   "unknown": 1
+  },
+  "samples": [
+   "Дорога Дубно - Луцьк 😮 Зрізали шар покриття. Скоро буде новий. 😌"
   ]
  },
  {
@@ -385,28 +425,6 @@
   },
   "samples": [
    "«Київстар» скасував планове відключення 3G у Чернігові - mediasat.info. «Київстар» скасував планове відключення 3G у Чер"
-  ]
- },
- {
-  "name": "Івано-Франківськ",
-  "lat": 48.9226,
-  "lng": 24.7111,
-  "complaints": 0,
-  "praise": 1,
-  "negativityShare": 0.0,
-  "daysWithComplaints": 2,
-  "intensity": 0.0,
-  "gridShare": 0.0,
-  "chronicGapShare": 0.0,
-  "pattern": "healthy",
-  "topCause": "internet",
-  "byBrand": {
-   "unknown": 1,
-   "kyivstar": 1
-  },
-  "samples": [
-   "Міні Starlink для стабільного інтернету там, де звичайна мережа не витримує - Інформатор Івано-Франківськ. Міні Starlink",
-   "останній свій коментар був залишив 18го року і уже 26й пишу на далі сама по собі програма зручна і зрозуміла але от покр"
   ]
  },
  {

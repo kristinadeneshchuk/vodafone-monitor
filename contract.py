@@ -166,10 +166,10 @@ def build(text, sentiment_name, source_type, source_name='', q=None):
     q — результат quality.score(text); якщо не передано, рахується тут.
     """
     text = text or ''
-    q = q or quality.score(text)
+    q = q or quality.score(text, source_type)
 
     cause = keywords.detect_cause(text, source_type)
-    location = geo.resolve(text)
+    location = geo.resolve(text, source_type)
     has_location = location is not None
 
     rel_score = relevance_score(text, cause, has_location)

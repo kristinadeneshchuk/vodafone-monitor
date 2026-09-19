@@ -26,7 +26,44 @@ import re
 # "Київстар" розпізнавався як місто Київ, і майже кожна скарга на
 # Київстар ставала скаргою з Києва. Перевірка вручну на 30 прикладах
 # дала 16 хибних локацій саме через це.
-OPERATOR_NAMES = re.compile(r'київстар\w*|киевстар\w*|kyivstar\w*', re.IGNORECASE)
+# Назву пишуть і злито, і через пробіл чи дефіс: "Київ Стар", "КИЇВ СТАРА".
+# Допускаємо друкарські помилки в назві: "київсьар", "київстар", "кивїстар".
+# Без цього одна пропущена літера повертає баг із містом Київ.
+OPERATOR_NAMES = re.compile(
+    r'ки[їве]{1,3}[\s\-]*с[тьc][аоуе]?р\w*'
+    r'|kyiv[\s\-]*star\w*',
+    re.IGNORECASE)
+
+# Підписи каналів і посилання всередині телеграм-постів. Пост про
+# загальнонаціональну тему з каналу "Типовий Львів" отримував локацію
+# Львів лише тому, що назва каналу лежить у тексті посилання.
+TELEGRAM_CHROME = re.compile(
+    r'\[([^\]]*)\]\([^)]*\)'          # markdown-посилання разом із підписом
+    r'|https?://\S+'                    # голі посилання
+    r'|@[A-Za-z0-9_]+'                   # згадки каналів
+    r'|#\w+',                            # хештеги
+    re.IGNORECASE)
+
+# Назва видання в кінці заголовка Google News: "Заголовок - Волинь 24."
+# Без цього національна новина отримувала локацію за містом видання.
+NEWS_OUTLET = re.compile(r'\s[-–—]\s[^.\-–—]{2,45}(?:\.|$)')
+
+
+def strip_chrome(text, source_type=None):
+    """Прибирає з тексту те, що не є змістом: підписи, посилання, видання."""
+    text = TELEGRAM_CHROME.sub(' ', text or '')
+    if source_type == 'news':
+        # Google News віддає "Заголовок - Видання. Заголовок - Видання опис",
+        # тобто назва видання трапляється двічі, і лише перша має роздільник.
+        # Виймаємо назву з першого входження й прибираємо ВСІ її копії,
+        # інакше "Моя Київщина" й далі дає локацію Київ.
+        m = NEWS_OUTLET.search(text)
+        if m:
+            outlet = m.group(0).strip(' .-–—')
+            if 2 < len(outlet) < 46:
+                text = text.replace(outlet, ' ')
+        text = NEWS_OUTLET.sub('. ', text)
+    return text
 
 CITY_STEMS = {
     # негативний перегляд: "київ" не рахується, якщо це частина "київстар"
@@ -118,7 +155,7 @@ def caps_ratio(text):
     return sum(c.isupper() for c in letters) / len(letters)
 
 
-def detect_cities(text):
+def detect_cities(text, source_type=None):
     """
     Міста, згадані в тексті. Неоднозначні — лише в безпечних формах.
 
@@ -126,20 +163,21 @@ def detect_cities(text):
     інакше "Київстар" дає місто Київ, "Львівобленерго" дає Львів,
     і карта наповнюється містами, яких у скарзі немає.
     """
-    text = OPERATOR_NAMES.sub(' ', text or '')
+    text = strip_chrome(text, source_type)
+    text = OPERATOR_NAMES.sub(' ', text)
     found = [n for n, rx in CITY_RX.items() if rx.search(text)]
     found += [n for n, rx in AMBIG_RX.items() if rx.search(text)]
     return found
 
 
-def score(text):
+def score(text, source_type=None):
     """Повертає ознаки й три показники для одного тексту."""
     t = text or ''
     words = len(t.split())
 
     exclaims = t.count('!')
     caps = caps_ratio(t)
-    cities = detect_cities(t)
+    cities = detect_cities(t, source_type)
 
     f = {
         'words': words,
