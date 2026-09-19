@@ -153,17 +153,39 @@ export class RealFeedbackService implements IFeedbackService {
 
     const dayCount = dayFeedbacks.length;
 
-    // Швидкість сплеску за день (порівняно з нормою 45 скарг або алертами)
+    // СКАРГА — це негативна згадка. Раніше сюди йшла загальна кількість
+    // згадок, і бриф писав "34 скарги" у день, коли негативних було 5,
+    // а 14 згадок були позитивні. На тихому дні виходила "критична загроза".
+    const dayNegatives = dayFeedbacks.filter(f => f.sentiment === 'negative').length;
+
+    // Норма береться З ДАНИХ, а не константою. Було baseline = 45 —
+    // число нізвідки, через нього будь-який день здавався або кризою,
+    // або порожнім.
+    const negativesByDay: Record<string, number> = {};
+    for (const f of this.data) {
+      if (f.sentiment !== 'negative') continue;
+      const d = f.timestamp.slice(0, 10);
+      negativesByDay[d] = (negativesByDay[d] ?? 0) + 1;
+    }
+    const dailyCounts = Object.values(negativesByDay).sort((a, b) => a - b);
+    const baseline = dailyCounts.length
+      ? dailyCounts[Math.floor(dailyCounts.length / 2)]   // медіана
+      : 1;
+
     const alerts = realAlerts as unknown as CrisisAlert[];
-    const dayAlert = alerts.find(a => 
-      a.window_start.startsWith(effectiveDayStr) || 
+    const dayAlerts = alerts.filter(a =>
+      a.window_start.startsWith(effectiveDayStr) ||
       a.window_end.startsWith(effectiveDayStr)
     );
-    const baseline = 45;
-    const spikeVelocityRatio = dayAlert ? dayAlert.ratio : Math.round((dayCount / baseline) * 10) / 10;
+    // Рівень тривоги бере детектор, а не текстова модель. Якщо wake
+    // немає — кризи немає, і бриф не має права писати "критична загроза".
+    const wakeAlert = dayAlerts.find(a => a.level === 'wake');
+    const spikeVelocityRatio = wakeAlert
+      ? wakeAlert.ratio
+      : Math.round((dayNegatives / Math.max(baseline, 1)) * 10) / 10;
 
-    const churnIntentRate = dayCount > 0 
-      ? Math.round((churnIntentCount / dayCount) * 1000) / 10 
+    const churnIntentRate = dayNegatives > 0
+      ? Math.round((churnIntentCount / dayNegatives) * 1000) / 10
       : 0;
 
     const averageResonance = dayCount > 0
@@ -178,7 +200,11 @@ export class RealFeedbackService implements IFeedbackService {
     return {
       date: effectiveDayStr,
       dateLabel,
-      totalComplaints: dayCount,
+      totalComplaints: dayNegatives,
+      totalMentions: dayCount,
+      negativeBaseline: baseline,
+      hasWakeAlert: Boolean(wakeAlert),
+      alertsToday: dayAlerts.length,
       averageRiskScore: riskyCount > 0 ? Math.round(totalRisk / riskyCount) : 0,
       highRiskIssuesCount,
       averageRelevance: dayCount > 0 ? Math.round((totalRelevance / dayCount) * 100) / 100 : 0,

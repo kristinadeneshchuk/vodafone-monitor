@@ -53,8 +53,19 @@ export function generateHeuristicBriefing(
     dateLabel = date;
   }
 
-  const isSevere = metrics.averageRiskScore >= 50 || metrics.highRiskIssuesCount >= 3 || metrics.spikeVelocityRatio >= 2.0;
-  const isModerate = metrics.averageRiskScore >= 25 || metrics.highRiskIssuesCount >= 1 || metrics.totalComplaints > 40;
+  // Рівень тривоги визначає ДЕТЕКТОР, а не бриф. Детектор має три умови
+  // одночасно: перевищення норми, мінімальна абсолютна кількість і сигнал
+  // із двох незалежних джерел. Без цього бриф оголошував "критичну загрозу"
+  // у день із пʼятьма негативними згадками при нормі одинадцять.
+  const baseline = metrics.negativeBaseline ?? 1;
+  const aboveBaseline = metrics.totalComplaints > baseline;
+
+  const isSevere = Boolean(metrics.hasWakeAlert)
+    || (aboveBaseline && metrics.spikeVelocityRatio >= 3.0 && metrics.highRiskIssuesCount >= 3);
+  const isModerate = !isSevere && (
+    (aboveBaseline && metrics.spikeVelocityRatio >= 2.0)
+    || metrics.highRiskIssuesCount >= 1
+  );
 
   const status: 'normal' | 'warning' | 'critical' = isSevere ? 'critical' : isModerate ? 'warning' : 'normal';
   const statusLabel = isSevere 
@@ -68,11 +79,16 @@ export function generateHeuristicBriefing(
 
   let executiveSummary = '';
   if (isSevere) {
-    executiveSummary = `Зафіксовано аномальний сплеск негативу (${metrics.totalComplaints} скарг, ${metrics.spikeVelocityRatio}x від добової норми). Середній репутаційний ризик зріс до ${metrics.averageRiskScore}/100. Головний епіцентр кризи зосереджено на ділянці: ${topLoc} (${topLocCount} звернень). Зафіксовано ризик ескалації скарг у медіа та активний відтік незадоволених клієнтів.`;
+    executiveSummary = `Зафіксовано сплеск негативу: ${metrics.totalComplaints} негативних згадок проти норми ${baseline} (x${metrics.spikeVelocityRatio}). Середній репутаційний ризик зріс до ${metrics.averageRiskScore}/100. Головний епіцентр кризи зосереджено на ділянці: ${topLoc} (${topLocCount} звернень). Зафіксовано ризик ескалації скарг у медіа та активний відтік незадоволених клієнтів.`;
   } else if (isModerate) {
-    executiveSummary = `Минула доба пройшла з помірною активністю абонентів (${metrics.totalComplaints} звернень). Середній ризик оцінюється у ${metrics.averageRiskScore}/100. Виявлено локальні затримки в роботі мережі на ділянці ${topLoc}. Ситуація контрольована, але потребує уваги служби технічної підтримки та моніторингу соціальних мереж.`;
+    executiveSummary = `Минула доба пройшла з помірною активністю (${metrics.totalComplaints} негативних згадок проти норми ${baseline}). Середній ризик оцінюється у ${metrics.averageRiskScore}/100. Виявлено локальні затримки в роботі мережі на ділянці ${topLoc}. Ситуація контрольована, але потребує уваги служби технічної підтримки та моніторингу соціальних мереж.`;
   } else {
-    executiveSummary = `Мережа та сервіси компанії працювали у стабільному, штатному режимі (${metrics.totalComplaints} звернень за добу, що повністю відповідає нормативному бейзлайну). Аномальних репутаційних спалахів та загроз бренду не зафіксовано. Поодинокі звернення стосувалися планових робіт та консультацій.`;
+    // Порожній звіт — теж результат. Кейс просить прямо: коли за добу
+    // нічого не сталося, так і писати, а не вигадувати драму.
+    const vsNorm = metrics.totalComplaints < baseline
+      ? `це нижче за звичайний рівень (${baseline} на добу)`
+      : `це в межах звичайного рівня (${baseline} на добу)`;
+    executiveSummary = `Штатний режим. За добу ${metrics.totalComplaints} негативних згадок із ${metrics.totalMentions ?? metrics.totalComplaints} загалом — ${vsNorm}. Сплесків, що потребують реакції, не зафіксовано.`;
   }
 
   const keyDrivers = [

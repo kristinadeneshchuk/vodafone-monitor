@@ -53,7 +53,15 @@ export interface CrisisAlert {
 }
 
 export interface DashboardMetrics {
+  /** Кількість НЕГАТИВНИХ згадок. Саме це слово "скарга" й означає. */
   totalComplaints: number;
+  /** Усі згадки за період, разом із позитивними та нейтральними. */
+  totalMentions?: number;
+  /** Медіана негативних згадок на добу — норма, порахована з даних. */
+  negativeBaseline?: number;
+  /** Чи був сплеск рівня "будити команду". Рівень визначає детектор. */
+  hasWakeAlert?: boolean;
+  alertsToday?: number;
   averageRiskScore: number;
   highRiskIssuesCount: number; // risk >= 50
   averageRelevance: number;
