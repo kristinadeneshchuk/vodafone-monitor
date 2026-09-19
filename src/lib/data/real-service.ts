@@ -173,6 +173,15 @@ export class RealFeedbackService implements IFeedbackService {
     const dayFeedbacks = feedbacks.filter(
       f => f.timestamp.slice(0, 10) >= windowStart
         && f.timestamp.slice(0, 10) <= effectiveDayStr);
+    // Попередній такий самий період — щоб цифра "9 скарг" мала з чим
+    // порівнюватись. Без цього вона не каже ні "краще", ні "гірше".
+    const prevStart = format(subDays(parseISO(windowStart), WINDOW_DAYS), 'yyyy-MM-dd');
+    const prevEnd = format(subDays(parseISO(windowStart), 1), 'yyyy-MM-dd');
+    const prevComplaints = feedbacks.filter(
+      f => f.sentiment === 'negative'
+        && f.timestamp.slice(0, 10) >= prevStart
+        && f.timestamp.slice(0, 10) <= prevEnd).length;
+
     const sentimentDistribution = { positive: 0, neutral: 0, negative: 0 };
 
     let riskyCount = 0;
@@ -255,6 +264,18 @@ export class RealFeedbackService implements IFeedbackService {
       ? Math.round((totalResonance / dayCount) * 10) / 10
       : 0;
 
+    // Головна причина скарг періоду. Комунікаційній команді потрібна
+    // не оцінка "негативно", а відповідь "що саме зламалось".
+    const causeMap: Record<string, number> = {};
+    for (const f of dayFeedbacks) {
+      if (f.sentiment !== 'negative') continue;
+      const c = f.cause ?? 'other';
+      causeMap[c] = (causeMap[c] ?? 0) + 1;
+    }
+    const topCauses = Object.entries(causeMap)
+      .map(([cause, count]) => ({ cause, count }))
+      .sort((a, b) => b.count - a.count);
+
     const topLocations = Object.entries(locationMap)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
@@ -300,6 +321,8 @@ export class RealFeedbackService implements IFeedbackService {
       sentimentDistribution,
       topLocations,
       topLocationsAllTime,
+      topCauses,
+      previousComplaints: prevComplaints,
       timelineData,
     };
   }

@@ -365,8 +365,23 @@ export default function DashboardOverview() {
               <div className="text-2xl font-black text-slate-900 tracking-tight">
                 {metrics.totalComplaints}
               </div>
-              <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                за 30 днів
+              {/* Без попереднього періоду число "9" не каже ні "краще",
+                  ні "гірше". Порівняння — це мінімум, заради якого
+                  керівник взагалі дивиться на показник. */}
+              <p className="text-[11px] mt-0.5 truncate">
+                {typeof metrics.previousComplaints === 'number' && metrics.previousComplaints > 0 ? (
+                  <span className={metrics.totalComplaints > metrics.previousComplaints
+                    ? 'text-red-600 font-semibold' : 'text-emerald-600 font-semibold'}>
+                    {metrics.totalComplaints > metrics.previousComplaints ? '↑' : '↓'}{' '}
+                    {Math.abs(Math.round(100 * (metrics.totalComplaints - metrics.previousComplaints)
+                      / metrics.previousComplaints))}%{' '}
+                    <span className="text-slate-400 font-normal">
+                      до попередніх 30 днів ({metrics.previousComplaints})
+                    </span>
+                  </span>
+                ) : (
+                  <span className="text-slate-400">за 30 днів</span>
+                )}
               </p>
             </div>
           </div>
@@ -377,7 +392,7 @@ export default function DashboardOverview() {
           }`}>
             <div className="flex items-center justify-between gap-1.5 mb-2">
               <span className="text-xs font-semibold text-slate-500 truncate">
-                Сер. ризик
+                Головна причина
               </span>
               <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
                 isRiskCrit ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
@@ -386,14 +401,18 @@ export default function DashboardOverview() {
               </div>
             </div>
             <div>
-              <div className="flex items-baseline gap-1">
-                <span className={`text-2xl font-black tracking-tight ${isRiskCrit ? 'text-red-600' : 'text-slate-800'}`}>
-                  {metrics.averageRiskScore}
-                </span>
-                <span className="text-xs text-slate-400 font-medium">/ 100</span>
+              {/* "Середній ризик 18/100" не веде до дії: незрозуміло,
+                  що саме зламалось. Причина веде — її можна передати
+                  технічній службі. */}
+              <div className="text-base lg:text-lg font-black text-slate-900 leading-tight">
+                {metrics.topCauses?.[0]
+                  ? (CAUSE_UA[metrics.topCauses[0].cause] ?? metrics.topCauses[0].cause)
+                  : 'Немає скарг'}
               </div>
               <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                індекс загрози
+                {metrics.topCauses?.[0]
+                  ? `${metrics.topCauses[0].count} із ${metrics.totalComplaints} скарг`
+                  : 'за звітний період'}
               </p>
             </div>
           </div>
@@ -404,7 +423,7 @@ export default function DashboardOverview() {
           }`}>
             <div className="flex items-center justify-between gap-1.5 mb-2">
               <span className="text-xs font-semibold text-slate-500 truncate">
-                Критичні
+                Частка негативу
               </span>
               <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
                 isHighRiskCrit ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
@@ -413,11 +432,18 @@ export default function DashboardOverview() {
               </div>
             </div>
             <div>
-              <div className={`text-2xl font-black tracking-tight ${isHighRiskCrit ? 'text-red-600' : 'text-slate-800'}`}>
-                {metrics.highRiskIssuesCount}
+              {/* "Критичні: 0" було нулем щомісяця і нічого не показувало.
+                  Частка негативу проти похвал відповідає на питання
+                  "нас лають чи хвалять", і її є з чим порівняти. */}
+              <div className="text-2xl font-black tracking-tight text-slate-800">
+                {(() => {
+                  const d = metrics.sentimentDistribution;
+                  const all = d.positive + d.neutral + d.negative;
+                  return all > 0 ? Math.round((100 * d.negative) / all) : 0;
+                })()}%
               </div>
               <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                ризик ≥ 50
+                {metrics.sentimentDistribution.positive} похвал поруч
               </p>
             </div>
           </div>
@@ -461,15 +487,15 @@ export default function DashboardOverview() {
                     Головна локація
                   </span>
                   <div className="text-sm font-black text-slate-900 truncate">
-                    {metrics.topLocations[0]?.name || 'Немає'}
+                    {(metrics.topLocationsAllTime ?? metrics.topLocations)[0]?.name || 'Немає'}
                   </div>
                 </div>
               </div>
               <div className="text-right shrink-0">
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
-                  {metrics.topLocations[0]?.count || 0} скарг
+                  {(metrics.topLocationsAllTime ?? metrics.topLocations)[0]?.count || 0} скарг
                 </span>
-                <span className="text-[10px] text-slate-400 block mt-0.5">за 30 днів</span>
+                <span className="text-[10px] text-slate-400 block mt-0.5">за рік</span>
               </div>
             </div>
 
@@ -485,10 +511,12 @@ export default function DashboardOverview() {
               </div>
               <div>
                 <div className="text-xl lg:text-2xl font-black text-slate-900 truncate">
-                  {metrics.topLocations[0]?.name || 'Немає'}
+                  {(metrics.topLocationsAllTime ?? metrics.topLocations)[0]?.name || 'Немає'}
                 </div>
                 <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                  {metrics.topLocations[0] ? `${metrics.topLocations[0].count} скарг за 30 днів` : 'аномалій не виявлено'}
+                  {(metrics.topLocationsAllTime ?? metrics.topLocations)[0]
+                    ? `${(metrics.topLocationsAllTime ?? metrics.topLocations)[0].count} скарг за рік`
+                    : 'жодна скарга не називає місце'}
                 </p>
               </div>
             </div>
