@@ -185,7 +185,7 @@ export default function DashboardOverview() {
               <div>
                 <div className="flex items-center gap-2">
                   <CardTitle className="text-lg font-bold text-white tracking-wide flex items-center gap-2">
-                    AI Репутаційний вердикт доби
+                    AI Репутаційний вердикт за період
                   </CardTitle>
                   <Badge className="bg-red-600 text-white text-[10px] font-bold px-1.5 py-0">
                     Gemini 2.5
@@ -340,7 +340,7 @@ export default function DashboardOverview() {
             <Activity className="w-4 h-4 text-red-600" />
             Операційні показники за 7 днів ({metrics.dateLabel})
           </h2>
-          <span className="text-xs text-slate-500">Фактичні цифри попередньої доби</span>
+          <span className="text-xs text-slate-500">Фактичні цифри за звітний період</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -403,7 +403,7 @@ export default function DashboardOverview() {
                 {metrics.topLocations[0]?.name || 'Штатний стан'}
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                {metrics.topLocations[0] ? `${metrics.topLocations[0].count} згадок за 7 днів` : 'аномалій не виявлено'}
+                {metrics.topLocations[0] ? `${metrics.topLocations[0].count} скарг за 7 днів` : 'аномалій не виявлено'}
               </p>
             </CardContent>
           </Card>

@@ -160,7 +160,12 @@ export class RealFeedbackService implements IFeedbackService {
       }
       totalResonance += (f.resonance ?? (f.relevanceScore * (f.reachWeight ?? 1)));
 
-      if (f.locationName && f.locationName !== 'Невідомо') {
+      // "Топ проблемних ділянок" має рахувати ПРОБЛЕМИ, а не всі згадки.
+      // Інакше Одеса з чотирма похвалами про запуск 5G ставала головною
+      // локацією проблем, і технічний департамент отримував вказівку
+      // перевірити там телеметрію базових станцій.
+      if (f.sentiment === 'negative'
+          && f.locationName && f.locationName !== 'Невідомо') {
         locationMap[f.locationName] = (locationMap[f.locationName] ?? 0) + 1;
       }
     }

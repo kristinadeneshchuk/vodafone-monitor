@@ -1,6 +1,6 @@
 import { DailyBriefing, DashboardMetrics, FeedbackRecord } from './types';
 import { GoogleGenAI } from '@google/genai';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, subDays } from 'date-fns';
 import { uk } from 'date-fns/locale';
 import fs from 'fs';
 import path from 'path';
@@ -46,9 +46,13 @@ export function generateHeuristicBriefing(
   feedbacks: FeedbackRecord[],
   metrics: DashboardMetrics
 ): DailyBriefing {
+  // Метрики рахуються за 7 днів, тому підпис теж має бути періодом,
+  // а не однією датою: було "Основний масив скарг за 16 вересня".
   let dateLabel = date;
   try {
-    dateLabel = format(parseISO(date), 'd MMMM yyyy', { locale: uk });
+    const from = format(subDays(parseISO(date), 6), 'd MMM', { locale: uk });
+    const to = format(parseISO(date), 'd MMMM yyyy', { locale: uk });
+    dateLabel = `${from} — ${to}`;
   } catch {
     dateLabel = date;
   }
@@ -179,9 +183,13 @@ export async function generateBriefingWithGemini(
 ): Promise<DailyBriefing> {
   const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
+  // Метрики рахуються за 7 днів, тому підпис теж має бути періодом,
+  // а не однією датою: було "Основний масив скарг за 16 вересня".
   let dateLabel = date;
   try {
-    dateLabel = format(parseISO(date), 'd MMMM yyyy', { locale: uk });
+    const from = format(subDays(parseISO(date), 6), 'd MMM', { locale: uk });
+    const to = format(parseISO(date), 'd MMMM yyyy', { locale: uk });
+    dateLabel = `${from} — ${to}`;
   } catch {
     dateLabel = date;
   }
