@@ -38,7 +38,8 @@ export interface FeedbackRecord {
 /** Алерт детектора криз: сплеск скарг, що перевищив норму. */
 export interface CrisisAlert {
   level: 'watch' | 'wake';
-  event_type: 'incident' | 'grid_outage';
+  /** media_attention — сплеск публікацій на одну тему незалежно від тональності. */
+  event_type: 'incident' | 'grid_outage' | 'media_attention';
   brand: string;
   cause: string;
   cities: string | null;
@@ -115,6 +116,9 @@ export interface DailyBriefing {
 }
 
 export interface FeedbackFilters {
+  /** Оператор. За замовчуванням 'vodafone' — це продукт для Vodafone,
+   *  конкуренти показуються окремим порівнянням, а не впереміш. */
+  brand?: string;
   startDate?: string;
   endDate?: string;
   problemType?: ProblemType[];

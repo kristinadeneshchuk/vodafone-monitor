@@ -19,6 +19,20 @@ export class RealFeedbackService implements IFeedbackService {
 
   private apply(filters?: FeedbackFilters): FeedbackRecord[] {
     let result = [...this.data];
+
+    // ЗА ЗАМОВЧУВАННЯМ — Vodafone. Це продукт для Vodafone, і стрічка,
+    // де 387 скарг на Київстар лежать упереміш із 213 на Vodafone,
+    // виглядає як шум. Конкуренти доступні через фільтр 'all'
+    // і через окреме порівняння на сторінці аналітики.
+    // Скарги без назви оператора ('unknown') сюди НЕ додаються:
+    // приписати їх Vodafone означало б роздути його цифри й зіпсувати
+    // порівняння з конкурентами. Вони доступні через фільтр 'all'
+    // і потрібні карті покриття, де проблема локації стосується всіх.
+    const brand = filters?.brand ?? 'vodafone';
+    if (brand !== 'all') {
+      result = result.filter(f => f.brand === brand);
+    }
+
     if (!filters) return result;
 
     if (filters.problemType?.length) {
@@ -109,15 +123,29 @@ export class RealFeedbackService implements IFeedbackService {
           return allDates.length >= 2 ? allDates[allDates.length - 2] : allDates[allDates.length - 1] || yesterdayStr;
       })());
 
+    // Підпис періоду має збігатися з вікном розрахунку. Раніше тут була
+    // одна дата, а метрики рахувались за тиждень — цифра й підпис
+    // означали різні речі.
     let dateLabel = effectiveDayStr;
     try {
-      dateLabel = format(parseISO(effectiveDayStr), 'd MMMM yyyy', { locale: uk });
+      const from = format(subDays(parseISO(effectiveDayStr), 6), 'd MMM', { locale: uk });
+      const to = format(parseISO(effectiveDayStr), 'd MMMM yyyy', { locale: uk });
+      dateLabel = `${from} — ${to}`;
     } catch {
       dateLabel = effectiveDayStr;
     }
 
     // 3. Всі інші метрики розраховуємо СУВОРО за вчорашній день (Morning Briefing)
-    const dayFeedbacks = feedbacks.filter(f => f.timestamp.startsWith(effectiveDayStr));
+    // ВІКНО ЗВІТУ — 7 ДНІВ, а не одна доба.
+    // Медіана скарг на звʼязок — 2 на добу, і 41 день на рік має нуль.
+    // Порівнювати "вчора проти норми" на таких числах означає міряти шум:
+    // дашборд показував усюди нулі просто тому, що 18 вересня випало 0.
+    // Тиждень дає 14-20 скарг — на цьому вже видно динаміку.
+    const WINDOW_DAYS = 7;
+    const windowStart = format(subDays(parseISO(effectiveDayStr), WINDOW_DAYS - 1), 'yyyy-MM-dd');
+    const dayFeedbacks = feedbacks.filter(
+      f => f.timestamp.slice(0, 10) >= windowStart
+        && f.timestamp.slice(0, 10) <= effectiveDayStr);
     const sentimentDistribution = { positive: 0, neutral: 0, negative: 0 };
 
     let riskyCount = 0;
@@ -146,7 +174,12 @@ export class RealFeedbackService implements IFeedbackService {
       }
       totalResonance += (f.resonance ?? (f.relevanceScore * (f.reachWeight ?? 1)));
 
-      if (f.locationName && f.locationName !== 'Невідомо') {
+      // "Топ проблемних ділянок" має рахувати ПРОБЛЕМИ, а не всі згадки.
+      // Інакше Одеса з чотирма похвалами про запуск 5G ставала головною
+      // локацією проблем, і технічний департамент отримував вказівку
+      // перевірити там телеметрію базових станцій.
+      if (f.sentiment === 'negative'
+          && f.locationName && f.locationName !== 'Невідомо') {
         locationMap[f.locationName] = (locationMap[f.locationName] ?? 0) + 1;
       }
     }
@@ -168,9 +201,12 @@ export class RealFeedbackService implements IFeedbackService {
       negativesByDay[d] = (negativesByDay[d] ?? 0) + 1;
     }
     const dailyCounts = Object.values(negativesByDay).sort((a, b) => a - b);
-    const baseline = dailyCounts.length
-      ? dailyCounts[Math.floor(dailyCounts.length / 2)]   // медіана
+    // Норма теж тижнева: порівнювати тижневу суму з добовою медіаною
+    // означало б отримувати семикратний "сплеск" щотижня.
+    const dailyMedian = dailyCounts.length
+      ? dailyCounts[Math.floor(dailyCounts.length / 2)]
       : 1;
+    const baseline = Math.max(1, dailyMedian * WINDOW_DAYS);
 
     const alerts = realAlerts as unknown as CrisisAlert[];
     const dayAlerts = alerts.filter(a =>

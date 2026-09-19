@@ -168,13 +168,19 @@ function FeedPageContent() {
     const avgRelevance = (feedbacks.reduce((acc, f) => acc + f.relevanceScore, 0) / total).toFixed(2);
     const avgConstructiveness = (feedbacks.reduce((acc, f) => acc + f.constructivenessScore, 0) / total).toFixed(2);
     
-    const churnCount = feedbacks.filter(f => f.churnIntent).length;
-    const churnRate = total > 0 ? ((churnCount / total) * 100).toFixed(1) : '0.0';
+    // Намір піти рахується від СКАРГ, а не від усіх згадок: ділити
+    // девʼять погроз на 1246 згадок разом із похвалами безглуздо.
+    const complaints = feedbacks.filter(f => f.sentiment === 'negative');
+    const churnCount = complaints.filter(f => f.churnIntent).length;
+    const churnRate = complaints.length > 0
+      ? ((churnCount / complaints.length) * 100).toFixed(1) : '0.0';
     const totalResonance = feedbacks.reduce((acc, f) => acc + (f.resonance ?? (f.relevanceScore * (f.reachWeight ?? 1))), 0);
     const avgResonance = (totalResonance / (total || 1)).toFixed(1);
 
+    // "Топ епіцентр" має показувати місце з найбільшою кількістю ПРОБЛЕМ,
+    // інакше туди потрапляє місто, де про оператора найбільше пишуть добре.
     const locationCounts: Record<string, number> = {};
-    feedbacks.forEach(f => {
+    complaints.forEach(f => {
       if (f.locationName !== 'Невідомо') {
         locationCounts[f.locationName] = (locationCounts[f.locationName] || 0) + 1;
       }
@@ -231,7 +237,7 @@ function FeedPageContent() {
                 <div className="flex items-center justify-between px-3 py-2 bg-red-50/90 border border-red-200 rounded-lg text-xs text-red-800 font-medium">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-red-600" />
-                    <span>Фільтр за дату з таймлайну: <strong>{activeDate}</strong> (знайдено: {feedbacks.length} скарг)</span>
+                    <span>Фільтр за дату з таймлайну: <strong>{activeDate}</strong> (знайдено: {feedbacks.length} згадок, з них {feedbacks.filter(f => f.sentiment === 'negative').length} скарг)</span>
                   </div>
                   <Button 
                     type="button" 
@@ -251,7 +257,7 @@ function FeedPageContent() {
                 <div className="relative flex-1 w-full">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
                   <Input 
-                    placeholder="Пошук за текстом скарги або локацією..." 
+                    placeholder="Пошук за текстом згадки або локацією..." 
                     className="pl-9 bg-slate-50/50"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -324,7 +330,8 @@ function FeedPageContent() {
         <div className="flex-none px-6 py-3 border-b bg-slate-50/80 flex flex-wrap justify-between items-center text-xs text-slate-600 rounded-t-xl gap-2">
           <div className="flex items-center gap-4">
             <span className="font-semibold text-slate-800">
-              Всього знайдено: <span className="text-red-600">{feedbacks.length}</span>
+              Всього згадок: <span className="text-slate-900">{feedbacks.length}</span>
+              {' '}· скарг: <span className="text-red-600">{feedbacks.filter(f => f.sentiment === 'negative').length}</span>
             </span>
             <span>Показано в таблиці: {displayedFeedbacks.length}</span>
           </div>
@@ -364,7 +371,7 @@ function FeedPageContent() {
                       {analytics.highRiskCount}
                     </span>
                     <span className="text-xs text-slate-400">
-                      ({Math.round((analytics.highRiskCount / feedbacks.length) * 100)}%)
+                      ({((analytics.highRiskCount / Math.max(feedbacks.length, 1)) * 100).toFixed(1)}%)
                     </span>
                   </div>
                 </CardContent>

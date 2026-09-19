@@ -89,9 +89,15 @@ export default function MapPage() {
     }).sort((a, b) => b.count - a.count);
   }, [records, brand, problem]);
 
-  const withoutLocation = records.filter(
-    r => r.sentiment === 'negative' && r.lat == null).length;
-  const totalNegative = records.filter(r => r.sentiment === 'negative').length;
+  // Відсоток має рахуватись по ТОМУ Ж зрізу, що показує карта.
+  // Раніше він брався по всіх брендах, а карта фільтрувала один —
+  // виходило 7% при фактичних 3%.
+  const inScope = records.filter(r =>
+    r.sentiment === 'negative'
+    && (brand === 'all' || r.brand === brand)
+    && (problem === 'all' || r.problemType === problem));
+  const totalNegative = inScope.length;
+  const withoutLocation = inScope.filter(r => r.lat == null).length;
   const sharePct = totalNegative
     ? Math.round((100 * (totalNegative - withoutLocation)) / totalNegative) : 0;
 

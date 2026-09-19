@@ -280,6 +280,13 @@ def compute(text, sentiment_name, source_type, source_name, cause, q):
     # немає ні серйозної теми (F2), ні загрози чи закликів (F3), то це
     # просто популярний пост, а не репутаційна подія.
     if f['f2'] < 3.0 and f['f3'] < 3.0:
+        # Але якщо це ЗАЯВЛЕНА скарга на звʼязок, повний нуль неправильний:
+        # на карті вона виглядала б як подія без ризику. Даємо мінімальний
+        # рівень, що відповідає охопленню джерела.
+        if cause in ('coverage', 'internet', 'calls', 'outage', 'blackout'):
+            base = round(min(f['f1'] * 0.35 + 1.0, 3.0), 2)
+            name, action = grade(base)
+            return {'score': base, 'grade': name, 'action': action, 'factors': f}
         return {'score': 0.0, 'grade': 'low', 'action': GRADES[-1][2], 'factors': f}
 
     score = sum(f[k] * WEIGHTS[k] for k in f)

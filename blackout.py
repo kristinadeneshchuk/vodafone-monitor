@@ -34,9 +34,20 @@ MONTH_UA = {
 # на акумулятори. Для планування живлення це ключове вікно.
 WINTER = ('11', '12', '01', '02')
 
-# "станція протримала 4 години", "третю добу без звʼязку"
+# Тривалість рахуємо ЛИШЕ коли вона прямо про відсутність звʼязку.
+# Раніше бралося будь-яке "N годин" у тексті, і в статистику потрапляв
+# графік відключень ("4 години через 8"), який описує подачу світла,
+# а не час без звʼязку.
+_UNIT = r'(годин\w*|год\b|днів|дня|день|доб\w*|тижд\w*)'
+_NOSIGNAL = (r'(без\s+(зв\W?язку|інтернет\w*|мереж\w*|сигнал\w*)'
+             r'|не\s+(працю|лови|йде)\w*'
+             r'|(нема|немає|відсутн|зник|пропа)\w*'
+             r'|протрима\w*|витрим\w*|трима\w*)')
+
 DURATION_RX = re.compile(
-    r'(\d+)\s*(годин\w*|год\b|днів|дня|день|доб\w*|тижд\w*)', re.IGNORECASE)
+    rf'(\d+)\s*{_UNIT}[^.]{{0,40}}{_NOSIGNAL}'
+    rf'|{_NOSIGNAL}[^.]{{0,40}}(\d+)\s*{_UNIT}',
+    re.IGNORECASE)
 
 # Пряма згадка автономності станцій — найцінніші свідчення.
 AUTONOMY_RX = re.compile(
@@ -64,6 +75,10 @@ def load():
         FROM analysis a JOIN mentions m ON m.id = a.mention_id
         WHERE a.sentiment IN ('negative','mixed')
           AND (a.context = 'blackout' OR a.cause = 'blackout')
+          -- той самий фільтр причин, що й у наборі скарг на звʼязок.
+          -- Без нього сюди потрапляли скарги на застосунок і тарифи,
+          -- які просто згадують світло: 304 записи проти 139 справжніх.
+          AND a.cause IN ('coverage','internet','calls','outage','blackout')
     """).fetchall()
 
 
@@ -85,7 +100,12 @@ def analyse():
         text = r['text'] or ''
         m = DURATION_RX.search(text)
         if m:
-            value, unit = int(m.group(1)), m.group(2).lower()
+            # шаблон має дві гілки: число попереду або після фрази
+            num = m.group(1) or m.group(4)
+            unit_raw = m.group(2) or m.group(5)
+            if not num or not unit_raw:
+                continue
+            value, unit = int(num), unit_raw.lower()
             if value > 100 and not unit.startswith(('годин', 'год')):
                 continue                          # явно не про час
             if unit.startswith(('годин', 'год')):
