@@ -179,20 +179,18 @@ function FeedPageContent() {
       return { 
         avgRisk: 0, 
         highRiskCount: 0, 
-        avgRelevance: 0, 
         topLocation: '-',
+        topLocationCount: 0,
+        complaintCount: 0,
         churnCount: 0,
         churnRate: '0.0'
       };
     }
-    const total = feedbacks.length;
     const riskyRecords = feedbacks.filter(f => f.reputationalRiskScore > 0);
     const avgRisk = riskyRecords.length > 0 
       ? Math.round(riskyRecords.reduce((acc, f) => acc + f.reputationalRiskScore, 0) / riskyRecords.length) 
       : 0;
     const highRiskCount = feedbacks.filter(f => f.reputationalRiskScore >= 50).length;
-    const avgRelevance = (feedbacks.reduce((acc, f) => acc + f.relevanceScore, 0) / total).toFixed(2);
-    
     // Намір піти рахується від СКАРГ, а не від усіх згадок: ділити
     // девʼять погроз на 1246 згадок разом із похвалами безглуздо.
     const complaints = feedbacks.filter(f => f.sentiment === 'negative');
@@ -209,12 +207,14 @@ function FeedPageContent() {
       }
     });
     const topLocation = Object.entries(locationCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Невідомо';
+    const topLocationCount = Object.entries(locationCounts).sort((a, b) => b[1] - a[1])[0]?.[1] ?? 0;
 
     return { 
       avgRisk, 
       highRiskCount, 
-      avgRelevance, 
       topLocation,
+      topLocationCount,
+      complaintCount: complaints.length,
       churnCount,
       churnRate
     };
@@ -454,7 +454,7 @@ function FeedPageContent() {
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Deep Analytics Block */}
           {!loading && feedbacks.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <Card className="bg-slate-50/60 border-slate-200 shadow-none">
                 <CardContent className="p-3.5">
                   <div className="text-xs text-slate-500 mb-1">Середній ризик</div>
@@ -475,7 +475,7 @@ function FeedPageContent() {
                       {analytics.highRiskCount}
                     </span>
                     <span className="text-xs text-slate-400">
-                      ({((analytics.highRiskCount / Math.max(feedbacks.length, 1)) * 100).toFixed(1)}%)
+                      ({((analytics.highRiskCount / Math.max(analytics.complaintCount, 1)) * 100).toFixed(1)}% скарг)
                     </span>
                   </div>
                 </CardContent>
@@ -495,27 +495,18 @@ function FeedPageContent() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-50/60 border-slate-200 shadow-none">
+              <Card className="bg-slate-50/60 border-slate-200 shadow-none col-span-2 md:col-span-1">
                 <CardContent className="p-3.5">
                   <div className="text-xs text-slate-500 mb-1 flex items-center gap-1">
-                    <Target className="w-3 h-3 text-slate-400" /> Релевантність
+                    <MapPin className="w-3 h-3 text-slate-400" /> Найбільше скарг у локації
                   </div>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-xl font-bold text-blue-600">
-                      {analytics.avgRelevance}
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-sm font-bold text-slate-800 truncate" title={analytics.topLocation}>
+                      {analytics.topLocation}
                     </span>
-                    <span className="text-xs text-slate-400">/ 1.0</span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-slate-50/60 border-slate-200 shadow-none col-span-2 md:col-span-1 lg:col-span-1">
-                <CardContent className="p-3.5">
-                  <div className="text-xs text-slate-500 mb-1 flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-slate-400" /> Топ епіцентр
-                  </div>
-                  <div className="text-sm font-bold text-slate-800 truncate" title={analytics.topLocation}>
-                    {analytics.topLocation}
+                    {analytics.topLocationCount > 0 && (
+                      <span className="text-xs text-slate-400">({analytics.topLocationCount})</span>
+                    )}
                   </div>
                 </CardContent>
               </Card>
