@@ -149,8 +149,8 @@ def enrich_batch(rows):
         if source_type == 'news':
             sent, conf = news_sentiment(text), 0.6
 
-        q = quality.score(text)
-        cause = keywords.detect_cause(text)
+        q = quality.score(text, source_type)
+        cause = keywords.detect_cause(text, source_type)
         context = keywords.detect_context(text)
         cities = q['cities']
         tonality, trust = classify_tonality(sent, q)

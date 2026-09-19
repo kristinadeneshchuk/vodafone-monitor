@@ -15,7 +15,7 @@
 
 import re
 
-from quality import detect_cities
+from quality import detect_cities, strip_chrome
 
 # Обласні центри та великі міста. Координати центру.
 CITY_COORDS = {
@@ -114,7 +114,7 @@ def _normalize_endpoint(raw):
     return None
 
 
-def resolve(text):
+def resolve(text, source_type=None):
     """
     Локація повідомлення або None.
 
@@ -122,7 +122,7 @@ def resolve(text):
     precision: district | city | area | route — №6 може малювати
     точку або відрізок різного розміру залежно від точності.
     """
-    t = text or ''
+    t = strip_chrome(text, source_type)
 
     # 1. Маршрут — перевіряємо першим: у "потяг Київ-Харків" є два міста,
     # і без цієї перевірки ми б записали скаргу в Київ, а вона про дорогу.
@@ -144,7 +144,7 @@ def resolve(text):
                 'precision': 'route',
             }
 
-    cities = detect_cities(t)
+    cities = detect_cities(t, source_type)
 
     # 2. Район міста — найточніше, що в нас є.
     if len(cities) == 1:
