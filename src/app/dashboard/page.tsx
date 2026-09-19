@@ -134,7 +134,7 @@ export default function DashboardOverview() {
   return (
     <div className="space-y-6">
       {/* Morning Briefing Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-3 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-3 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-bold gap-1 px-2.5 py-0.5 text-xs shadow-xs">
@@ -144,15 +144,15 @@ export default function DashboardOverview() {
               Підсумки за місяць
             </Badge>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
             Ранковий аналітичний бриф
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Звітний період: <span className="font-semibold text-slate-800">{metrics.dateLabel || 'останні 30 днів'}</span> (30 днів)
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {isCached && (
             <Badge variant="outline" className="text-[11px] bg-slate-50 text-slate-500 border-slate-200 gap-1 font-normal py-1">
               <Database className="w-3 h-3 text-slate-400" /> Збережено в базі
@@ -164,7 +164,7 @@ export default function DashboardOverview() {
             size="sm"
             onClick={handleRefreshBriefing}
             disabled={isRefreshingBriefing}
-            className="gap-2 text-xs font-semibold h-8 border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
+            className="gap-2 text-xs font-semibold h-8 border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors flex-1 sm:flex-none"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshingBriefing ? 'animate-spin' : ''}`} />
             {isRefreshingBriefing ? 'Генерація...' : 'Оновити бриф'}
@@ -172,7 +172,7 @@ export default function DashboardOverview() {
 
           <Button
             size="sm"
-            className="bg-red-600 hover:bg-red-700 text-white font-medium text-xs h-8 gap-1.5 shadow-xs"
+            className="bg-red-600 hover:bg-red-700 text-white font-medium text-xs h-8 gap-1.5 shadow-xs flex-1 sm:flex-none"
             onClick={() => router.push('/dashboard/feed')}
           >
             Стрічка за період <ArrowRight className="w-3 h-3" />
@@ -184,20 +184,17 @@ export default function DashboardOverview() {
       {/* 1. AI MORNING BRIEFING CARD (WHITE BACKGROUND & CONCISE TEXT) */}
       {/* ========================================================================= */}
       <Card className="border border-slate-200 shadow-sm bg-white text-slate-900 rounded-xl overflow-hidden">
-        <CardHeader className="border-b border-slate-100 bg-slate-50/60 pb-3.5 pt-4 px-6">
+        <CardHeader className="border-b border-slate-100 bg-slate-50/60 pb-3.5 pt-4 px-4 sm:px-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="p-1.5 rounded-lg bg-red-50 border border-red-100 text-red-600">
+            <div className="flex items-start md:items-center flex-col md:flex-row gap-2.5">
+              <div className="p-1.5 rounded-lg bg-red-50 border border-red-100 text-red-600 shrink-0">
                 <Sparkles className="w-4 h-4 text-red-600" />
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <CardTitle className="text-lg font-bold text-slate-700 tracking-wide flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <CardTitle className="text-base sm:text-lg font-bold text-slate-800 tracking-tight flex items-center gap-2">
                     AI Репутаційний вердикт за період
                   </CardTitle>
-                  <Badge className="bg-slate-100 text-slate-600 hover:bg-slate-100 text-[10px] font-bold px-1.5 py-0 border border-slate-200">
-                    Gemini AI
-                  </Badge>
                 </div>
                 <CardDescription className="text-slate-400 text-xs mt-0.5">
                   Синтезовано штучним інтелектом на основі {metrics.totalComplaints} звернень та телеметрії за період {metrics.dateLabel}
@@ -208,7 +205,7 @@ export default function DashboardOverview() {
             {briefing && (
               <Badge 
                 variant="outline"
-                className={`text-xs px-2.5 py-0.5 font-bold tracking-wide ${
+                className={`text-xs px-2.5 py-0.5 font-bold tracking-wide shrink-0 ${
                   briefing.status === 'critical'
                     ? 'bg-red-50 text-red-700 border-red-300'
                     : briefing.status === 'warning'
@@ -216,16 +213,13 @@ export default function DashboardOverview() {
                     : 'bg-slate-100 text-slate-700 border-slate-300'
                 }`}
               >
-                {briefing.status === 'critical' && '🚨 '}
-                {briefing.status === 'warning' && '⚠️ '}
-                {briefing.status === 'normal' && ' '}
                 {briefing.statusLabel}
               </Badge>
             )}
           </div>
         </CardHeader>
 
-        <CardContent className="p-5 space-y-4">
+        <CardContent className="p-4 sm:p-5 space-y-4">
           {loadingBriefing && !briefing ? (
             <div className="flex items-center justify-center py-8 text-slate-400 text-sm gap-2">
               <RefreshCw className="w-4 h-4 animate-spin text-slate-400" />
@@ -245,8 +239,8 @@ export default function DashboardOverview() {
 
               {/* Key Problem Drivers (Short & Punchy) */}
               <div>
-                <div className="text-xs uppercase font-bold tracking-wider text-slate-400 mb-3">
-                  🔍 Ключові фактори та драйвери скарг за місяць
+                <div className="text-xs uppercase font-bold tracking-wider text-slate-400 mb-2.5">
+                  Ключові фактори та драйвери скарг за місяць
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
                   {briefing.keyDrivers.map((driver, idx) => (
@@ -331,104 +325,178 @@ export default function DashboardOverview() {
       {/* 2. OPERATIONAL KPIS (GREY DEFAULT, RED ONLY WHEN CRITICAL) */}
       {/* ========================================================================= */}
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
-            <Activity className="w-4 h-4 text-red-600" />
-            Операційні показники за 30 днів ({metrics.dateLabel})
-          </h2>
-          <span className="text-xs text-slate-500">Фактичні цифри за звітний період</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="w-2 h-2 rounded-full bg-red-600 shrink-0" />
+            <h2 className="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wide">
+              Операційні показники за 30 днів
+            </h2>
+            <Badge variant="outline" className="text-[10px] text-slate-600 bg-slate-50 border-slate-200 font-mono py-0 px-1.5">
+              {metrics.dateLabel}
+            </Badge>
+          </div>
+          <span className="text-[11px] sm:text-xs text-slate-400 hidden xs:inline">
+            Фактичні дані за звітний період
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-          {/* Complaints Count */}
-          <Card className={`border shadow-sm transition-colors ${
-            isComplaintsCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-3.5">
+          {/* 1. Complaints Count */}
+          <div className={`p-3 sm:p-4 rounded-xl border shadow-2xs transition-all flex flex-col justify-between ${
+            isComplaintsCrit ? 'border-red-200 bg-red-50/20' : 'border-slate-200 bg-white'
           }`}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-slate-500">Скарг за 30 днів</CardTitle>
-              <Users className="w-4 h-4 text-slate-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900">{metrics.totalComplaints}</div>
-              <p className="text-xs text-slate-500 mt-1">за звітний період</p>
-            </CardContent>
-          </Card>
-
-          {/* Average Risk */}
-          <Card className={`border shadow-sm transition-colors ${
-            isRiskCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
-          }`}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-slate-500">Середній ризик (0-100)</CardTitle>
-              <Activity className={`w-4 h-4 ${isRiskCrit ? 'text-red-600' : 'text-slate-400'}`} />
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${isRiskCrit ? 'text-red-600' : 'text-slate-600'}`}>
-                {metrics.averageRiskScore}
+            <div className="flex items-center justify-between gap-1.5 mb-2">
+              <span className="text-xs font-semibold text-slate-500 truncate">
+                Всі скарги
+              </span>
+              <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                isComplaintsCrit ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
+              }`}>
+                <Users className="w-3.5 h-3.5" />
               </div>
-              <p className="text-xs text-slate-500 mt-1">індекс загрози за 30 днів</p>
-            </CardContent>
-          </Card>
+            </div>
+            <div>
+              <div className="text-2xl font-black text-slate-900 tracking-tight">
+                {metrics.totalComplaints}
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                за 30 днів
+              </p>
+            </div>
+          </div>
 
-          {/* High Risk Count */}
-          <Card className={`border shadow-sm transition-colors ${
-            isHighRiskCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
+          {/* 2. Average Risk */}
+          <div className={`p-3 sm:p-4 rounded-xl border shadow-2xs transition-all flex flex-col justify-between ${
+            isRiskCrit ? 'border-red-200 bg-red-50/20' : 'border-slate-200 bg-white'
           }`}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-slate-500">Високий ризик (&gt;50)</CardTitle>
-              <AlertTriangle className={`w-4 h-4 ${isHighRiskCrit ? 'text-red-600' : 'text-slate-400'}`} />
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${isHighRiskCrit ? 'text-red-600' : 'text-slate-600'}`}>
+            <div className="flex items-center justify-between gap-1.5 mb-2">
+              <span className="text-xs font-semibold text-slate-500 truncate">
+                Сер. ризик
+              </span>
+              <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                isRiskCrit ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
+              }`}>
+                <Activity className="w-3.5 h-3.5" />
+              </div>
+            </div>
+            <div>
+              <div className="flex items-baseline gap-1">
+                <span className={`text-2xl font-black tracking-tight ${isRiskCrit ? 'text-red-600' : 'text-slate-800'}`}>
+                  {metrics.averageRiskScore}
+                </span>
+                <span className="text-xs text-slate-400 font-medium">/ 100</span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                індекс загрози
+              </p>
+            </div>
+          </div>
+
+          {/* 3. High Risk Count */}
+          <div className={`p-3 sm:p-4 rounded-xl border shadow-2xs transition-all flex flex-col justify-between ${
+            isHighRiskCrit ? 'border-red-200 bg-red-50/20' : 'border-slate-200 bg-white'
+          }`}>
+            <div className="flex items-center justify-between gap-1.5 mb-2">
+              <span className="text-xs font-semibold text-slate-500 truncate">
+                Критичні
+              </span>
+              <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                isHighRiskCrit ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
+              }`}>
+                <AlertTriangle className="w-3.5 h-3.5" />
+              </div>
+            </div>
+            <div>
+              <div className={`text-2xl font-black tracking-tight ${isHighRiskCrit ? 'text-red-600' : 'text-slate-800'}`}>
                 {metrics.highRiskIssuesCount}
               </div>
-              <p className="text-xs text-slate-500 mt-1">вимагали реакції за 30 днів</p>
-            </CardContent>
-          </Card>
+              <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                ризик ≥ 50
+              </p>
+            </div>
+          </div>
 
-          {/* Churn Intent */}
-          <Card className={`border shadow-sm transition-colors ${
-            isChurnCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
+          {/* 4. Churn Intent */}
+          <div className={`p-3 sm:p-4 rounded-xl border shadow-2xs transition-all flex flex-col justify-between ${
+            isChurnCrit ? 'border-red-200 bg-red-50/20' : 'border-slate-200 bg-white'
           }`}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-slate-500">Відтік (Churn Intent)</CardTitle>
-              <UserX className={`w-4 h-4 ${isChurnCrit ? 'text-red-600' : 'text-slate-400'}`} />
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${isChurnCrit ? 'text-red-600' : 'text-slate-600'}`}>
+            <div className="flex items-center justify-between gap-1.5 mb-2">
+              <span className="text-xs font-semibold text-slate-500 truncate">
+                Відтік
+              </span>
+              <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                isChurnCrit ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
+              }`}>
+                <UserX className="w-3.5 h-3.5" />
+              </div>
+            </div>
+            <div>
+              <div className={`text-2xl font-black tracking-tight ${isChurnCrit ? 'text-red-600' : 'text-slate-800'}`}>
                 {metrics.churnIntentRate}%
               </div>
-              <p className="text-xs text-slate-500 mt-1">
-                <span className="font-semibold text-slate-700">{metrics.churnIntentCount}</span> погроз за 30 днів
+              <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                {metrics.churnIntentCount} {metrics.churnIntentCount === 1 ? 'погроза' : metrics.churnIntentCount < 5 ? 'погрози' : 'погроз'}
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          {/* Top Location */}
-          <Card className="border-slate-200 shadow-sm bg-white">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-slate-500">Головна локація проблем</CardTitle>
-              <MapPin className={`w-4 h-4 ${isRiskCrit ? 'text-red-600' : 'text-slate-400'}`} />
-            </CardHeader>
-            <CardContent>
-              <div className={`text-lg font-bold truncate ${isRiskCrit ? 'text-red-600' : 'text-slate-700'}`}>
-                {metrics.topLocations[0]?.name || 'Немає'}
+          {/* 5. Top Location (Spans 2 cols on mobile, 1 col on lg) */}
+          <div className={`col-span-2 lg:col-span-1 p-3 sm:p-4 rounded-xl border shadow-2xs transition-all flex flex-col justify-between ${
+            isRiskCrit ? 'border-red-200 bg-red-50/20' : 'border-slate-200 bg-white'
+          }`}>
+            {/* Mobile layout (flex row) */}
+            <div className="flex sm:hidden items-center justify-between gap-2.5">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-red-50 border border-red-100 text-red-600 flex items-center justify-center shrink-0">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block leading-none mb-1">
+                    Головна локація
+                  </span>
+                  <div className="text-sm font-black text-slate-900 truncate">
+                    {metrics.topLocations[0]?.name || 'Немає'}
+                  </div>
+                </div>
               </div>
-              <p className="text-xs text-slate-500 mt-1">
-                {metrics.topLocations[0] ? `${metrics.topLocations[0].count} скарг за 30 днів` : 'аномалій не виявлено'}
-              </p>
-            </CardContent>
-          </Card>
+              <div className="text-right shrink-0">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
+                  {metrics.topLocations[0]?.count || 0} скарг
+                </span>
+                <span className="text-[10px] text-slate-400 block mt-0.5">за 30 днів</span>
+              </div>
+            </div>
+
+            {/* Desktop & Tablet layout (matches cards 1-4) */}
+            <div className="hidden sm:flex flex-col justify-between h-full">
+              <div className="flex items-center justify-between gap-1.5 mb-2">
+                <span className="text-xs font-semibold text-slate-500 truncate">
+                  Головна локація
+                </span>
+                <div className="w-7 h-7 rounded-lg bg-red-50 border border-red-100 text-red-600 flex items-center justify-center shrink-0">
+                  <MapPin className="w-3.5 h-3.5" />
+                </div>
+              </div>
+              <div>
+                <div className="text-xl lg:text-2xl font-black text-slate-900 truncate">
+                  {metrics.topLocations[0]?.name || 'Немає'}
+                </div>
+                <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                  {metrics.topLocations[0] ? `${metrics.topLocations[0].count} скарг за 30 днів` : 'аномалій не виявлено'}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* ========================================================================= */}
       {/* 4. 30 DAYS DYNAMICS CHART & YESTERDAY TOP LOCATIONS */}
       {/* ========================================================================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Chart of recent 30 days */}
         <Card className="col-span-1 border-slate-200 shadow-sm bg-white">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 p-4 sm:p-6">
             <CardTitle className="text-base flex items-center justify-between">
               <span>Динаміка скарг по днях</span>
               <Badge variant="outline" className="text-[10px] font-normal text-slate-500">
@@ -439,30 +507,30 @@ export default function DashboardOverview() {
               Хронологія кількості звернень за останній місяць
             </CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px]">
+          <CardContent className="h-[220px] sm:h-[280px] md:h-[300px] p-2 sm:p-6 pt-0">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={metrics.timelineData}>
+              <LineChart data={metrics.timelineData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis 
                   dataKey="date" 
                   tickLine={false} 
                   axisLine={false} 
-                  tick={{fill: '#888', fontSize: 11}}
-                  interval={3}
+                  tick={{fill: '#888', fontSize: 10}}
+                  interval={4}
                 />
-                <YAxis tickLine={false} axisLine={false} tick={{fill: '#888', fontSize: 12}} />
+                <YAxis tickLine={false} axisLine={false} tick={{fill: '#888', fontSize: 11}} />
                 <Tooltip 
                   formatter={(val: any) => [val, 'Кількість скарг']}
                   labelFormatter={(label) => `Дата: ${label}`}
-                  contentStyle={{borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)'}}
+                  contentStyle={{borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)', fontSize: '12px'}}
                 />
                 <Line 
                   type="monotone" 
                   dataKey="issuesCount" 
                   stroke="#ef4444" 
                   strokeWidth={2.5} 
-                  dot={{r: 3, fill: '#ef4444'}} 
-                  activeDot={{r: 5}}
+                  dot={{r: 2.5, fill: '#ef4444'}} 
+                  activeDot={{r: 4.5}}
                   name="Кількість скарг" 
                 />
               </LineChart>

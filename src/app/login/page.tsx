@@ -20,8 +20,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-50">
-      <Card className="w-[400px]">
+    <div className="flex items-center justify-center min-h-screen min-h-[100dvh] bg-slate-50 p-4">
+      <Card className="w-full max-w-[400px] shadow-sm border-slate-200">
         <CardHeader>
           <CardTitle>Вхід у систему</CardTitle>
           <CardDescription>Дашборд аналізу репутаційних ризиків</CardDescription>

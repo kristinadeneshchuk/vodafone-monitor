@@ -242,45 +242,41 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-120px)] space-y-4">
+    <div className="flex flex-col h-[calc(100dvh-175px)] sm:h-[calc(100vh-140px)] min-h-[480px] space-y-3 sm:space-y-4">
       {/* Top Header Card */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-3 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 pb-3 border-b border-slate-200">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-red-600" />
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
               AI Аналітика & Прогнози
             </h1>
-            <Badge className="bg-red-600 text-white font-bold text-[10px] px-2 py-0.5">
-              Gemini 3.6 Flash
-            </Badge>
           </div>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Інтерактивний аналітичний чат із доступом до всієї річної бази моніторингу Vodafone, блекаутів та прогнозних моделей
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-xs bg-slate-50 border-slate-200 text-slate-600 gap-1.5 py-1 px-3">
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+          <Badge variant="outline" className="text-xs bg-slate-50 border-slate-200 text-slate-600 gap-1.5 py-1 px-2.5 sm:px-3">
             <Database className="w-3.5 h-3.5 text-slate-400" />
-            <span>База: <b>1 051 запис</b> (вересень 2025 – вересень 2026)</span>
+            <span>База: <b>1 051 запис</b> <span className="hidden md:inline">(вересень 2025 – вересень 2026)</span></span>
           </Badge>
 
           <Button 
             variant="outline" 
             size="sm" 
             onClick={handleClearChat}
-            className="h-8 text-xs gap-1.5 text-slate-600 hover:text-slate-900 border-slate-200 cursor-pointer"
+            className="h-8 text-xs gap-1.5 text-slate-600 hover:text-slate-900 border-slate-200 cursor-pointer shrink-0"
             title="Очистити історію діалогу"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            Очистити
+            <span>Очистити</span>
           </Button>
         </div>
       </div>
 
       {/* Quick Questions Horizon Pills */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar -mx-3.5 px-3.5 sm:mx-0 sm:px-0">
         <span className="text-slate-400 text-[11px] font-medium mr-1 shrink-0 flex items-center gap-1">
           Швидкі прогнози:
         </span>
@@ -292,9 +288,9 @@ export default function AnalyticsPage() {
               type="button"
               disabled={loading}
               onClick={() => handleSendMessage(preset.query)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-red-50 hover:border-red-200 hover:text-red-700 text-slate-700 font-medium whitespace-nowrap transition-all shadow-2xs text-xs cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-red-50 hover:border-red-200 hover:text-red-700 text-slate-700 font-medium whitespace-nowrap transition-all shadow-2xs text-xs cursor-pointer disabled:opacity-50 shrink-0"
             >
-              <Icon className="w-3 h-3 text-red-600 shrink-0" />
+              {Icon && <Icon className="w-3 h-3 text-red-600 shrink-0" />}
               <span>{preset.label}</span>
             </button>
           );
@@ -303,32 +299,32 @@ export default function AnalyticsPage() {
 
       {/* Main Chat Log Area */}
       <Card className="flex-1 flex flex-col min-h-0 border-slate-200 shadow-sm bg-slate-50/40 rounded-xl overflow-hidden">
-        <CardContent className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+        <CardContent className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4">
           {messages.map((msg) => {
             const isAI = msg.role === 'model';
             return (
               <div 
                 key={msg.id} 
-                className={`flex gap-3 max-w-[90%] md:max-w-[82%] ${isAI ? 'mr-auto' : 'ml-auto flex-row-reverse'}`}
+                className={`flex gap-2 sm:gap-3 max-w-[95%] sm:max-w-[88%] md:max-w-[82%] ${isAI ? 'mr-auto' : 'ml-auto flex-row-reverse'}`}
               >
                 {/* Avatar */}
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-2xs ${
+                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 shadow-2xs ${
                   isAI 
                     ? 'bg-red-600 text-white' 
                     : 'bg-slate-800 text-white'
                 }`}>
-                  {isAI ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
+                  {isAI ? <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                 </div>
 
                 {/* Message Body */}
-                <div className="space-y-1.5">
-                  <div className={`p-4 rounded-2xl text-sm leading-relaxed shadow-2xs ${
+                <div className="space-y-1.5 max-w-full min-w-0">
+                  <div className={`p-3 sm:p-4 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-2xs ${
                     isAI 
                       ? 'bg-white border border-slate-200 text-slate-800 rounded-tl-xs' 
                       : 'bg-red-600 text-white font-medium rounded-tr-xs'
                   }`}>
                     {isAI ? (
-                      <div className="space-y-3">
+                      <div className="space-y-2.5 sm:space-y-3">
                         {msg.content.split('\n\n').map((paragraph, pIdx) => renderAiParagraph(paragraph, pIdx))}
                       </div>
                     ) : (
@@ -337,12 +333,12 @@ export default function AnalyticsPage() {
                   </div>
 
                   {/* Metadata and Actions */}
-                  <div className={`flex items-center gap-2 text-[11px] text-slate-400 px-1 ${isAI ? 'justify-start' : 'justify-end'}`}>
+                  <div className={`flex items-center gap-2 text-[10px] sm:text-[11px] text-slate-400 px-1 ${isAI ? 'justify-start' : 'justify-end'}`}>
                     <span>{msg.timestamp}</span>
                     {isAI && msg.source && (
                       <>
                         <span>·</span>
-                        <span className="text-[10px] text-slate-400 font-mono">
+                        <span className="text-[9px] sm:text-[10px] text-slate-400 font-mono">
                           {msg.source === 'gemini-3.6-flash' ? 'Gemini 3.6 Flash' : 'Аналітичний рушій'}
                         </span>
                         <button
@@ -368,11 +364,11 @@ export default function AnalyticsPage() {
 
           {/* Typing indicator */}
           {loading && (
-            <div className="flex gap-3 max-w-[85%] mr-auto">
-              <div className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
-                <Bot className="w-4 h-4" />
+            <div className="flex gap-2 sm:gap-3 max-w-[90%] sm:max-w-[85%] mr-auto">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-red-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
-              <div className="p-4 rounded-2xl bg-white border border-slate-200 rounded-tl-xs shadow-2xs space-y-2">
+              <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200 rounded-tl-xs shadow-2xs space-y-2">
                 <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
                   <Sparkles className="w-3.5 h-3.5 text-red-600 animate-spin" />
                   <span>Gemini аналізує вибірку та генерує прогноз...</span>
@@ -390,7 +386,7 @@ export default function AnalyticsPage() {
         </CardContent>
 
         {/* Input Bar */}
-        <div className="p-3 bg-white border-t border-slate-200">
+        <div className="p-2.5 sm:p-3 bg-white border-t border-slate-200">
           <form 
             onSubmit={(e) => {
               e.preventDefault();
@@ -402,22 +398,22 @@ export default function AnalyticsPage() {
               ref={inputRef}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Поставте аналітичне запитання або запитайте про прогноз (напр: 'Що чекати від відтоку взимку?')..."
+              placeholder="Поставте запитання або запитайте про прогноз..."
               disabled={loading}
-              className="flex-1 bg-slate-50/60 border-slate-200 text-sm focus-visible:ring-red-600 h-10"
+              className="flex-1 bg-slate-50/60 border-slate-200 text-xs sm:text-sm focus-visible:ring-red-600 h-9 sm:h-10"
             />
             <Button 
               type="submit" 
               disabled={loading || !inputValue.trim()}
-              className="bg-red-600 hover:bg-red-700 text-white h-10 px-4 font-semibold gap-1.5 shadow-sm cursor-pointer shrink-0 disabled:opacity-50"
+              className="bg-red-600 hover:bg-red-700 text-white h-9 sm:h-10 px-3 sm:px-4 font-semibold gap-1.5 shadow-sm cursor-pointer shrink-0 disabled:opacity-50"
             >
-              <span>Запитати</span>
+              <span className="hidden sm:inline text-xs sm:text-sm">Запитати</span>
               <Send className="w-3.5 h-3.5" />
             </Button>
           </form>
-          <div className="flex justify-between items-center px-1 pt-2 text-[11px] text-slate-400">
-            <span>Натисніть Enter для відправки запиту</span>
-            <span className="text-slate-400">Спирається на 100% реальних даних вибірки Vodafone (2025–2026)</span>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-1 pt-1.5 gap-1 text-[10px] sm:text-[11px] text-slate-400">
+            <span className="hidden sm:inline">Натисніть Enter для відправки запиту</span>
+            <span className="text-slate-400 truncate max-w-full">Спирається на 100% реальних даних вибірки Vodafone</span>
           </div>
         </div>
       </Card>

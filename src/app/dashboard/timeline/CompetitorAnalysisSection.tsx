@@ -413,7 +413,7 @@ export default function CompetitorAnalysisSection({
       {/* --------------------------------------------------------------------- */}
       {/* SECTION HEADER                                                        */}
       {/* --------------------------------------------------------------------- */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-slate-200 shadow-xs bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-slate-200 shadow-xs bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-slate-200/30 border border-slate-500/40 flex items-center justify-center text-red-600 shrink-0">
@@ -1001,11 +1001,11 @@ export default function CompetitorAnalysisSection({
             </div>
 
             {/* Tab selector */}
-            <div className="flex flex-wrap items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-medium">
+            <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-medium overflow-x-auto max-w-full no-scrollbar">
               <button
                 type="button"
                 onClick={() => setActiveTab('kyivstar')}
-                className={`px-3 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
                   activeTab === 'kyivstar'
                     ? 'bg-sky-600 text-white font-bold shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -1022,7 +1022,7 @@ export default function CompetitorAnalysisSection({
               <button
                 type="button"
                 onClick={() => setActiveTab('lifecell')}
-                className={`px-3 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
                   activeTab === 'lifecell'
                     ? 'bg-amber-500 text-slate-950 font-bold shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -1039,7 +1039,7 @@ export default function CompetitorAnalysisSection({
               <button
                 type="button"
                 onClick={() => setActiveTab('vodafone')}
-                className={`px-3 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
                   activeTab === 'vodafone'
                     ? 'bg-red-600 text-white font-bold shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -1056,7 +1056,7 @@ export default function CompetitorAnalysisSection({
               <button
                 type="button"
                 onClick={() => setActiveTab('news')}
-                className={`px-3 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
                   activeTab === 'news'
                     ? 'bg-indigo-600 text-white font-bold shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -1075,7 +1075,7 @@ export default function CompetitorAnalysisSection({
 
           {/* Filter / Search Bar */}
           <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 mt-2">
-            <div className="relative flex-1 max-w-sm">
+            <div className="relative flex-1 w-full sm:max-w-sm">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
               <Input
                 value={searchQuery}

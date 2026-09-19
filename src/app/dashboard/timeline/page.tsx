@@ -29,7 +29,9 @@ import {
   ArrowRight, 
   Calendar,
   Layers,
-  Smartphone
+  Smartphone,
+  Users,
+  Activity
 } from 'lucide-react';
 import { feedbackService } from '@/lib/data/feedback-service';
 import { FeedbackRecord } from '@/lib/data/types';
@@ -508,10 +510,10 @@ export default function TimelinePage() {
             </div>
 
             {/* Scale Horizon & Simulation Controls */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
               {/* Horizon Scale & Period Selector */}
-              <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-medium">
-                <span className="text-[11px] text-slate-500 px-2 flex items-center gap-1 font-semibold">
+              <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-medium overflow-x-auto max-w-full no-scrollbar shrink-0">
+                <span className="text-[11px] text-slate-500 px-2 flex items-center gap-1 font-semibold shrink-0">
                   <Layers className="w-3 h-3" /> Період:
                 </span>
                 <button
@@ -523,7 +525,7 @@ export default function TimelinePage() {
                     const start = Math.max(0, end - 29);
                     setRange([start, end]);
                   }}
-                  className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-md transition-all cursor-pointer shrink-0 ${
                     horizon === '30d'
                       ? 'bg-white text-slate-900 shadow-xs font-bold'
                       : 'text-slate-600 hover:text-slate-900'
@@ -540,7 +542,7 @@ export default function TimelinePage() {
                     const start = Math.max(0, end - 89);
                     setRange([start, end]);
                   }}
-                  className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-md transition-all cursor-pointer shrink-0 ${
                     horizon === '90d'
                       ? 'bg-white text-slate-900 shadow-xs font-bold'
                       : 'text-slate-600 hover:text-slate-900'
@@ -557,7 +559,7 @@ export default function TimelinePage() {
                     const start = Math.max(0, end - 179);
                     setRange([start, end]);
                   }}
-                  className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-md transition-all cursor-pointer shrink-0 ${
                     horizon === '180d'
                       ? 'bg-white text-slate-900 shadow-xs font-bold'
                       : 'text-slate-600 hover:text-slate-900'
@@ -572,7 +574,7 @@ export default function TimelinePage() {
                     setMode('range');
                     setRange([0, totalLength - 1]);
                   }}
-                  className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-md transition-all cursor-pointer shrink-0 ${
                     horizon === 'all'
                       ? 'bg-red-600 text-white shadow-xs font-bold'
                       : 'text-red-700 hover:text-red-800 font-semibold'
@@ -583,7 +585,7 @@ export default function TimelinePage() {
               </div>
 
               {/* Simulation controls */}
-              <div className="flex items-center gap-1.5 border-l pl-3 border-slate-200">
+              <div className="flex items-center gap-1.5 border-l pl-2.5 border-slate-200">
                 <Button 
                   variant={isDayPlaying ? "destructive" : "default"} 
                   size="sm" 
@@ -591,7 +593,7 @@ export default function TimelinePage() {
                   className="gap-1.5 font-medium h-8 text-xs cursor-pointer"
                 >
                   {isDayPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                  {isDayPlaying ? "Пауза" : "Відтворити"}
+                  <span className="hidden sm:inline">{isDayPlaying ? "Пауза" : "Відтворити"}</span>
                 </Button>
                 <Button 
                   variant="outline" 
@@ -607,9 +609,9 @@ export default function TimelinePage() {
           </div>
 
           {/* Secondary Control Bar: Mode Toggle + Date Pickers */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 mt-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-slate-100 mt-2">
             {/* Mode Toggle */}
-            <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-medium">
+            <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-medium self-start sm:self-auto">
               <button
                 type="button"
                 onClick={() => {
@@ -645,26 +647,30 @@ export default function TimelinePage() {
             </div>
 
             {/* Direct Date Range Pickers */}
-            <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200 text-xs">
-              <Calendar className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-              <span className="text-slate-500 font-medium">З:</span>
-              <input
-                type="date"
-                min={minDateStr}
-                max={maxDateStr}
-                value={startDay?.dateStr || ''}
-                onChange={(e) => handleStartDateChange(e.target.value)}
-                className="bg-white border border-slate-200 rounded px-1.5 py-0.5 text-slate-800 font-medium text-xs focus:outline-none focus:ring-1 focus:ring-red-500 cursor-pointer"
-              />
-              <span className="text-slate-400">по:</span>
-              <input
-                type="date"
-                min={minDateStr}
-                max={maxDateStr}
-                value={endDay?.dateStr || ''}
-                onChange={(e) => handleEndDateChange(e.target.value)}
-                className="bg-white border border-slate-200 rounded px-1.5 py-0.5 text-slate-800 font-medium text-xs focus:outline-none focus:ring-1 focus:ring-red-500 cursor-pointer"
-              />
+            <div className="flex flex-wrap items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs justify-between sm:justify-start">
+              <div className="flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span className="text-slate-500 font-medium">З:</span>
+                <input
+                  type="date"
+                  min={minDateStr}
+                  max={maxDateStr}
+                  value={startDay?.dateStr || ''}
+                  onChange={(e) => handleStartDateChange(e.target.value)}
+                  className="bg-white border border-slate-200 rounded px-1.5 py-0.5 text-slate-800 font-medium text-xs focus:outline-none focus:ring-1 focus:ring-red-500 cursor-pointer"
+                />
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-slate-400">по:</span>
+                <input
+                  type="date"
+                  min={minDateStr}
+                  max={maxDateStr}
+                  value={endDay?.dateStr || ''}
+                  onChange={(e) => handleEndDateChange(e.target.value)}
+                  className="bg-white border border-slate-200 rounded px-1.5 py-0.5 text-slate-800 font-medium text-xs focus:outline-none focus:ring-1 focus:ring-red-500 cursor-pointer"
+                />
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -681,8 +687,8 @@ export default function TimelinePage() {
               className="w-full cursor-pointer"
             />
             
-            <div className="flex justify-between text-xs text-slate-400 mt-2 font-medium">
-              <span>
+            <div className="flex flex-col sm:flex-row justify-between text-xs text-slate-400 mt-2 font-medium gap-1 text-center sm:text-left">
+              <span className="hidden sm:inline">
                 {allDays[Math.min(horizonStart, activeStartIndex)]?.dateStr} ({allDays[Math.min(horizonStart, activeStartIndex)]?.label})
               </span>
               <span className="font-bold text-red-600">
@@ -692,7 +698,7 @@ export default function TimelinePage() {
                   <>Обрано період: {startDay?.dateStr} – {endDay?.dateStr} ({periodMetrics.daysCount} дн.)</>
                 )}
               </span>
-              <span>
+              <span className="hidden sm:inline">
                 {allDays[Math.max(horizonEnd, activeEndIndex)]?.dateStr} ({allDays[Math.max(horizonEnd, activeEndIndex)]?.label})
               </span>
             </div>
@@ -700,11 +706,11 @@ export default function TimelinePage() {
 
           {/* Status Banner for Selected Day or Range */}
           {startDay && endDay && (
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 transition-all">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50 transition-all">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4">
                 <div className="space-y-1">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <span className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
                       {isRange 
                         ? `${startDay.fullLabel} — ${endDay.fullLabel}` 
                         : startDay.fullLabel
@@ -714,7 +720,7 @@ export default function TimelinePage() {
                       {isRange ? `${periodMetrics.daysCount} дн.` : '1 день'}
                     </Badge>
                   </div>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                     {isRange 
                       ? `За обрані ${periodMetrics.daysCount} дн. зафіксовано ${periodMetrics.count.toLocaleString()} звернень (в середньому ${periodMetrics.avgDaily}/день), середній ризик ${periodMetrics.avgRisk}/100.${periodTopLocation.count > 0 ? ` Топ-локація: ${periodTopLocation.name}.` : ''}`
                       : `Зафіксовано ${startDay.count} звернень. Середній ризик: ${startDay.avgRisk}/100.${startDay.topLocation !== 'Немає даних' ? ` Головна локація: ${startDay.topLocation}.` : ''}`
@@ -722,11 +728,11 @@ export default function TimelinePage() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 self-end md:self-center shrink-0">
+                <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 pt-1 sm:pt-0">
                   <Button 
                     size="sm" 
                     variant="default" 
-                    className="text-xs h-8 px-3.5 font-semibold bg-red-600 hover:bg-red-700 text-white gap-1.5 shadow-sm cursor-pointer"
+                    className="w-full sm:w-auto text-xs h-8 px-3.5 font-semibold bg-red-600 hover:bg-red-700 text-white gap-1.5 shadow-sm cursor-pointer justify-center"
                     onClick={() => router.push(targetFeedUrl)}
                   >
                     {isRange ? (
@@ -743,103 +749,133 @@ export default function TimelinePage() {
       </Card>
 
       {/* Summary KPI Metrics Grid (Grey by default, Red when critical) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <Card className="border-slate-200">
-          <CardContent className="p-3.5">
-            <div className="text-xs text-slate-500 font-medium mb-1">
-              {isRange ? 'Скарг за період' : 'Скарг за день'}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+        {/* Card 1: Complaints */}
+        <div className="p-3 sm:p-4 rounded-xl border border-slate-200 bg-white shadow-2xs flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-1 mb-2">
+            <span className="text-xs font-semibold text-slate-500 truncate">
+              {isRange ? 'Скарги' : 'Скарги дня'}
+            </span>
+            <div className="w-6 h-6 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+              <Users className="w-3.5 h-3.5" />
             </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xl font-bold text-slate-900">{periodMetrics.count.toLocaleString()}</span>
-              {isRange && (
-                <span className="text-[11px] font-medium text-slate-400">
-                  ~{periodMetrics.avgDaily}/день
-                </span>
-              )}
+          </div>
+          <div>
+            <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              {periodMetrics.count.toLocaleString()}
             </div>
-          </CardContent>
-        </Card>
+            <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+              {isRange ? `~${periodMetrics.avgDaily}/день` : 'за день'}
+            </p>
+          </div>
+        </div>
 
-        <Card className="border-slate-200">
-          <CardContent className="p-3.5">
-            <div className="text-xs text-slate-500 font-medium mb-1">
-              {isRange ? 'Сер. ризик періоду' : 'Сер. ризик'}
+        {/* Card 2: Risk */}
+        <div className={`p-3 sm:p-4 rounded-xl border shadow-2xs flex flex-col justify-between ${
+          periodMetrics.avgRisk >= 50 ? 'border-red-200 bg-red-50/20' : 'border-slate-200 bg-white'
+        }`}>
+          <div className="flex items-center justify-between gap-1 mb-2">
+            <span className="text-xs font-semibold text-slate-500 truncate">
+              {isRange ? 'Сер. ризик' : 'Ризик дня'}
+            </span>
+            <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${
+              periodMetrics.avgRisk >= 50 ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
+            }`}>
+              <Activity className="w-3.5 h-3.5" />
             </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className={`text-xl font-bold ${
-                periodMetrics.avgRisk >= 50 
-                  ? 'text-red-600' 
-                  : 'text-slate-600'
+          </div>
+          <div>
+            <div className="flex items-baseline gap-1">
+              <span className={`text-xl sm:text-2xl font-black tracking-tight ${
+                periodMetrics.avgRisk >= 50 ? 'text-red-600' : 'text-slate-900'
               }`}>
                 {periodMetrics.avgRisk}
               </span>
-              <span className="text-xs text-slate-400">/ 100</span>
-              {periodMetrics.highRiskCount > 0 && (
-                <span className={`text-[10px] ml-auto font-medium ${periodMetrics.highRiskCount >= (isRange ? 10 : 3) ? 'text-red-600' : 'text-slate-400'}`}>
-                  {periodMetrics.highRiskCount} крит.
-                </span>
-              )}
+              <span className="text-xs text-slate-400 font-medium">/ 100</span>
             </div>
-          </CardContent>
-        </Card>
+            <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+              {periodMetrics.highRiskCount > 0 
+                ? `${periodMetrics.highRiskCount} крит. скарг` 
+                : 'без критичних'}
+            </p>
+          </div>
+        </div>
 
-        <Card className="border-slate-200">
-          <CardContent className="p-3.5">
-            <div className="text-xs text-slate-500 font-medium mb-1 flex items-center gap-1">
-              <UserX className="w-3 h-3 text-slate-400" /> Відтік (Churn)
+        {/* Card 3: Churn */}
+        <div className={`p-3 sm:p-4 rounded-xl border shadow-2xs flex flex-col justify-between ${
+          periodMetrics.churnPercent >= 15 ? 'border-red-200 bg-red-50/20' : 'border-slate-200 bg-white'
+        }`}>
+          <div className="flex items-center justify-between gap-1 mb-2">
+            <span className="text-xs font-semibold text-slate-500 truncate">
+              Відтік
+            </span>
+            <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${
+              periodMetrics.churnPercent >= 15 ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
+            }`}>
+              <UserX className="w-3.5 h-3.5" />
             </div>
+          </div>
+          <div>
             <div className="flex items-baseline gap-1">
-              <span className={`text-xl font-bold ${
-                periodMetrics.churnPercent >= 15 ? 'text-red-600' : 'text-slate-600'
+              <span className={`text-xl sm:text-2xl font-black tracking-tight ${
+                periodMetrics.churnPercent >= 15 ? 'text-red-600' : 'text-slate-900'
               }`}>
                 {periodMetrics.churnPercent}%
               </span>
-              <span className="text-xs text-slate-400">({periodMetrics.churnCount})</span>
             </div>
-          </CardContent>
-        </Card>
+            <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+              {periodMetrics.churnCount} {periodMetrics.churnCount === 1 ? 'погроза' : periodMetrics.churnCount < 5 ? 'погрози' : 'погроз'}
+            </p>
+          </div>
+        </div>
 
-        <Card className="border-slate-200">
-          <CardContent className="p-3.5">
-            <div className="text-xs text-slate-500 font-medium mb-1 flex items-center gap-1">
-              <MapPin className="w-3 h-3 text-slate-400" /> {isRange ? 'Топ-локація' : 'Епіцентр дня'}
+        {/* Card 4: Top Location */}
+        <div className="p-3 sm:p-4 rounded-xl border border-slate-200 bg-white shadow-2xs flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-1 mb-2">
+            <span className="text-xs font-semibold text-slate-500 truncate">
+              {isRange ? 'Топ-локація' : 'Епіцентр'}
+            </span>
+            <div className="w-6 h-6 rounded-lg bg-red-50 text-red-600 border border-red-100 flex items-center justify-center shrink-0">
+              <MapPin className="w-3.5 h-3.5" />
             </div>
-            <div className="text-sm font-bold text-slate-800 truncate mt-1" title={periodTopLocation.name}>
+          </div>
+          <div>
+            <div className="text-sm sm:text-base font-black text-slate-900 truncate" title={periodTopLocation.name}>
               {periodTopLocation.name}
             </div>
-            {periodTopLocation.count > 0 && (
-              <div className="text-[10px] text-slate-400">
-                {periodTopLocation.count} скарг ({periodTopLocation.percent}%)
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+              {periodTopLocation.count > 0 
+                ? `${periodTopLocation.count} скарг (${periodTopLocation.percent}%)`
+                : 'аномалій немає'}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Chart + Selected Period Live Feed */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Interactive Bar Chart for Active Horizon (2 cols) */}
         <Card className="lg:col-span-2 border-slate-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center justify-between">
+          <CardHeader className="pb-2 p-4 sm:p-6">
+            <CardTitle className="text-sm sm:text-base flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
               <span>
                 Динаміка звернень ({horizon === 'all' ? `Весь проміжок: ${totalLength} дн.` : `${visibleDays.length} дн.`})
               </span>
               <span className="text-xs font-normal text-slate-500">
                 {isRange 
-                  ? `Обрано діапазон: ${startDay?.dateStr} – ${endDay?.dateStr} (${periodMetrics.daysCount} дн.)`
+                  ? `Обрано: ${startDay?.dateStr} – ${endDay?.dateStr} (${periodMetrics.daysCount} дн.)`
                   : `Підсвічено: ${startDay?.label}`
                 }
               </span>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs">
               {mode === 'single' 
                 ? 'Клікніть на будь-який стовпчик графіка, щоб перемкнути вибір на цей день'
-                : 'Клікніть на стовпчик, щоб скоригувати межі періоду, або двічі клікніть для переходу у стрічку'
+                : 'Клікніть на стовпчик, щоб скоригувати межі періоду'
               }
             </CardDescription>
           </CardHeader>
-          <CardContent className="h-[340px]">
+          <CardContent className="h-[240px] sm:h-[300px] md:h-[340px] p-2 sm:p-6 pt-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart 
                 data={visibleDays}

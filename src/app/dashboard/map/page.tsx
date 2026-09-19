@@ -132,51 +132,53 @@ export default function MapPage() {
       </div>
 
       {/* Filter Bar */}
-      <div className="relative z-30 flex flex-wrap gap-4 items-center p-3.5 bg-white border border-slate-200 rounded-xl shadow-xs">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-slate-600">Оператор:</span>
-          <Select value={brand} onValueChange={(v) => setBrand(v ?? 'all')}>
-            <SelectTrigger className="w-[170px] h-9 bg-slate-50 border-slate-200 text-xs">
-              <SelectValue placeholder="Оператор" labelMap={OPERATOR_LABELS} />
-            </SelectTrigger>
-            <SelectContent className="z-[9999]">
-              <SelectItem value="all">Усі оператори</SelectItem>
-              <SelectItem value="vodafone">Vodafone</SelectItem>
-              <SelectItem value="kyivstar">Київстар</SelectItem>
-              <SelectItem value="lifecell">lifecell</SelectItem>
-            </SelectContent>
-          </Select>
+      <div className="relative z-30 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 sm:items-center p-3 sm:p-3.5 bg-white border border-slate-200 rounded-xl shadow-xs">
+        <div className="flex flex-col xs:flex-row sm:flex-row gap-2.5 sm:gap-3 flex-1">
+          <div className="flex items-center gap-2 flex-1 sm:flex-initial">
+            <span className="text-xs font-semibold text-slate-600 shrink-0">Оператор:</span>
+            <Select value={brand} onValueChange={(v) => setBrand(v ?? 'all')}>
+              <SelectTrigger className="w-full sm:w-[160px] h-9 bg-slate-50 border-slate-200 text-xs">
+                <SelectValue placeholder="Оператор" labelMap={OPERATOR_LABELS} />
+              </SelectTrigger>
+              <SelectContent className="z-[9999]">
+                <SelectItem value="all">Усі оператори</SelectItem>
+                <SelectItem value="vodafone">Vodafone</SelectItem>
+                <SelectItem value="kyivstar">Київстар</SelectItem>
+                <SelectItem value="lifecell">lifecell</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-2 flex-1 sm:flex-initial">
+            <span className="text-xs font-semibold text-slate-600 shrink-0">Проблема:</span>
+            <Select value={problem} onValueChange={(v) => setProblem(v ?? 'all')}>
+              <SelectTrigger className="w-full sm:w-[180px] h-9 bg-slate-50 border-slate-200 text-xs">
+                <SelectValue placeholder="Тип проблеми" labelMap={MAP_PROBLEM_LABELS} />
+              </SelectTrigger>
+              <SelectContent className="z-[9999]">
+                <SelectItem value="all">Усі типи</SelectItem>
+                <SelectItem value="no_signal">Немає сигналу</SelectItem>
+                <SelectItem value="slow_internet">Повільний інтернет</SelectItem>
+                <SelectItem value="dropped_calls">Обриви дзвінків</SelectItem>
+                <SelectItem value="other">Інше</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-slate-600">Проблема:</span>
-          <Select value={problem} onValueChange={(v) => setProblem(v ?? 'all')}>
-            <SelectTrigger className="w-[190px] h-9 bg-slate-50 border-slate-200 text-xs">
-              <SelectValue placeholder="Тип проблеми" labelMap={MAP_PROBLEM_LABELS} />
-            </SelectTrigger>
-            <SelectContent className="z-[9999]">
-              <SelectItem value="all">Усі типи</SelectItem>
-              <SelectItem value="no_signal">Немає сигналу</SelectItem>
-              <SelectItem value="slow_internet">Повільний інтернет</SelectItem>
-              <SelectItem value="dropped_calls">Обриви дзвінків</SelectItem>
-              <SelectItem value="other">Інше</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 ml-auto">
+        <div className="flex flex-wrap items-center gap-2 sm:ml-auto w-full sm:w-auto justify-between sm:justify-end pt-2 sm:pt-0 border-t border-slate-100 sm:border-0">
           <Badge variant="outline" className="text-xs py-1 px-2.5 bg-slate-50 border-slate-200 font-medium text-slate-600">
-            Локацій на карті: <b className="ml-1 text-slate-900 font-bold">{points.length}</b>
+            Локацій: <b className="ml-1 text-slate-900 font-bold">{points.length}</b>
           </Badge>
           <Badge variant="outline" className="text-xs py-1 px-2.5 bg-slate-50 border-slate-200 font-medium text-slate-600">
-            Гео-визначення: <b className="ml-1 text-slate-900 font-bold">{sharePct}% скарг</b>
+            Гео-визначення: <b className="ml-1 text-slate-900 font-bold">{sharePct}%</b>
           </Badge>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
         <Card className="overflow-hidden relative z-0 border-slate-200 shadow-sm">
-          <CardContent className="p-0 h-[560px] relative z-0">
+          <CardContent className="p-0 h-[360px] sm:h-[460px] md:h-[560px] relative z-0">
             {loading
               ? <div className="h-full flex items-center justify-center text-slate-400">
                   Завантаження даних...
@@ -185,13 +187,13 @@ export default function MapPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Найпроблемніші локації</CardTitle>
+        <Card className="border-slate-200 shadow-sm">
+          <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-3">
+            <CardTitle className="text-base sm:text-lg font-bold">Найпроблемніші локації</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 max-h-[500px] overflow-y-auto">
+          <CardContent className="p-4 sm:p-6 pt-0 space-y-2 max-h-[360px] sm:max-h-[460px] md:max-h-[500px] overflow-y-auto">
             {points.slice(0, 20).map((p, i) => (
-              <div key={p.key} className="flex items-start justify-between gap-2 text-sm border-b pb-2">
+              <div key={p.key} className="flex items-start justify-between gap-2 text-sm border-b border-slate-100 pb-2">
                 <div>
                   <div className="font-medium">{i + 1}. {p.name}</div>
                   <div className="text-slate-500 text-xs">{p.topCause}</div>
@@ -203,7 +205,7 @@ export default function MapPage() {
               </div>
             ))}
             {points.length === 0 && !loading && (
-              <div className="text-slate-400 text-sm">
+              <div className="text-slate-400 text-sm py-4 text-center">
                 Для цих фільтрів скарг із визначеною локацією немає.
               </div>
             )}

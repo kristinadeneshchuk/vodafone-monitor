@@ -62,7 +62,7 @@ const RELEVANCE_LABELS: Record<string, string> = {
 
 const CHURN_LABELS: Record<string, string> = {
   all: 'Усі відгуки',
-  true: '🚨 Тільки Churn (погрози)',
+  true: 'Тільки Churn (погрози)',
 };
 
 function FeedPageContent() {
@@ -308,10 +308,10 @@ function FeedPageContent() {
                   />
                 </div>
                 
-                <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full md:w-auto items-center">
                   <Select value={sourceFilter} onValueChange={(val) => { if (val) setSourceFilter(val); }}>
-                    <SelectTrigger className="w-[160px] bg-slate-50/50">
-                      <Globe className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
+                    <SelectTrigger className="w-full sm:w-[150px] bg-slate-50/50 text-xs">
+                      <Globe className="w-3.5 h-3.5 mr-1.5 text-slate-500 shrink-0" />
                       <SelectValue placeholder="Джерело" labelMap={SOURCE_LABELS} />
                     </SelectTrigger>
                     <SelectContent>
@@ -325,8 +325,8 @@ function FeedPageContent() {
                   </Select>
 
                   <Select value={problemFilter} onValueChange={(val) => { if (val) setProblemFilter(val); }}>
-                    <SelectTrigger className="w-[170px] bg-slate-50/50">
-                      <Filter className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
+                    <SelectTrigger className="w-full sm:w-[160px] bg-slate-50/50 text-xs">
+                      <Filter className="w-3.5 h-3.5 mr-1.5 text-slate-500 shrink-0" />
                       <SelectValue placeholder="Тип проблеми" labelMap={PROBLEM_LABELS} />
                     </SelectTrigger>
                     <SelectContent>
@@ -339,8 +339,8 @@ function FeedPageContent() {
                   </Select>
 
                   <Select value={relevantFilter} onValueChange={(val) => { if (val) setRelevantFilter(val); }}>
-                    <SelectTrigger className="w-[170px] bg-slate-50/50">
-                      <Target className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
+                    <SelectTrigger className="w-full sm:w-[150px] bg-slate-50/50 text-xs">
+                      <Target className="w-3.5 h-3.5 mr-1.5 text-slate-500 shrink-0" />
                       <SelectValue placeholder="Релевантність" labelMap={RELEVANCE_LABELS} />
                     </SelectTrigger>
                     <SelectContent>
@@ -351,17 +351,17 @@ function FeedPageContent() {
                   </Select>
 
                   <Select value={churnFilter} onValueChange={(val) => { if (val) setChurnFilter(val); }}>
-                    <SelectTrigger className="w-[170px] bg-slate-50/50">
-                      <UserX className="w-3.5 h-3.5 mr-1.5 text-rose-600" />
+                    <SelectTrigger className="w-full sm:w-[165px] bg-slate-50/50 text-xs">
+                      <UserX className="w-3.5 h-3.5 mr-1.5 text-rose-600 shrink-0" />
                       <SelectValue placeholder="Загроза відтоку" labelMap={CHURN_LABELS} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Усі відгуки</SelectItem>
-                      <SelectItem value="true">🚨 Тільки Churn (погрози)</SelectItem>
+                      <SelectItem value="true">Тільки Churn (погрози)</SelectItem>
                     </SelectContent>
                   </Select>
 
-                  <Button type="submit" variant="secondary" className="px-4">
+                  <Button type="submit" variant="secondary" className="col-span-2 sm:col-span-1 px-4 text-xs h-9">
                     Застосувати
                   </Button>
                 </div>
@@ -502,149 +502,232 @@ function FeedPageContent() {
             </div>
           )}
 
-          {/* Table Container */}
-          <div className="border border-slate-200 rounded-lg overflow-hidden">
+          {/* Table Container for Desktop + Mobile Cards List */}
+          <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
             {loading ? (
-              <div className="text-center py-16 text-slate-500">Завантаження та фільтрація даних...</div>
+              <div className="text-center py-16 text-slate-500 text-sm">Завантаження та фільтрація даних...</div>
             ) : displayedFeedbacks.length === 0 ? (
-              <div className="text-center py-16 text-slate-500">Повідомлень не знайдено за заданими критеріями</div>
+              <div className="text-center py-16 text-slate-500 text-sm">Повідомлень не знайдено за заданими критеріями</div>
             ) : (
-              <Table>
-                <TableHeader className="bg-slate-50/80">
-                  <TableRow>
-                    <TableHead 
-                      className="cursor-pointer hover:bg-slate-100 transition-colors w-[150px]"
-                      onClick={() => handleSort('timestamp')}
-                    >
-                      Дата & Джерело {renderSortIndicator('timestamp')}
-                    </TableHead>
-                    <TableHead className="w-[180px]">Локація</TableHead>
-                    <TableHead className="w-[140px]">Проблема</TableHead>
-                    <TableHead className="min-w-[320px]">Повідомлення</TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:bg-slate-100 transition-colors text-right w-[110px]"
-                      onClick={() => handleSort('relevanceScore')}
-                    >
-                      До покриття (0-1) {renderSortIndicator('relevanceScore')}
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:bg-slate-100 transition-colors text-right w-[110px]"
-                      onClick={() => handleSort('reputationalRiskScore')}
-                    >
-                      Ризик (0-100) {renderSortIndicator('reputationalRiskScore')}
-                    </TableHead>
-                    <TableHead className="text-center w-[70px]">Джерело</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <>
+                {/* 1. Mobile Feed Cards (Visible on screens < md) */}
+                <div className="block md:hidden divide-y divide-slate-100">
                   {displayedFeedbacks.map((record) => (
-                    <TableRow key={record.id} className="hover:bg-slate-50/60 transition-colors">
-                      {/* Date & Source */}
-                      <TableCell className="align-top py-3">
-                        <div className="space-y-1">
-                          <div className="text-xs text-slate-500">
+                    <div key={record.id} className="p-3.5 space-y-2.5 hover:bg-slate-50/70 transition-colors">
+                      {/* Top Header Row */}
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2">
+                          {getSourceBadge(record.source)}
+                          <span className="text-[11px] font-mono text-slate-400">
                             {format(parseISO(record.timestamp), 'dd.MM.yy HH:mm')}
-                          </div>
-                          <div>{getSourceBadge(record.source)}</div>
-                        </div>
-                      </TableCell>
-
-                      {/* Location */}
-                      <TableCell className="align-top py-3 font-medium text-slate-700 text-xs">
-                        <div className="flex items-center gap-1">
-                          <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <span className="truncate max-w-[160px]" title={record.locationName}>
-                            {record.locationName}
                           </span>
                         </div>
-                      </TableCell>
-
-                      {/* Problem Type + тон: без тону похвала читалась як скарга */}
-                      <TableCell className="align-top py-3">
-                        <div className="flex flex-col gap-1 items-start">
-                          <Badge variant="outline" className={
-                            record.sentiment === 'negative'
-                              ? 'text-xs font-normal text-red-700 bg-red-50 border-red-200'
-                              : record.sentiment === 'positive'
-                              ? 'text-xs font-normal text-emerald-700 bg-emerald-50 border-emerald-200'
-                              : 'text-xs font-normal text-slate-600 bg-slate-50'}>
-                            {record.sentiment === 'negative' ? 'Скарга'
-                              : record.sentiment === 'positive' ? 'Похвала' : 'Нейтрально'}
+                        <div className="flex items-center gap-1.5">
+                          <Badge 
+                            className={`text-[10px] px-1.5 py-0 font-bold ${
+                              record.reputationalRiskScore >= 50
+                                ? 'bg-red-500 text-white'
+                                : record.reputationalRiskScore >= 30
+                                ? 'bg-amber-500 text-white'
+                                : 'bg-slate-200 text-slate-700'
+                            }`}
+                          >
+                            Ризик {record.reputationalRiskScore}
                           </Badge>
-                          {record.problemType !== 'none' && (
-                            <Badge variant="outline" className="text-xs font-normal text-slate-700 bg-slate-50">
-                              {getProblemLabel(record.problemType)}
-                            </Badge>
-                          )}
+                          <a 
+                            href={getExternalUrl(record.originalUrl)} 
+                            target="_blank" 
+                            rel="noreferrer"
+                            className="p-1 text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
+                            title="Відкрити джерело"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
                         </div>
-                      </TableCell>
+                      </div>
+
+                      {/* Badges Row */}
+                      <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                        <Badge variant="outline" className={
+                          record.sentiment === 'negative'
+                            ? 'text-[10px] py-0 font-normal text-red-700 bg-red-50 border-red-200'
+                            : record.sentiment === 'positive'
+                            ? 'text-[10px] py-0 font-normal text-emerald-700 bg-emerald-50 border-emerald-200'
+                            : 'text-[10px] py-0 font-normal text-slate-600 bg-slate-50'
+                        }>
+                          {record.sentiment === 'negative' ? 'Скарга' : record.sentiment === 'positive' ? 'Похвала' : 'Нейтрально'}
+                        </Badge>
+                        {record.problemType !== 'none' && (
+                          <Badge variant="outline" className="text-[10px] py-0 font-normal text-slate-700 bg-slate-50">
+                            {getProblemLabel(record.problemType)}
+                          </Badge>
+                        )}
+                        {record.churnIntent && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0 rounded text-[9px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                            <UserX className="w-2.5 h-2.5" /> Churn
+                          </span>
+                        )}
+                      </div>
 
                       {/* Message Content */}
-                      <TableCell className="align-top py-3">
-                        <p className="text-xs text-slate-800 leading-relaxed max-w-xl whitespace-normal">
-                          {record.content}
-                          {record.churnIntent && (
-                            <span className="inline-flex items-center gap-1 ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                              <UserX className="w-2.5 h-2.5" /> Churn
-                            </span>
-                          )}
-                        </p>
-                      </TableCell>
+                      <p className="text-xs text-slate-800 leading-relaxed font-normal">
+                        {record.content}
+                      </p>
 
-                      {/* Relevance Score (0 - 1) */}
-                      <TableCell className="align-top py-3 text-right">
-                        <div className="flex flex-col items-end gap-1">
-                          <Badge 
-                            variant="outline" 
-                            className={record.isRelevant ? "text-[10px] py-0 px-1.5 border-blue-200 bg-blue-50 text-blue-700" : "text-[10px] py-0 px-1.5 border-slate-200 text-slate-400"}
-                          >
-                            {record.isRelevant ? "Про покриття" : "Інша тема"}
-                          </Badge>
-                          <div className="inline-flex items-center gap-1.5">
-                            <span className="font-semibold text-xs text-blue-700">
-                              {record.relevanceScore.toFixed(2)}
-                            </span>
-                            <div className="w-10 h-1.5 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
-                              <div 
-                                className="h-full bg-blue-500 rounded-full" 
-                                style={{ width: `${Math.round(record.relevanceScore * 100)}%` }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </TableCell>
-
-                      {/* Risk Score (0 - 100) */}
-                      <TableCell className="align-top py-3 text-right">
-                        <Badge 
-                          className={`text-xs font-bold ${
-                            record.reputationalRiskScore >= 50
-                              ? 'bg-red-500 text-white hover:bg-red-600'
-                              : record.reputationalRiskScore >= 30
-                              ? 'bg-amber-500 text-white hover:bg-amber-600'
-                              : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                          }`}
-                        >
-                          {record.reputationalRiskScore}
-                        </Badge>
-                      </TableCell>
-
-                      {/* External Link */}
-                      <TableCell className="align-top py-3 text-center">
-                        <a 
-                          href={getExternalUrl(record.originalUrl)} 
-                          target="_blank" 
-                          rel="noreferrer"
-                          className="inline-flex p-1 text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
-                          title={record.source === 'review' || record.originalUrl?.startsWith('play_store_') ? "Відкрити додаток у Google Play" : "Відкрити оригінал"}
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      </TableCell>
-                    </TableRow>
+                      {/* Footer Row */}
+                      <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
+                        <span className="flex items-center gap-1 truncate max-w-[180px]">
+                          <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+                          <span className="truncate">{record.locationName}</span>
+                        </span>
+                        <span className="text-[10px] text-blue-600 font-medium">
+                          {record.isRelevant ? `Покриття (${record.relevanceScore.toFixed(2)})` : 'Інша тема'}
+                        </span>
+                      </div>
+                    </div>
                   ))}
-                </TableBody>
-              </Table>
+                </div>
+
+                {/* 2. Desktop Table (Visible on md+) */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader className="bg-slate-50/80">
+                      <TableRow>
+                        <TableHead 
+                          className="cursor-pointer hover:bg-slate-100 transition-colors w-[150px]"
+                          onClick={() => handleSort('timestamp')}
+                        >
+                          Дата & Джерело {renderSortIndicator('timestamp')}
+                        </TableHead>
+                        <TableHead className="w-[180px]">Локація</TableHead>
+                        <TableHead className="w-[140px]">Проблема</TableHead>
+                        <TableHead className="min-w-[320px]">Повідомлення</TableHead>
+                        <TableHead 
+                          className="cursor-pointer hover:bg-slate-100 transition-colors text-right w-[110px]"
+                          onClick={() => handleSort('relevanceScore')}
+                        >
+                          До покриття (0-1) {renderSortIndicator('relevanceScore')}
+                        </TableHead>
+                        <TableHead 
+                          className="cursor-pointer hover:bg-slate-100 transition-colors text-right w-[110px]"
+                          onClick={() => handleSort('reputationalRiskScore')}
+                        >
+                          Ризик (0-100) {renderSortIndicator('reputationalRiskScore')}
+                        </TableHead>
+                        <TableHead className="text-center w-[70px]">Джерело</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {displayedFeedbacks.map((record) => (
+                        <TableRow key={record.id} className="hover:bg-slate-50/60 transition-colors">
+                          {/* Date & Source */}
+                          <TableCell className="align-top py-3">
+                            <div className="space-y-1">
+                              <div className="text-xs text-slate-500">
+                                {format(parseISO(record.timestamp), 'dd.MM.yy HH:mm')}
+                              </div>
+                              <div>{getSourceBadge(record.source)}</div>
+                            </div>
+                          </TableCell>
+
+                          {/* Location */}
+                          <TableCell className="align-top py-3 font-medium text-slate-700 text-xs">
+                            <div className="flex items-center gap-1">
+                              <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                              <span className="truncate max-w-[160px]" title={record.locationName}>
+                                {record.locationName}
+                              </span>
+                            </div>
+                          </TableCell>
+
+                          {/* Problem Type */}
+                          <TableCell className="align-top py-3">
+                            <div className="flex flex-col gap-1 items-start">
+                              <Badge variant="outline" className={
+                                record.sentiment === 'negative'
+                                  ? 'text-xs font-normal text-red-700 bg-red-50 border-red-200'
+                                  : record.sentiment === 'positive'
+                                  ? 'text-xs font-normal text-emerald-700 bg-emerald-50 border-emerald-200'
+                                  : 'text-xs font-normal text-slate-600 bg-slate-50'}>
+                                {record.sentiment === 'negative' ? 'Скарга'
+                                  : record.sentiment === 'positive' ? 'Похвала' : 'Нейтрально'}
+                              </Badge>
+                              {record.problemType !== 'none' && (
+                                <Badge variant="outline" className="text-xs font-normal text-slate-700 bg-slate-50">
+                                  {getProblemLabel(record.problemType)}
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
+
+                          {/* Message Content */}
+                          <TableCell className="align-top py-3">
+                            <p className="text-xs text-slate-800 leading-relaxed max-w-xl whitespace-normal">
+                              {record.content}
+                              {record.churnIntent && (
+                                <span className="inline-flex items-center gap-1 ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                                  <UserX className="w-2.5 h-2.5" /> Churn
+                                </span>
+                              )}
+                            </p>
+                          </TableCell>
+
+                          {/* Relevance Score (0 - 1) */}
+                          <TableCell className="align-top py-3 text-right">
+                            <div className="flex flex-col items-end gap-1">
+                              <Badge 
+                                variant="outline" 
+                                className={record.isRelevant ? "text-[10px] py-0 px-1.5 border-blue-200 bg-blue-50 text-blue-700" : "text-[10px] py-0 px-1.5 border-slate-200 text-slate-400"}
+                              >
+                                {record.isRelevant ? "Про покриття" : "Інша тема"}
+                              </Badge>
+                              <div className="inline-flex items-center gap-1.5">
+                                <span className="font-semibold text-xs text-blue-700">
+                                  {record.relevanceScore.toFixed(2)}
+                                </span>
+                                <div className="w-10 h-1.5 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
+                                  <div 
+                                    className="h-full bg-blue-500 rounded-full" 
+                                    style={{ width: `${Math.round(record.relevanceScore * 100)}%` }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </TableCell>
+
+                          {/* Risk Score (0 - 100) */}
+                          <TableCell className="align-top py-3 text-right">
+                            <Badge 
+                              className={`text-xs font-bold ${
+                                record.reputationalRiskScore >= 50
+                                  ? 'bg-red-500 text-white hover:bg-red-600'
+                                  : record.reputationalRiskScore >= 30
+                                  ? 'bg-amber-500 text-white hover:bg-amber-600'
+                                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                              }`}
+                            >
+                              {record.reputationalRiskScore}
+                            </Badge>
+                          </TableCell>
+
+                          {/* External Link */}
+                          <TableCell className="align-top py-3 text-center">
+                            <a 
+                              href={getExternalUrl(record.originalUrl)} 
+                              target="_blank" 
+                              rel="noreferrer"
+                              className="inline-flex p-1 text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
+                              title={record.source === 'review' || record.originalUrl?.startsWith('play_store_') ? "Відкрити додаток у Google Play" : "Відкрити оригінал"}
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </a>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
           </div>
 
