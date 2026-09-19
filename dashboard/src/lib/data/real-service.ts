@@ -64,6 +64,10 @@ export class RealFeedbackService implements IFeedbackService {
     }
 
     const sentimentDistribution = { positive: 0, neutral: 0, negative: 0 };
+    // Середній ризик рахуємо ЛИШЕ по згадках із ненульовим ризиком.
+    // Середнє по всьому масиві безглузде: 98% записів це не скарги
+    // ("дякую, все супер" має ризик 0) і вони тягнуть показник у нуль.
+    let riskyCount = 0;
     const locationMap: Record<string, number> = {};
     const timelineMap: Record<string, { count: number; totalRisk: number }> = {};
     let totalRisk = 0;
@@ -71,8 +75,13 @@ export class RealFeedbackService implements IFeedbackService {
 
     for (const f of feedbacks) {
       sentimentDistribution[f.sentiment] += 1;
-      totalRisk += f.reputationalRiskScore;
-      if (f.importance === 'critical') criticalIssuesCount += 1;
+      if (f.reputationalRiskScore > 0) {
+        totalRisk += f.reputationalRiskScore;
+        riskyCount += 1;
+      }
+      // "Критичні" — це high і critical за шкалою інтерпретації ризику.
+      // Окрема криза видно не тут, а в алертах детектора (getAlerts).
+      if (f.importance === 'critical' || f.importance === 'high') criticalIssuesCount += 1;
 
       // "Невідомо" у топ локацій не показуємо: це не місце.
       if (f.locationName && f.locationName !== 'Невідомо') {
@@ -87,7 +96,7 @@ export class RealFeedbackService implements IFeedbackService {
 
     return {
       totalComplaints: feedbacks.length,
-      averageRiskScore: Math.round(totalRisk / feedbacks.length),
+      averageRiskScore: riskyCount ? Math.round(totalRisk / riskyCount) : 0,
       criticalIssuesCount,
       sentimentDistribution,
       topLocations: Object.entries(locationMap)
