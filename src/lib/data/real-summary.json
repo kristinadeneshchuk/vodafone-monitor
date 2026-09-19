@@ -1,24 +1,24 @@
 {
  "problemLocations": 20,
  "gridDriven": 7,
- "chronicLocations": 3,
+ "chronicLocations": 2,
  "healthyLocations": 2,
  "incidentLocations": 0,
- "coverageMentions": 2110,
- "coverageComplaints": 1142,
- "coveragePraise": 513,
+ "coverageMentions": 2136,
+ "coverageComplaints": 1158,
+ "coveragePraise": 525,
  "gridOutageShare": 16.4,
- "gridOutageCount": 346,
- "withLocation": 265,
- "withLocationShare": 12.6,
- "chronicGaps": 44,
+ "gridOutageCount": 351,
+ "withLocation": 268,
+ "withLocationShare": 12.5,
+ "chronicGaps": 43,
  "byBrand": {
-  "kyivstar": 763,
-  "vodafone": 717,
-  "unknown": 460,
-  "lifecell": 170
+  "kyivstar": 769,
+  "vodafone": 727,
+  "unknown": 464,
+  "lifecell": 176
  },
  "wakeAlertsPerYear": 4,
- "alertsTotal": 197,
+ "alertsTotal": 199,
  "maxSpikeVelocity": 24.0
 }
