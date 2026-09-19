@@ -2,7 +2,8 @@
 // даних (16 600 записів), без нього збірка падає на типах.
 export type SourceType = 'telegram' | 'twitter' | 'facebook' | 'news' | 'review';
 export type SentimentType = 'positive' | 'neutral' | 'negative';
-export type ProblemType = 'no_signal' | 'slow_internet' | 'dropped_calls' | 'other';
+/** 'none' — згадка про звʼязок, у якій проблеми немає (похвала, нейтральна новина). */
+export type ProblemType = 'no_signal' | 'slow_internet' | 'dropped_calls' | 'other' | 'none';
 
 export interface FeedbackRecord {
   id: string;
@@ -76,7 +77,10 @@ export interface DashboardMetrics {
   averageResonance: number;     // коефіцієнт резонансу / вірусності (Reach x Relevance)
   spikeVelocityRatio: number;   // швидкість спалаху скарг (перевищення норми baseline, x разів)
 
-  date?: string;                // YYYY-MM-DD
+  date?: string;                // YYYY-MM-DD — останній день вікна
+  /** Перший день вікна звіту. Бриф має описувати той самий період,
+   *  що й цифри над ним, а не одну добу. */
+  windowStart?: string;         // YYYY-MM-DD
   dateLabel?: string;           // Наприклад "19 вересня 2026"
 
   sentimentDistribution: {

@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS analysis (
 
     -- контракт для №6: enum числами заради місця
     is_market_wide    INTEGER,
+    is_ad             INTEGER,
     is_relevant       INTEGER,
     relevance_score   REAL,
     is_constructive   INTEGER,
@@ -214,7 +215,7 @@ def enrich_batch(rows):
             context[0] if context else None,
             q['actionability'], q['emotional_noise'], q['promo_like'],
             json.dumps(q, ensure_ascii=False),
-            int(c['isMarketWide']),
+            int(c['isMarketWide']), int(c['isAd']),
             int(c['isRelevant']), c['relevanceScore'],
             int(c['isConstructive']), c['constructiveScore'],
             c['importance'], c['sentiment'], c['problemType'], c['reputationalRiskScore'],
@@ -251,7 +252,7 @@ def run(redo=False):
         if not rows:
             break
         con.executemany(
-            "INSERT OR REPLACE INTO analysis VALUES (" + ",".join("?"*28) + ")",
+            "INSERT OR REPLACE INTO analysis VALUES (" + ",".join("?"*29) + ")",
             enrich_batch(rows))
         con.commit()
         done += len(rows)

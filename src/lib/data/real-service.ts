@@ -129,10 +129,18 @@ export class RealFeedbackService implements IFeedbackService {
 
     // Якщо вчорашній день є в базі — використовуємо його.
     // Якщо відкрили іншого дня — беремо останній повний завершений день з бази
-    const effectiveDayStr = filters?.startDate?.slice(0, 10) 
+    // Дані зібрані за рік і рідкі: буває по кілька днів поспіль без
+    // жодної скарги. Брати "передостанню дату з набору" не можна —
+    // коли останні записи 15 вересня, а передостанні 5-го, звіт
+    // показував тиждень 30 серпня - 5 вересня, хоча свіжі дані були.
+    // Беремо останній день, який уже завершився.
+    const effectiveDayStr = filters?.startDate?.slice(0, 10)
       || (hasYesterday ? yesterdayStr : (() => {
-          const allDates = [...new Set(feedbacks.map(f => f.timestamp.slice(0, 10)))].sort();
-          return allDates.length >= 2 ? allDates[allDates.length - 2] : allDates[allDates.length - 1] || yesterdayStr;
+          const past = feedbacks
+            .map(f => f.timestamp.slice(0, 10))
+            .filter(d => d <= yesterdayStr)
+            .sort();
+          return past[past.length - 1] || yesterdayStr;
       })());
 
     // Підпис періоду має збігатися з вікном розрахунку. Раніше тут була
@@ -140,7 +148,7 @@ export class RealFeedbackService implements IFeedbackService {
     // означали різні речі.
     let dateLabel = effectiveDayStr;
     try {
-      const from = format(subDays(parseISO(effectiveDayStr), 6), 'd MMM', { locale: uk });
+      const from = format(subDays(parseISO(effectiveDayStr), 29), 'd MMM', { locale: uk });
       const to = format(parseISO(effectiveDayStr), 'd MMMM yyyy', { locale: uk });
       dateLabel = `${from} — ${to}`;
     } catch {
@@ -153,7 +161,11 @@ export class RealFeedbackService implements IFeedbackService {
     // Порівнювати "вчора проти норми" на таких числах означає міряти шум:
     // дашборд показував усюди нулі просто тому, що 18 вересня випало 0.
     // Тиждень дає 14-20 скарг — на цьому вже видно динаміку.
-    const WINDOW_DAYS = 7;
+    // 30, а не 7. На звʼязок Vodafone припадає близько чотирьох скарг
+    // на тиждень, і тижневе вікно показувало "1 скарга, штатний режим"
+    // навіть тоді, коли в місяці була видима динаміка. Місяць дає
+    // 15 згадок і 7 скарг — на цьому вже можна щось стверджувати.
+    const WINDOW_DAYS = 30;
     const windowStart = format(subDays(parseISO(effectiveDayStr), WINDOW_DAYS - 1), 'yyyy-MM-dd');
     const dayFeedbacks = feedbacks.filter(
       f => f.timestamp.slice(0, 10) >= windowStart
@@ -247,6 +259,7 @@ export class RealFeedbackService implements IFeedbackService {
 
     return {
       date: effectiveDayStr,
+      windowStart,
       dateLabel,
       totalComplaints: dayNegatives,
       totalMentions: dayCount,

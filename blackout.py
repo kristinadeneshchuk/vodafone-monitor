@@ -79,6 +79,7 @@ def load():
           -- Без нього сюди потрапляли скарги на застосунок і тарифи,
           -- які просто згадують світло: 304 записи проти 139 справжніх.
           AND a.cause IN ('coverage','internet','calls','outage','blackout')
+          AND a.is_ad = 0 AND a.is_market_wide = 0
     """).fetchall()
 
 
@@ -177,6 +178,11 @@ def report():
 
 if __name__ == '__main__':
     report()
-    with open('blackout_analysis.json', 'w', encoding='utf-8') as f:
-        json.dump(analyse(), f, ensure_ascii=False, indent=1)
-    print("\nJSON: blackout_analysis.json")
+    data = analyse()
+    # Два адресати: файл для перевірки руками і той, який читає
+    # сторінка аналітики. Раніше другий копіювався руками й відставав:
+    # на дашборді лишалось 142 скарги, коли в базі було 141.
+    for path in ('blackout_analysis.json', 'src/lib/data/real-blackout.json'):
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=1)
+    print("\nJSON: blackout_analysis.json, src/lib/data/real-blackout.json")

@@ -1,6 +1,6 @@
 {
- "total": 49,
- "unique": 48,
+ "total": 35,
+ "unique": 34,
  "items": [
   {
    "content": "Київстар, Водафон, Лайфселл - куди скаржитися на поганий зв'язок - informator.ua. Київстар, Водафон, Лайфселл - куди скаржитися на поганий зв'язок informator.ua",
@@ -59,14 +59,6 @@
    "sentiment": "neutral"
   },
   {
-   "content": "одна єдина проблема дуже слабий інтернет.київстар буває хуже но вдеяких місьцях лайф тяне круче всіх.водафон рішай шось...",
-   "timestamp": "2026-07-22T13:06:04+00:00",
-   "source": "review",
-   "url": "play_store_ua.vodafone.myvodafone_51e11974-c122-4aac-a80e-46bca147b1ad",
-   "cause": "internet",
-   "sentiment": "negative"
-  },
-  {
    "content": "🗣 Пілотна мережа 5G [запрацювала](https://epravda.com.ua/tehnologiji/u-centri-kiyeva-zapustili-5g-shvidkist-perevishchila-1-gbit-s-823871/) в центральній частині Києва, зокрема всі мобільні оператори забезпечили покриття на Хрещатику, повідомив заступник міністра цифрової трансформації Станіслав Прибитько.\n\nПілот має перевірити роботу мережі за різного навантаження, якість покриття та обладнання, ",
    "timestamp": "2026-07-22T09:25:45+00:00",
    "source": "telegram",
@@ -115,14 +107,6 @@
    "sentiment": "neutral"
   },
   {
-   "content": "телефон мережу показує,але при дзвінках постійне \"квакання\".Інтернету також немає,хоча пише що 4G.Приходиться телефонувати абонентам водафон з номера КИВСТАР.Інтернет в КИЇВСТАРі переходить в 3g,але працює,хоч і повільно.",
-   "timestamp": "2026-06-18T10:17:14+00:00",
-   "source": "review",
-   "url": "play_store_ua.vodafone.myvodafone_074e6944-47b4-4dff-ab12-74b3e3537da6",
-   "cause": "internet",
-   "sentiment": "negative"
-  },
-  {
    "content": "АМКУ заборонив «Київстару», Vodafone та lifecell називати «безлімом» тарифні плани, де штучно знижується швидкість мобільного інтернету. Що повинні змінити оператори - dev.ua. АМКУ заборонив «Київстару», Vodafone та lifecell називати «безлімом» тарифні плани, де штучно знижується швидкість мобільного інтернету. Що повинні змінити оператори dev.ua",
    "timestamp": "2026-05-01T07:00:00+00:00",
    "source": "news",
@@ -163,28 +147,12 @@
    "sentiment": "positive"
   },
   {
-   "content": "це просто жах!!! гроші знімають за домашній інтернет а інтернет не працює постійно!!! київстар дно!! краще перейду на інший піду до водафон з ними немає проблем",
-   "timestamp": "2026-02-27T14:10:46+00:00",
-   "source": "review",
-   "url": "play_store_com.kyivstar.mykyivstar_c42ff7ec-9f8f-41e4-99b6-0e4f8b303a9f",
-   "cause": "internet",
-   "sentiment": "negative"
-  },
-  {
    "content": "**📞**** Готують до блекаутів мобільні станції Франківщини.**\n\nВ області [працює](https://galka.if.ua/stantsii-mobilnoho-zv-iazku-zabezpecheni-akumuliatoramy-ale-brakuie-heneratoriv-ivano-frankivska-ova/) 1139 базових об’єктів операторів Київстар, Vodafone Україна та lifecell. Генератори є лише на 23% об’єктів, тому планують дооснастити ще 285 локацій у 56 громадах.\n\n[ТРУХА⚡️Івано-Франківськ](https",
    "timestamp": "2026-02-18T15:22:42+00:00",
    "source": "telegram",
    "url": "https://t.me/truexafrankivsk/32401",
    "cause": "blackout",
    "sentiment": "neutral"
-  },
-  {
-   "content": "в нас з київстаром 10хв був зв'язок інтернету пропадав а в lifecell навіть 5 годин тримає",
-   "timestamp": "2026-02-10T09:54:42+00:00",
-   "source": "review",
-   "url": "play_store_com.life.my_62c4a3f2-c652-420f-9fa2-764096480636",
-   "cause": "internet",
-   "sentiment": "positive"
   },
   {
    "content": "😳 Стало відомо про можливе об’єднання «Київстар» і Vodafone.\n\n lifecell вже заявив про ризики монополізації ринку:  така угода може призвести до монополізації телеком-ринку, зниження конкуренції та створити ризики для національної безпеки[.](https://forbes.ua/news/lifecell-zayaviv-pro-riziki-monopolizatsii-rinku-cherez-mozhlive-obednannya-bashtovoi-infrastrukturi-kiivstar-i-vodafone-09022026-36187",
@@ -200,22 +168,6 @@
    "source": "telegram",
    "url": "https://t.me/news_rivne/6324",
    "cause": "coverage",
-   "sentiment": "negative"
-  },
-  {
-   "content": "Маю декілька контрактних номерів Київстар дуже багато років. В тому числі з максимальним тарифом. Поганий і нестабільний зв'язок. Інтернет, котрий зникає майже зразу після відключення електроенергії. Прийшлося купити додатково Lifecell для того, щоб мати стабільний інтернет. київстар не вклажає гроші в зв'язок та якість сервісу для своїх абонентів. Якщо місяць-два нічого не зміниться, то треба змі",
-   "timestamp": "2026-02-05T08:09:41+00:00",
-   "source": "review",
-   "url": "play_store_com.kyivstar.mykyivstar_b1758038-22bf-43ea-aeeb-0ef96db93135",
-   "cause": "internet",
-   "sentiment": "negative"
-  },
-  {
-   "content": "В Україні!А точніше В столиці давно користуюсь(¤Водафон¤~¤МТС¤) [APР і оператом ДАННОГО мобільного з'вязку]!¡!З 23.11.2025р.[Ціна на місячний пакет піднялась],а якість [інтернету і з'вязку] дуже погіршилась.Навіть через довідку складно дозвонитись до спеціаліста,бо перешкоджає>>>роботизована не досконала поведінка Вікторіі<<<]Тому не-рекомендую і сам буду пробувати іншого оператора наприклад《Lifec",
-   "timestamp": "2026-02-02T15:02:03+00:00",
-   "source": "review",
-   "url": "play_store_ua.vodafone.myvodafone_cf8103c0-7507-479c-bae3-e7e363fc6ba5",
-   "cause": "internet",
    "sentiment": "negative"
   },
   {
@@ -235,28 +187,12 @@
    "sentiment": "neutral"
   },
   {
-   "content": "Лінія активна, SMS, мобільний інтернет працює. Тариф оплачено. Але дзвінки не працюють. Тривалий час знаходжуся у Німеччині, з 2023. Від початку така проблема. Неодноразово звертався у підтримку - не допомогло. Дзвінки не працюють, допоможіть. При спробі відсилати короткі USSD коди (наприклад *108*5# ) завжди отримую таку відповідь: \"Пробл. підключення чи недійсний код MMI.\" Неодноразово намагався",
-   "timestamp": "2026-01-20T13:05:28+00:00",
-   "source": "review",
-   "url": "play_store_com.life.my_55e62251-5c76-43b8-964e-b35c787827bd",
-   "cause": "calls",
-   "sentiment": "negative"
-  },
-  {
    "content": "\"Київстар\" обійшов Vodafone та lifecell за швидкістю мобільного інтернету: 40,85 Мбіт/с зі - ITC.ua. \"Київстар\" обійшов Vodafone та lifecell за швидкістю мобільного інтернету: 40,85 Мбіт/с зі ITC.ua",
    "timestamp": "2026-01-19T08:00:00+00:00",
    "source": "news",
    "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOUlZoWGlyWjZGM1JBeEpwejBsT2xmWHlBWjdTYURlNnc2THdTbThBQXZMZGdfV2lUQ3dHbTR2Vk1iV05zOEFJdzJ4OWRPazZmQllFQ3gwekhHdHRvV0pFX2pYV0NMNUVkSENYLXZmSXNGZTZxVmJhNzdxT3N6TUtOMkFlSE5pT3JsOEVaU2ROUEloVDBUOFBpY0dQTkpPZkNybFFXeXlCZ0NkeDRpbWMzQlJYcTNfcTloU29hb3hiNFc3S0hSLTFMeXZ6c1owMFlCS3NEaVdsQdIB3AFBVV95cUxOdTNjQjdKRXMtSmRGbjNrdVU0MXBrMUdCYlg5Wko1VXEyS01hd0NqZW01dTF3SzVNYmhha044STNOVGVFQXBMdEZqMzc1bnhzMUl6WFBOUXBNbjNMX1FJRFlSdG9QMG1TQl9YWnBMR2N2WDEyVlBaa25BMHpuSVItUzhGQ01DWE1HcXhkdmRSaTVIYWFaNVZYXzZFRWhGZmRwYWlacWUyV1RKRC1qSGotcmVCX0JQb0ZRLWJLMlJHNVpfa0JPUV9idm9vUi1Kb3d0QVhFZ2JLNWZUdHNJ?oc=5",
    "cause": "internet",
    "sentiment": "neutral"
-  },
-  {
-   "content": "нема зв'язку! київстар і лайф є а водафон гроші дере і ще виде опитування",
-   "timestamp": "2026-01-15T10:54:19+00:00",
-   "source": "review",
-   "url": "play_store_ua.vodafone.myvodafone_c3351dd0-e686-4032-a3bf-91f8b3ff48fd",
-   "cause": "coverage",
-   "sentiment": "negative"
   },
   {
    "content": "**📲 В Україні **[**запустили**](https://epravda.com.ua/infrastruktura/u-lvovi-zapustili-pershu-v-ukrajini-pilotnu-merezhu-5g-zi-shvidkistyu-500-mbit-s-816418/)** пілотний 5G-зв'язок. Відсьогодні він працює в центрі Львова.\n**\nОдна із ключових переваг 5G — вища швидкість передачі даних — близько 500 Мбіт/с на абонента. СЕО \"Київстар\" Олександр Комаров приводив таке порівняння: \n\n\"Якщо 4G можна порі",
@@ -299,14 +235,6 @@
    "sentiment": "negative"
   },
   {
-   "content": "Поповнила на один рік на 1260₴. Як на мене вигідніше ніж Київстар. 3гіг інтернету вистачило на дворі з 19 до 9 числа наступного місяця. Вдома маю вайфай. Та за подарункові і бонуси від поповнення рахунку взяла 1 гіг нету на місяць. За 30 грн в місяць до купила безліміт на месенджер та zoom. Як на мене дешевшої з лімітом інтернету пропозиції не знаю поки. Шкода домашнього інтернету водафон в нашому",
-   "timestamp": "2026-01-08T13:38:58+00:00",
-   "source": "review",
-   "url": "play_store_ua.vodafone.myvodafone_0f8bbdcf-e37c-4e84-8e61-67a2d41d6949",
-   "cause": "internet",
-   "sentiment": "positive"
-  },
-  {
    "content": "Чому у Чернівцях погіршилась якість мобільного зв'язку в абонентів Vodafone та Київстар — пояснення - Суспільне | Новини. Чому у Чернівцях погіршилась якість мобільного зв'язку в абонентів Vodafone та Київстар — пояснення Суспільне | Новини",
    "timestamp": "2025-12-19T08:00:00+00:00",
    "source": "news",
@@ -315,12 +243,36 @@
    "sentiment": "neutral"
   },
   {
-   "content": "жахливий додаток, незручний, не зрозумілий. постійно тупить але ще гірше- це квест із можливості додзвонитись до ЖИВОГО оператора. Тому що всі вони зайняті лише тим, щоб обдзвонити холодну базу і впарити не працюючий домашній інтернет. Ніколи не звязуйтесь із Лайфселл. Всією родиною переходимо на Київстар. Дешевше і завжди є можливість вирішити усі питання.",
-   "timestamp": "2025-12-18T16:02:30+00:00",
-   "source": "review",
-   "url": "play_store_com.life.my_2d964c23-cf43-4441-85d1-f972893d0302",
-   "cause": "internet",
+   "content": "🌐**Тепер стабільний та швидкий інтернет зʼявиться у будь-якому куточку України – **Президент підписав Закон № 12094, [повідомляє](https://t.me/zedigital/6341) Федоров \n\nЗміни, які чекають українців:\n\n1. Українці зможуть самостійно **робити спідтести, а реальні дані автоматично надходитимуть до НКЕК.**\n2. Оператори активніше розбудовуватимуть мережу в селах та **покриватимуть території, де досі нем",
+   "timestamp": "2025-11-25T11:09:39+00:00",
+   "source": "telegram",
+   "url": "https://t.me/lvivtp/42159",
+   "cause": "coverage",
    "sentiment": "negative"
+  },
+  {
+   "content": "UPD. Генератор грошей — Мінцифри пропонує здавати свої генератори в оренду, щоб живити станції мобільних операторів. Як працює програма - dev.ua. UPD. Генератор грошей — Мінцифри пропонує здавати свої генератори в оренду, щоб живити станції мобільних операторів. Як працює програма dev.ua",
+   "timestamp": "2025-11-13T08:00:00+00:00",
+   "source": "news",
+   "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBjcGxyOGtfdHVSX1VrdzE3NGdmODdZZGE4UzRXYThRUklkOWRLRGszNmZNRVY5eGlRTXZuVnp2SUo3bVdGWklmRXcxei1LVlZDdkRmaXhoYi1jUDZ4?oc=5",
+   "cause": "blackout",
+   "sentiment": "neutral"
+  },
+  {
+   "content": "🕐Vodafone попередив про тимчасові обмеження в роботі через перебої зі світлом.\n\nНавантаження виникає, коли усі одразу переходять на мобільний інтернет при відключенні електрики. Оператор порадив користуватися національним роумінгом.\n\nПідписники також скаржаться на труднощі в роботі Київстар🫠\n\n✈️ [Скинути фото/відео/інфу](https://t.me/svoi_kr)",
+   "timestamp": "2025-11-09T08:12:33+00:00",
+   "source": "telegram",
+   "url": "https://t.me/svoiKR/46714",
+   "cause": "outage",
+   "sentiment": "negative"
+  },
+  {
+   "content": "«Укртелеком», Vodafone – лідери з енергостійкого інтернету, у «Київстару» інша стратегія. Які провайдери дають інтернет без світла - Forbes. «Укртелеком», Vodafone – лідери з енергостійкого інтернету, у «Київстару» інша стратегія. Які провайдери дають інтернет без світла Forbes",
+   "timestamp": "2025-10-24T07:00:00+00:00",
+   "source": "news",
+   "url": "https://news.google.com/rss/articles/CBMipwJBVV95cUxPOXdWVTZrWG1BajZ5OUpEVXkyTC15NEY2WWRNZGZibjZsWGpocTdydEZKT1ZZekRMNk9XcmZZQ2NyV3FnTnMwRUdhMnVYZGg3eEdITkZNaGxkNnJuMGFTN0k4bERlNm40NTI4Um83Q3lETHRyUHV2WDU3dkdkVkpQZzZGYnVtZDFXUXdja1ZuOEg1Y0RzMlFFSG0xLXlmMVMteC1rNGlpSHpWOFVNdGM1cmJyRktLNWVBcHplUkhvbTA4aFRNYXg2NlRGOWUydXhaTHZYQVlhVmI1Ukd2S0pLdWZMb1Fmb0RCbXZ2Y0g3M0xWYk9TbGg1Qkx4ZTV2Zy1KeTNmOEhhUGs1Wnh1ay1OeG1WV2VUdHlFdDVvYmI2WkUxZ2dMX2xn?oc=5",
+   "cause": "blackout",
+   "sentiment": "neutral"
   }
  ]
 }

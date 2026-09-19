@@ -51,7 +51,11 @@ export default function DashboardOverview() {
     const fetchBriefing = async () => {
       setLoadingBriefing(true);
       try {
-        const localKey = `briefing_${metrics.date}`;
+        // Ключ включає самі цифри: бриф, збережений на попередньому
+        // вікні звіту, інакше лишався в браузері назавжди і підписував
+        // нові метрики старим текстом.
+        const localKey = `briefing_${metrics.date}_${metrics.windowStart ?? ''}`
+          + `_${metrics.totalComplaints}_${metrics.totalMentions ?? 0}`;
         const cachedLocal = typeof window !== 'undefined' ? localStorage.getItem(localKey) : null;
         if (cachedLocal) {
           try {
@@ -99,7 +103,10 @@ export default function DashboardOverview() {
           setBriefing(json.briefing);
           setIsCached(false);
           if (typeof window !== 'undefined') {
-            localStorage.setItem(`briefing_${metrics.date}`, JSON.stringify(json.briefing));
+            localStorage.setItem(
+              `briefing_${metrics.date}_${metrics.windowStart ?? ''}`
+                + `_${metrics.totalComplaints}_${metrics.totalMentions ?? 0}`,
+              JSON.stringify(json.briefing));
           }
         }
       }
@@ -137,14 +144,14 @@ export default function DashboardOverview() {
               <Sun className="w-3.5 h-3.5" /> MORNING BRIEFING
             </Badge>
             <Badge variant="outline" className="text-slate-600 border-slate-300 text-xs">
-              Підсумки за тиждень
+              Підсумки за місяць
             </Badge>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             Ранковий аналітичний бриф
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            Звітний період: <span className="font-semibold text-slate-800">{metrics.dateLabel || 'останні 7 днів'}</span> (7 днів)
+            Звітний період: <span className="font-semibold text-slate-800">{metrics.dateLabel || 'останні 30 днів'}</span> (30 днів)
           </p>
         </div>
 
@@ -169,9 +176,9 @@ export default function DashboardOverview() {
           <Button
             size="sm"
             className="bg-red-600 hover:bg-red-700 text-white font-medium text-xs h-8 gap-1.5 shadow-xs"
-            onClick={() => router.push(`/dashboard/feed?date=${metrics.date}`)}
+            onClick={() => router.push('/dashboard/feed')}
           >
-            Стрічка за тиждень <ArrowRight className="w-3 h-3" />
+            Стрічка за період <ArrowRight className="w-3 h-3" />
           </Button>
         </div>
       </div>
@@ -242,7 +249,7 @@ export default function DashboardOverview() {
               {/* Key Problem Drivers (Short & Punchy) */}
               <div>
                 <div className="text-xs uppercase font-bold tracking-wider text-slate-400 mb-3">
-                  🔍 Ключові фактори та драйвери скарг за тиждень
+                  🔍 Ключові фактори та драйвери скарг за місяць
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
                   {briefing.keyDrivers.map((driver, idx) => (
@@ -341,7 +348,7 @@ export default function DashboardOverview() {
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
             <Activity className="w-4 h-4 text-red-600" />
-            Операційні показники за 7 днів ({metrics.dateLabel})
+            Операційні показники за 30 днів ({metrics.dateLabel})
           </h2>
           <span className="text-xs text-slate-500">Фактичні цифри за звітний період</span>
         </div>
@@ -352,7 +359,7 @@ export default function DashboardOverview() {
             isComplaintsCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
           }`}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-slate-500">Скарг за 7 днів</CardTitle>
+              <CardTitle className="text-sm font-medium text-slate-500">Скарг за 30 днів</CardTitle>
               <Users className="w-4 h-4 text-slate-400" />
             </CardHeader>
             <CardContent>
@@ -373,7 +380,7 @@ export default function DashboardOverview() {
               <div className={`text-2xl font-bold ${isRiskCrit ? 'text-red-600' : 'text-slate-600'}`}>
                 {metrics.averageRiskScore}
               </div>
-              <p className="text-xs text-slate-500 mt-1">індекс загрози за 7 днів</p>
+              <p className="text-xs text-slate-500 mt-1">індекс загрози за 30 днів</p>
             </CardContent>
           </Card>
 
@@ -389,7 +396,7 @@ export default function DashboardOverview() {
               <div className={`text-2xl font-bold ${isHighRiskCrit ? 'text-red-600' : 'text-slate-600'}`}>
                 {metrics.highRiskIssuesCount}
               </div>
-              <p className="text-xs text-slate-500 mt-1">вимагали реакції за 7 днів</p>
+              <p className="text-xs text-slate-500 mt-1">вимагали реакції за 30 днів</p>
             </CardContent>
           </Card>
 
@@ -401,10 +408,10 @@ export default function DashboardOverview() {
             </CardHeader>
             <CardContent>
               <div className={`text-lg font-bold truncate ${isRiskCrit ? 'text-red-600' : 'text-slate-700'}`}>
-                {metrics.topLocations[0]?.name || 'Нормально'}
+                {metrics.topLocations[0]?.name || 'Немає'}
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                {metrics.topLocations[0] ? `${metrics.topLocations[0].count} скарг за 7 днів` : 'аномалій не виявлено'}
+                {metrics.topLocations[0] ? `${metrics.topLocations[0].count} скарг за 30 днів` : 'аномалій не виявлено'}
               </p>
             </CardContent>
           </Card>
@@ -418,7 +425,7 @@ export default function DashboardOverview() {
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold text-slate-800 flex items-center gap-1.5 uppercase tracking-wide">
             <Zap className="w-4 h-4 text-slate-500" />
-            Глибокі бізнес-метрики загрози (Enterprise Risk) — Вчора
+            Глибокі бізнес-метрики загрози (Enterprise Risk) — за 30 днів
           </h2>
           <span className="text-xs text-slate-400">Аналіз впливу на LTV, вірусність та аварії</span>
         </div>
@@ -437,7 +444,7 @@ export default function DashboardOverview() {
                 {metrics.churnIntentRate}%
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                <span className="font-semibold text-slate-700">{metrics.churnIntentCount}</span> погроз змінити оператора за 7 днів
+                <span className="font-semibold text-slate-700">{metrics.churnIntentCount}</span> погроз змінити оператора за 30 днів
               </p>
             </CardContent>
           </Card>
@@ -455,7 +462,7 @@ export default function DashboardOverview() {
                 {metrics.averageResonance}x
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                середня вага джерел за 7 днів
+                середня вага джерел за 30 днів
               </p>
             </CardContent>
           </Card>
@@ -473,7 +480,7 @@ export default function DashboardOverview() {
                 {metrics.spikeVelocityRatio}x
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                перевищення тижневої норми
+                перевищення місячної норми
               </p>
             </CardContent>
           </Card>
@@ -531,7 +538,7 @@ export default function DashboardOverview() {
         {/* Top Locations for Yesterday */}
         <Card className="col-span-1 border-slate-200 shadow-sm bg-white">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Топ проблемних ділянок за 7 днів</CardTitle>
+            <CardTitle className="text-base">Топ проблемних ділянок за 30 днів</CardTitle>
             <CardDescription className="text-xs">
               Локації з найбільшою кількістю звернень за звітний період ({metrics.dateLabel})
             </CardDescription>
@@ -556,7 +563,7 @@ export default function DashboardOverview() {
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center text-slate-400 text-sm space-y-2">
                 <MapPin className="w-8 h-8 text-slate-300" />
-                <p className="font-medium text-slate-600">Локальних аномалій за тиждень не виявлено</p>
+                <p className="font-medium text-slate-600">Локальних аномалій за місяць не виявлено</p>
                 <p className="text-xs text-slate-400 max-w-xs">
                   Усі базові станції працювали у штатному режимі
                 </p>

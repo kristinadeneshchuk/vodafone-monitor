@@ -18,7 +18,9 @@ OUT_JSON = 'src/lib/data/real-data.json'   # застосунок живе в к
 
 IMPORTANCE = {0: 'low', 1: 'medium', 2: 'high', 3: 'critical'}
 SENTIMENT = {0: 'positive', 1: 'neutral', 2: 'negative'}
-PROBLEM = {0: 'no_signal', 1: 'slow_internet', 2: 'dropped_calls', 3: 'other'}
+# 4 = проблеми немає: згадка про звʼязок без скарги ('звʼязок нормальний').
+PROBLEM = {0: 'no_signal', 1: 'slow_internet', 2: 'dropped_calls',
+           3: 'other', 4: 'none'}
 
 # У його types.ts SourceType = telegram | twitter | facebook | news.
 # Відгуків там немає, а це 85% наших даних. Поки мапимо review -> news,
@@ -50,7 +52,10 @@ def fetch(scope='problems', limit=None, days=None):
     con = sqlite3.connect(DB_PATH)
     con.row_factory = sqlite3.Row
 
-    conds = ["a.sentiment IS NOT NULL"]
+    # Рекламні пости оператора у телеграм-каналах — куплене місце,
+    # а не голос абонента. У стрічці скарг вони читаються як згадка
+    # про звʼязок ("Gigabit Net тримає до 4 діб без світла").
+    conds = ["a.sentiment IS NOT NULL", "a.is_ad = 0"]
     params = []
     if scope in ('problems', 'negative'):
         conds.append("a.sentiment IN ('negative','mixed')")
