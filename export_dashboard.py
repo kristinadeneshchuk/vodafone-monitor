@@ -115,6 +115,80 @@ def fetch(scope='problems', limit=None, days=None):
     return out
 
 
+def build_locations(records):
+    """
+    ГОЛОВНИЙ артефакт продукту: локації, а не окремі скарги.
+
+    Vodafone ухвалює рішення не по повідомленнях, а по місцях —
+    куди ставити базову станцію, де потрібне резервне живлення,
+    де проблема взагалі не наша. Тому одиниця аналізу — локація.
+
+    Для кожної рахуємо не лише кількість скарг, а РОЗПОДІЛ У ЧАСІ.
+    19 скарг за 18 різних днів і 19 скарг за один день — це різні
+    речі: перше хронічний фон, друге аварія.
+    """
+    from collections import defaultdict
+
+    groups = defaultdict(lambda: {
+        'complaints': 0, 'grid': 0, 'chronic': 0,
+        'days': set(), 'brands': defaultdict(int),
+        'causes': defaultdict(int), 'samples': [],
+        'lat': None, 'lng': None,
+    })
+
+    for r in records:
+        if r['lat'] is None:
+            continue
+        name = r['locationName']
+        if name == 'Невідомо':
+            continue
+        g = groups[name]
+        g['lat'], g['lng'] = r['lat'], r['lng']
+        g['complaints'] += 1
+        g['days'].add(r['timestamp'][:10])
+        g['brands'][r['brand']] += 1
+        g['causes'][r['cause']] += 1
+        if r['attribution'] == 'grid':
+            g['grid'] += 1
+        if r['context'] in ('transport', 'terrain', 'rural'):
+            g['chronic'] += 1
+        if len(g['samples']) < 3:
+            g['samples'].append(' '.join(r['content'].split())[:120])
+
+    out = []
+    for name, g in groups.items():
+        n = g['complaints']
+        days = len(g['days'])
+        grid_share = round(100 * g['grid'] / n, 1)
+
+        # Що це насправді: разова аварія чи постійний фон.
+        # Скарги, розмазані по багатьох днях, — це не подія,
+        # і команду по них піднімати не треба.
+        intensity = n / days if days else 0
+        if grid_share >= 50:
+            pattern = 'grid'          # проблема не в мережі оператора
+        elif days >= 10 and intensity < 2.5:
+            pattern = 'chronic'       # постійний фон, питання інвестицій
+        elif intensity >= 3:
+            pattern = 'incident'      # сплеск, питання реагування
+        else:
+            pattern = 'sporadic'
+
+        out.append({
+            'name': name, 'lat': g['lat'], 'lng': g['lng'],
+            'complaints': n,
+            'daysWithComplaints': days,
+            'intensity': round(intensity, 2),
+            'gridShare': grid_share,
+            'chronicGapShare': round(100 * g['chronic'] / n, 1),
+            'pattern': pattern,
+            'topCause': max(g['causes'], key=g['causes'].get),
+            'byBrand': dict(sorted(g['brands'].items(), key=lambda x: -x[1])),
+            'samples': g['samples'],
+        })
+    return sorted(out, key=lambda x: -x['complaints'])
+
+
 def build_summary(records, alerts):
     """
     Бізнес-показники для головного екрана.
@@ -122,6 +196,7 @@ def build_summary(records, alerts):
     Кожен підпис має бути правдою. "Всього скарг" мусить означати скарги,
     а не весь потік відгуків разом із подяками.
     """
+    locations = build_locations(records)
     total = len(records)
     grid = sum(1 for r in records if r['attribution'] == 'grid')
     geo = sum(1 for r in records if r['lat'])
@@ -135,6 +210,12 @@ def build_summary(records, alerts):
     wake = [a for a in alerts if a['level'] == 'wake']
 
     return {
+        # головне: скільки МІСЦЬ має проблему і якого вона типу
+        'problemLocations': len(locations),
+        'gridDriven': sum(1 for l in locations if l['pattern'] == 'grid'),
+        'chronicLocations': sum(1 for l in locations if l['pattern'] == 'chronic'),
+        'incidentLocations': sum(1 for l in locations if l['pattern'] == 'incident'),
+
         'coverageComplaints': total,
         'gridOutageShare': round(100 * grid / total, 1) if total else 0,
         'gridOutageCount': grid,
@@ -178,6 +259,10 @@ def main():
     with open(OUT_JSON, 'w', encoding='utf-8') as f:
         json.dump(records, f, ensure_ascii=False)
 
+    loc_path = OUT_JSON.replace('real-data.json', 'real-locations.json')
+    with open(loc_path, 'w', encoding='utf-8') as f:
+        json.dump(build_locations(records), f, ensure_ascii=False, indent=1)
+
     summary_path = OUT_JSON.replace('real-data.json', 'real-summary.json')
     with open(summary_path, 'w', encoding='utf-8') as f:
         json.dump(build_summary(records, alerts), f, ensure_ascii=False, indent=1)
@@ -195,6 +280,7 @@ def main():
     print(f"  {OUT_JSON}")
     print(f"  {alerts_path}")
     print(f"  {summary_path}")
+    print(f"  {loc_path}")
 
 
 if __name__ == '__main__':

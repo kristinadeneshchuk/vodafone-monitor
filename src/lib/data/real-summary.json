@@ -1,4 +1,8 @@
 {
+ "problemLocations": 15,
+ "gridDriven": 3,
+ "chronicLocations": 4,
+ "incidentLocations": 0,
  "coverageComplaints": 1106,
  "gridOutageShare": 16.3,
  "gridOutageCount": 180,
