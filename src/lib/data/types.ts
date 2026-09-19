@@ -55,9 +55,19 @@ export interface CrisisAlert {
 export interface DashboardMetrics {
   totalComplaints: number;
   averageRiskScore: number;
-  highRiskIssuesCount: number; // risk > 70
+  highRiskIssuesCount: number; // risk >= 50
   averageRelevance: number;
   averageConstructiveness: number;
+
+  // 3 Enterprise Actionable Metrics
+  churnIntentRate: number;      // % скарг із наміром відтоку (LTV ризик)
+  churnIntentCount: number;     // кількість абонентів із загрозою відтоку
+  averageResonance: number;     // коефіцієнт резонансу / вірусності (Reach x Relevance)
+  spikeVelocityRatio: number;   // швидкість спалаху скарг (перевищення норми baseline, x разів)
+
+  date?: string;                // YYYY-MM-DD
+  dateLabel?: string;           // Наприклад "19 вересня 2026"
+
   sentimentDistribution: {
     positive: number;
     neutral: number;
@@ -67,6 +77,35 @@ export interface DashboardMetrics {
   timelineData: { date: string; issuesCount: number; averageRisk: number }[];
 }
 
+export interface DailyBriefing {
+  date: string;               // YYYY-MM-DD
+  dateLabel: string;          // Наприклад "18 вересня 2026"
+  generatedAt: string;        // ISO timestamp
+  status: 'normal' | 'warning' | 'critical';
+  statusLabel: string;        // "Штатний стан" | "Підвищена увага" | "Критична загроза"
+  executiveSummary: string;   // Головний вердикт
+  keyDrivers: {
+    title: string;
+    description: string;
+    impact: 'low' | 'medium' | 'high';
+  }[];
+  churnRiskAnalysis: string;  // Аналіз ризику відтоку абонентів
+  mediaViralityRisk: string;  // Аналіз резонансу та вірусності
+  recommendedActions: {
+    team: 'PR & Комунікації' | 'Служба підтримки' | 'Технічний департамент';
+    action: string;
+    priority: 'high' | 'medium' | 'low';
+  }[];
+  metricsSnapshot: {
+    complaintsCount: number;
+    avgRisk: number;
+    highRiskCount: number;
+    churnRate: number;
+    resonance: number;
+    spikeRatio: number;
+  };
+}
+
 export interface FeedbackFilters {
   startDate?: string;
   endDate?: string;
@@ -74,8 +113,10 @@ export interface FeedbackFilters {
   location?: string;
   isRelevant?: boolean;
   isConstructive?: boolean;
+  churnOnly?: boolean;
   minRelevance?: number;
   minConstructiveness?: number;
+  minResonance?: number;
 }
 
 export interface IFeedbackService {

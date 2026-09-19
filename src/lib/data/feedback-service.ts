@@ -53,6 +53,10 @@ export class MockFeedbackService implements IFeedbackService {
         highRiskIssuesCount: 0,
         averageRelevance: 0,
         averageConstructiveness: 0,
+        churnIntentRate: 0,
+        churnIntentCount: 0,
+        averageResonance: 0,
+        spikeVelocityRatio: 0,
         sentimentDistribution: { positive: 0, neutral: 0, negative: 0 },
         topLocations: [],
         timelineData: []
@@ -62,7 +66,7 @@ export class MockFeedbackService implements IFeedbackService {
     const totalComplaints = feedbacks.length;
     const totalRisk = feedbacks.reduce((acc, curr) => acc + curr.reputationalRiskScore, 0);
     const averageRiskScore = Math.round(totalRisk / totalComplaints);
-    const highRiskIssuesCount = feedbacks.filter(f => f.reputationalRiskScore >= 70).length;
+    const highRiskIssuesCount = feedbacks.filter(f => f.reputationalRiskScore >= 50).length;
     
     const avgRelevance = Math.round((feedbacks.reduce((acc, curr) => acc + curr.relevanceScore, 0) / totalComplaints) * 100) / 100;
     const avgConstructiveness = Math.round((feedbacks.reduce((acc, curr) => acc + curr.constructivenessScore, 0) / totalComplaints) * 100) / 100;
@@ -105,12 +109,19 @@ export class MockFeedbackService implements IFeedbackService {
       }))
       .sort((a, b) => a.date.localeCompare(b.date));
 
+    const churnCount = feedbacks.filter(f => f.reputationalRiskScore >= 50 && f.relevanceScore >= 0.7).length;
+    const churnIntentRate = Math.round((churnCount / totalComplaints) * 1000) / 10;
+
     return {
       totalComplaints,
       averageRiskScore,
       highRiskIssuesCount,
       averageRelevance: avgRelevance,
       averageConstructiveness: avgConstructiveness,
+      churnIntentRate,
+      churnIntentCount: churnCount,
+      averageResonance: 3.8,
+      spikeVelocityRatio: 4.5,
       sentimentDistribution,
       topLocations,
       timelineData
