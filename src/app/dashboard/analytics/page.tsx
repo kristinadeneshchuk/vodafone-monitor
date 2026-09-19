@@ -83,7 +83,9 @@ export default function AnalyticsPage() {
           <div className="grid gap-4 md:grid-cols-3">
             <Metric label="Скарг за рік" value={b.total} />
             <Metric label="В опалювальний сезон" value={b.winterCount} tone="text-amber-600" />
-            <Metric label="Медіана без звʼязку" value={`${b.medianHours} год`} />
+            <Metric
+              label={`Медіана без звʼязку (${(b.durationsHours ?? []).length} згадок)`}
+              value={`${b.medianHours} год`} />
           </div>
 
           <div>
