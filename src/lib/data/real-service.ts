@@ -129,10 +129,18 @@ export class RealFeedbackService implements IFeedbackService {
 
     // Якщо вчорашній день є в базі — використовуємо його.
     // Якщо відкрили іншого дня — беремо останній повний завершений день з бази
-    const effectiveDayStr = filters?.startDate?.slice(0, 10) 
+    // Дані зібрані за рік і рідкі: буває по кілька днів поспіль без
+    // жодної скарги. Брати "передостанню дату з набору" не можна —
+    // коли останні записи 15 вересня, а передостанні 5-го, звіт
+    // показував тиждень 30 серпня - 5 вересня, хоча свіжі дані були.
+    // Беремо останній день, який уже завершився.
+    const effectiveDayStr = filters?.startDate?.slice(0, 10)
       || (hasYesterday ? yesterdayStr : (() => {
-          const allDates = [...new Set(feedbacks.map(f => f.timestamp.slice(0, 10)))].sort();
-          return allDates.length >= 2 ? allDates[allDates.length - 2] : allDates[allDates.length - 1] || yesterdayStr;
+          const past = feedbacks
+            .map(f => f.timestamp.slice(0, 10))
+            .filter(d => d <= yesterdayStr)
+            .sort();
+          return past[past.length - 1] || yesterdayStr;
       })());
 
     // Підпис періоду має збігатися з вікном розрахунку. Раніше тут була
