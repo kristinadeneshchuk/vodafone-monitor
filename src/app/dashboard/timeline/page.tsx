@@ -136,20 +136,18 @@ export default function TimelinePage() {
 
       const dayRecords = recordsByDate.get(dateStr) || [];
       const count = dayRecords.length;
-      const riskyRecords = dayRecords.filter(r => r.reputationalRiskScore > 0);
+      const complaints = dayRecords.filter(r => r.sentiment === 'negative');
+      const complaintCount = complaints.length;
+      const riskyRecords = complaints.filter(r => r.reputationalRiskScore > 0);
       const totalRisk = riskyRecords.reduce((sum, r) => sum + r.reputationalRiskScore, 0);
       const avgRisk = riskyRecords.length > 0 ? Math.round(totalRisk / riskyRecords.length) : 0;
-      const highRiskCount = dayRecords.filter(r => r.reputationalRiskScore >= 50).length;
+      const highRiskCount = complaints.filter(r => r.reputationalRiskScore >= 50).length;
 
-      const churnCount = dayRecords.filter(r => r.churnIntent).length;
-      const churnPercent = count > 0 ? Math.round((churnCount / count) * 1000) / 10 : 0;
-      const totalResonance = dayRecords.reduce((sum, r) => sum + (r.resonance ?? (r.relevanceScore * (r.reachWeight ?? 1))), 0);
-      const avgResonance = (totalResonance / (count || 1)).toFixed(1);
-      const baseline = 45;
-      const spikeRatio = Math.round((count / baseline) * 10) / 10;
+      const churnCount = complaints.filter(r => r.churnIntent).length;
+      const churnPercent = complaintCount > 0 ? Math.round((churnCount / complaintCount) * 1000) / 10 : 0;
 
       const locCounts: Record<string, number> = {};
-      dayRecords.forEach(r => {
+      complaints.forEach(r => {
         if (r.locationName !== 'Невідомо') {
           locCounts[r.locationName] = (locCounts[r.locationName] || 0) + 1;
         }
@@ -166,15 +164,16 @@ export default function TimelinePage() {
         daysAgo,
         records: dayRecords,
         count,
+        complaintCount,
         riskyCount: riskyRecords.length,
         avgRisk,
         highRiskCount,
         topLocation: topLoc,
         churnCount,
         churnPercent,
-        avgResonance,
-        spikeRatio,
-        isSpike: avgRisk >= 40 || highRiskCount >= 3 || count >= 80 || spikeRatio >= 2.0
+        // Підсвічування тут — лише навігація по історії. Рівень кризи
+        // визначає detector.py, а не умовний поріг у UI.
+        isSpike: avgRisk >= 40 || highRiskCount >= 3
       };
     });
 
@@ -240,39 +239,30 @@ export default function TimelinePage() {
   // Aggregated Summary Metrics across the selected period
   const periodMetrics = useMemo(() => {
     const count = periodRecords.length;
+    const complaints = periodRecords.filter(r => r.sentiment === 'negative');
+    const complaintCount = complaints.length;
     const daysCount = activeEndIndex - activeStartIndex + 1;
-    const avgDaily = Math.round(count / (daysCount || 1));
-    const baseline = 45;
-    const spikeRatio = Math.round((avgDaily / baseline) * 10) / 10;
+    const avgDaily = Math.round((complaintCount / (daysCount || 1)) * 10) / 10;
 
-    const riskyRecords = periodRecords.filter(r => r.reputationalRiskScore > 0);
+    const riskyRecords = complaints.filter(r => r.reputationalRiskScore > 0);
     const totalRisk = riskyRecords.reduce((sum, r) => sum + r.reputationalRiskScore, 0);
     const avgRisk = riskyRecords.length > 0 ? Math.round(totalRisk / riskyRecords.length) : 0;
-    const highRiskCount = periodRecords.filter(r => r.reputationalRiskScore >= 50).length;
+    const highRiskCount = complaints.filter(r => r.reputationalRiskScore >= 50).length;
 
-    const churnCount = periodRecords.filter(r => r.churnIntent).length;
-    const churnPercent = count > 0 ? Math.round((churnCount / count) * 1000) / 10 : 0;
-
-    const totalResonance = periodRecords.reduce(
-      (sum, r) => sum + (r.resonance ?? (r.relevanceScore * (r.reachWeight ?? 1))),
-      0
-    );
-    const avgResonance = (totalResonance / (count || 1)).toFixed(1);
-
-    const isSpike = avgRisk >= 40 || highRiskCount >= (daysCount > 1 ? 5 : 3) || avgDaily >= 80 || spikeRatio >= 2.0;
+    const churnCount = complaints.filter(r => r.churnIntent).length;
+    const churnPercent = complaintCount > 0 ? Math.round((churnCount / complaintCount) * 1000) / 10 : 0;
 
     return {
       count,
+      complaintCount,
       daysCount,
       avgDaily,
-      spikeRatio,
       riskyCount: riskyRecords.length,
       avgRisk,
       highRiskCount,
       churnCount,
       churnPercent,
-      avgResonance,
-      isSpike
+      isSpike: avgRisk >= 40 || highRiskCount >= (daysCount > 1 ? 5 : 3)
     };
   }, [periodRecords, activeStartIndex, activeEndIndex]);
 
@@ -280,7 +270,7 @@ export default function TimelinePage() {
   const periodTopLocation = useMemo(() => {
     const locCounts: Record<string, number> = {};
     let totalNamed = 0;
-    periodRecords.forEach(r => {
+    periodRecords.filter(r => r.sentiment === 'negative').forEach(r => {
       if (r.locationName && r.locationName !== 'Невідомо') {
         locCounts[r.locationName] = (locCounts[r.locationName] || 0) + 1;
         totalNamed++;
@@ -722,8 +712,8 @@ export default function TimelinePage() {
                   </div>
                   <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                     {isRange 
-                      ? `За обрані ${periodMetrics.daysCount} дн. зафіксовано ${periodMetrics.count.toLocaleString()} звернень (в середньому ${periodMetrics.avgDaily}/день), середній ризик ${periodMetrics.avgRisk}/100.${periodTopLocation.count > 0 ? ` Топ-локація: ${periodTopLocation.name}.` : ''}`
-                      : `Зафіксовано ${startDay.count} звернень. Середній ризик: ${startDay.avgRisk}/100.${startDay.topLocation !== 'Немає даних' ? ` Головна локація: ${startDay.topLocation}.` : ''}`
+                      ? `За обрані ${periodMetrics.daysCount} дн. зібрано ${periodMetrics.count.toLocaleString()} згадок про зв’язок, з них ${periodMetrics.complaintCount} скарг (у середньому ${periodMetrics.avgDaily}/день). Середній ризик скарг: ${periodMetrics.avgRisk}/100.${periodTopLocation.count > 0 ? ` Топ-локація: ${periodTopLocation.name}.` : ''}`
+                      : `Зібрано ${startDay.count} згадок про зв’язок, з них ${startDay.complaintCount} скарг. Середній ризик скарг: ${startDay.avgRisk}/100.${startDay.topLocation !== 'Немає даних' ? ` Головна локація: ${startDay.topLocation}.` : ''}`
                     }
                   </p>
                 </div>
@@ -762,10 +752,10 @@ export default function TimelinePage() {
           </div>
           <div>
             <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              {periodMetrics.count.toLocaleString()}
+              {periodMetrics.complaintCount.toLocaleString()}
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-              {isRange ? `~${periodMetrics.avgDaily}/день` : 'за день'}
+              {isRange ? `${periodMetrics.count} згадок у вибірці` : 'за день'}
             </p>
           </div>
         </div>
@@ -795,8 +785,8 @@ export default function TimelinePage() {
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5 truncate">
               {periodMetrics.highRiskCount > 0 
-                ? `${periodMetrics.highRiskCount} крит. скарг` 
-                : 'без критичних'}
+                ? `${periodMetrics.highRiskCount} високоризикових скарг`
+                : 'високих ризиків не виявлено'}
             </p>
           </div>
         </div>
@@ -824,7 +814,9 @@ export default function TimelinePage() {
               </span>
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-              {periodMetrics.churnCount} {periodMetrics.churnCount === 1 ? 'погроза' : periodMetrics.churnCount < 5 ? 'погрози' : 'погроз'}
+              {periodMetrics.churnCount > 0
+                ? `${periodMetrics.churnCount} ${periodMetrics.churnCount === 1 ? 'погроза' : periodMetrics.churnCount < 5 ? 'погрози' : 'погроз'}`
+                : 'прямих погроз не виявлено'}
             </p>
           </div>
         </div>
@@ -845,7 +837,7 @@ export default function TimelinePage() {
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5 truncate">
               {periodTopLocation.count > 0 
-                ? `${periodTopLocation.count} скарг (${periodTopLocation.percent}%)`
+                ? `${periodTopLocation.count} зі скарг з названою локацією (${periodTopLocation.percent}%)`
                 : 'аномалій немає'}
             </p>
           </div>
@@ -859,7 +851,7 @@ export default function TimelinePage() {
           <CardHeader className="pb-2 p-4 sm:p-6">
             <CardTitle className="text-sm sm:text-base flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1">
               <span>
-                Динаміка звернень ({horizon === 'all' ? `Весь проміжок: ${totalLength} дн.` : `${visibleDays.length} дн.`})
+                Динаміка згадок про зв’язок ({horizon === 'all' ? `Весь проміжок: ${totalLength} дн.` : `${visibleDays.length} дн.`})
               </span>
               <span className="text-xs font-normal text-slate-500">
                 {isRange 
@@ -908,7 +900,7 @@ export default function TimelinePage() {
                 />
                 <YAxis tick={{fontSize: 11, fill: '#64748b'}} />
                 <Tooltip 
-                  formatter={(val: any) => [val, 'Кількість скарг']}
+                  formatter={(val: any) => [val, 'Згадки про зв’язок']}
                   labelFormatter={(label, payload) => {
                     const item = payload?.[0]?.payload;
                     return item ? `${item.fullLabel} (${item.dateStr}) | Ризик: ${item.avgRisk}/100` : label;
@@ -1018,7 +1010,7 @@ export default function TimelinePage() {
           </CardContent>
           <div className="p-3 border-t bg-slate-50/80 flex justify-between items-center text-xs">
             <span className="text-slate-500 font-medium truncate mr-2">
-              {periodRecords.length.toLocaleString()} скарг {isRange ? `за ${periodMetrics.daysCount} дн.` : `за ${startDay?.label}`}
+              {periodMetrics.complaintCount.toLocaleString()} скарг із {periodRecords.length.toLocaleString()} згадок {isRange ? `за ${periodMetrics.daysCount} дн.` : `за ${startDay?.label}`}
             </span>
             <Button 
               size="sm" 
