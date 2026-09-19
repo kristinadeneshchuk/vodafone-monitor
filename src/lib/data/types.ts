@@ -29,6 +29,8 @@ export interface FeedbackRecord {
   lng?: number | null;
   cause?: string;
   context?: string | null;
+  /** Матеріал про телеком-ринок загалом, а не про цього оператора. */
+  isMarketWide?: boolean;
   churnIntent?: boolean;      // намір піти від оператора
   churnScore?: number;        // 0-10
   reachWeight?: number;       // охоплення джерела, 0-10

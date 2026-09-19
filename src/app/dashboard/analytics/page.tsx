@@ -7,6 +7,7 @@ import blackout from '@/lib/data/real-blackout.json';
 import summary from '@/lib/data/real-summary.json';
 import locations from '@/lib/data/real-locations.json';
 import alertsData from '@/lib/data/real-alerts.json';
+import market from '@/lib/data/real-market.json';
 import { CrisisAlert } from '@/lib/data/types';
 
 const MONTH_UA: Record<string, string> = {
@@ -36,6 +37,7 @@ export default function AnalyticsPage() {
   const s = summary as any;
   const locs = locations as any[];
   const alerts = alertsData as unknown as CrisisAlert[];
+  const mk = market as any;
 
   const wake = alerts.filter(a => a.level === 'wake');
   const grid = alerts.filter(a => a.event_type === 'grid_outage');
@@ -191,6 +193,40 @@ export default function AnalyticsPage() {
                   {a.count} згадок проти норми {a.baseline}
                   {a.cities ? ` · ${a.cities}` : ''} · джерел: {a.n_source_types}
                 </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 5. Ринковий контекст — окремо від скарг на Vodafone */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">
+            Ринковий контекст
+            <Badge variant="outline" className="ml-2">{mk.unique} матеріалів</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-xs text-slate-500 mb-3">
+            Це матеріали про телеком-ринок загалом: порівняння операторів,
+            вимоги Мінцифри, галузеві огляди. Вони не є скаргами на Vodafone,
+            тому в стрічку скарг і в підрахунки не входять — але стежити за
+            ними треба, бо саме тут задається рамка, у якій нас оцінюють.
+          </p>
+          <div className="space-y-2">
+            {mk.items.slice(0, 8).map((m: any, i: number) => (
+              <div key={i} className="text-sm border-b pb-2 flex gap-3">
+                <span className="text-xs text-slate-400 tabular-nums w-20 shrink-0">
+                  {m.timestamp.slice(0, 10)}
+                </span>
+                <span className="flex-1">
+                  {m.url ? (
+                    <a href={m.url} target="_blank" rel="noreferrer"
+                       className="hover:underline">{m.content.split('.')[0]}</a>
+                  ) : m.content.split('.')[0]}
+                </span>
+                <Badge variant="outline" className="shrink-0 h-5">{m.source}</Badge>
               </div>
             ))}
           </div>

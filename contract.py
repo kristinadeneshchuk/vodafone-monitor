@@ -159,6 +159,33 @@ def reputational_risk(sentiment_name, q, cause, source_type, has_location):
     return int(max(0, min(100, round(score))))
 
 
+# Матеріал про РИНОК, а не про конкретного оператора: порівняння
+# тарифів, галузеві пояснювальні статті, огляди вимог до всіх операторів.
+# Такий текст зберігається по разу на кожен бренд, тому без цієї ознаки
+# стаття "Київстар, Водафон, Лайфселл — куди скаржитися" потрапляє
+# і в стрічку Vodafone, хоча вона не про Vodafone.
+_OPERATOR_RX = [
+    re.compile(r'vodafone|водафон|водофон', re.IGNORECASE),
+    re.compile(r'kyivstar|київстар|киевстар', re.IGNORECASE),
+    re.compile(r'lifecell|лайфсел|лайфцел', re.IGNORECASE),
+]
+
+MARKET_WIDE = re.compile(
+    r'(усі|всі|три)\s+(мобільні\s+)?оператор|мобільн\w*\s+оператор\w*\s+україн|'
+    r'телеком-?ринок|ринок\s+(мобільн|телеком)|оператор\w*\s+зобов|'
+    r'вимог\w*\s+до\s+(мобільн\w*\s+)?оператор|нкек|нкрзі|мінцифри|'
+    r'оператор\w*\s+(обіцяют|готуют|посилюют|переход)|'
+    r'скільки\s+обіцяют|як\s+оператори\s+',
+    re.IGNORECASE)
+
+
+def is_market_wide(text):
+    """Скільки операторів названо. Два й більше — це про ринок."""
+    text = text or ''
+    named = sum(1 for rx in _OPERATOR_RX if rx.search(text))
+    return named >= 2 or bool(MARKET_WIDE.search(text))
+
+
 def build(text, sentiment_name, source_type, source_name='', q=None):
     """
     Повний набір полів для №6.
@@ -211,6 +238,7 @@ def build(text, sentiment_name, source_type, source_name='', q=None):
                      if location else None),
         'problemType': problem_type(text, cause),
         'reputationalRiskScore': risk_score,
+        'isMarketWide': is_market_wide(text),
         'churnIntent': churn_intent,
         'churnScore': churn_score,
         'reachWeight': reach_weight,
