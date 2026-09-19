@@ -29,6 +29,10 @@ from telethon.errors import (
     FloodWaitError,
     UsernameNotOccupiedError,
 )
+from telethon.tl.functions.channels import GetFullChannelRequest
+from telethon.tl.functions.contacts import SearchRequest
+
+import channels as channels_cfg
 
 # ---------------------------------------------------------------- налаштування
 
@@ -36,22 +40,9 @@ API_ID = os.getenv('TG_API_ID')
 API_HASH = os.getenv('TG_API_HASH')
 SESSION_NAME = 'vodafone_monitor'
 
-# Публічні канали. ПЕРЕВІР кожен перед хакатоном: частина може бути
-# перейменована або закрита. Регіональні тут важливіші за національні —
-# саме в них живуть локальні скарги на зв'язок.
-CHANNELS = [
-    # національні новинні
-    'ukrainskapravda',
-    'nexta_live',
-    'suspilnenews',
-    # технології / телеком
-    'itc_ua',
-    'ain_ua',
-    # регіональні — додай свої міста
-    'lvivmedia',
-    'kharkivlife',
-    'odesa_media',
-]
+# Список джерел живе в channels.py. Туди потрапляють лише канали,
+# що пройшли `--check`.
+CHANNELS = channels_cfg.CHANNELS
 
 MAX_MESSAGES_PER_CHANNEL = 3000   # запобіжник, щоб не висіти годинами
 SLEEP_BETWEEN_CHANNELS = 1.0      # секунди, бережемо rate limit
@@ -217,6 +208,82 @@ def save_to_db(mentions):
     return inserted
 
 
+# ---------------------------------------------------------------- розвідка каналів
+
+async def _client():
+    if not API_ID or not API_HASH:
+        sys.exit(
+            "Немає TG_API_ID / TG_API_HASH.\n"
+            "Візьми їх на my.telegram.org -> API development tools, далі:\n"
+            "  export TG_API_ID=123456\n"
+            "  export TG_API_HASH=abcdef..."
+        )
+    return TelegramClient(SESSION_NAME, int(API_ID), API_HASH)
+
+
+async def find_channels(queries):
+    """Шукає публічні канали за назвою і показує їхні юзернейми."""
+    async with await _client() as client:
+        for q in queries:
+            print(f"\n=== {q}")
+            try:
+                res = await client(SearchRequest(q=q, limit=5))
+            except FloodWaitError as e:
+                print(f"  Telegram просить почекати {e.seconds} с")
+                break
+            found = False
+            for chat in res.chats:
+                username = getattr(chat, 'username', None)
+                if not username:
+                    continue          # без юзернейма канал недоступний для збору
+                if getattr(chat, 'megagroup', False):
+                    continue          # групи-чати пропускаємо, нас цікавлять канали
+                found = True
+                print(f"  @{username:<28} {chat.title}")
+            if not found:
+                print("  нічого публічного не знайдено")
+            await asyncio.sleep(1)
+
+
+async def check_channels(names):
+    """Перевіряє, що канали зі списку існують і живі."""
+    if not names:
+        print("CHANNELS порожній. Спочатку: python collector_telegram.py --find")
+        return
+
+    good, bad = [], []
+    async with await _client() as client:
+        for name in names:
+            try:
+                entity = await client.get_entity(name)
+                full = await client(GetFullChannelRequest(entity))
+                subs = full.full_chat.participants_count
+
+                last = await client.get_messages(entity, limit=1)
+                last_date = to_iso(last[0].date) if last else 'постів немає'
+
+                print(f"  [OK ] @{name:<26} {subs or '?':>9} підписників | останній пост {last_date}")
+                good.append(name)
+            except (ValueError, UsernameNotOccupiedError):
+                print(f"  [НЕМА] @{name:<26} канал не знайдено")
+                bad.append(name)
+            except ChannelPrivateError:
+                print(f"  [ЗАКР] @{name:<26} канал закритий")
+                bad.append(name)
+            except FloodWaitError as e:
+                print(f"  Telegram просить почекати {e.seconds} с, зупиняюсь")
+                break
+            await asyncio.sleep(0.5)
+
+    print(f"\nПрацюють: {len(good)}, не працюють: {len(bad)}")
+    if good:
+        print("\nВстав це у channels.py -> CHANNELS:\n")
+        for n in good:
+            print(f"    '{n}',")
+    if bad:
+        print(f"\nПрибери зі списку: {', '.join(bad)}")
+
+
 # ---------------------------------------------------------------- самоперевірка
 
 SELF_TEST_SAMPLES = [
@@ -262,10 +329,23 @@ def main():
     p.add_argument('--no-db', action='store_true', help='не писати в базу')
     p.add_argument('--loose', action='store_true', help='увімкнути шумні варіанти (ВФ, лайф)')
     p.add_argument('--self-test', action='store_true', help='перевірка фільтра без Telegram')
+    p.add_argument('--find', nargs='*', metavar='НАЗВА',
+                   help='знайти юзернейми каналів за назвою (без аргументів — усі з channels.py)')
+    p.add_argument('--check', action='store_true',
+                   help='перевірити, що канали з channels.py існують і живі')
     args = p.parse_args()
 
     if args.self_test:
         self_test(loose=args.loose)
+        return
+
+    if args.find is not None:
+        queries = args.find or (channels_cfg.SEARCH_QUERIES + channels_cfg.BLACKOUT_QUERIES)
+        asyncio.run(find_channels(queries))
+        return
+
+    if args.check:
+        asyncio.run(check_channels(CHANNELS))
         return
 
     if not args.days and not args.since:
