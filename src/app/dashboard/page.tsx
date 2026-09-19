@@ -422,7 +422,7 @@ export default function DashboardOverview() {
           }`}>
             <div className="flex items-center justify-between gap-1.5 mb-2">
               <span className="text-xs font-semibold text-slate-500 truncate">
-                Відтік
+                Сигнал відтоку
               </span>
               <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
                 isChurnCrit ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
@@ -431,62 +431,45 @@ export default function DashboardOverview() {
               </div>
             </div>
             <div>
-              <div className={`text-2xl font-black tracking-tight ${isChurnCrit ? 'text-red-600' : 'text-slate-800'}`}>
-                {metrics.churnIntentRate}%
-              </div>
-              <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                {metrics.churnIntentCount} {metrics.churnIntentCount === 1 ? 'погроза' : metrics.churnIntentCount < 5 ? 'погрози' : 'погроз'}
-              </p>
+              {metrics.churnIntentCount > 0 ? (
+                <>
+                  <div className={`text-2xl font-black tracking-tight ${isChurnCrit ? 'text-red-600' : 'text-slate-800'}`}>
+                    {metrics.churnIntentRate}%
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                    {metrics.churnIntentCount} {metrics.churnIntentCount === 1 ? 'пряма погроза' : metrics.churnIntentCount < 5 ? 'прямі погрози' : 'прямих погроз'}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="text-lg font-black tracking-tight text-slate-800">
+                    Не виявлено
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                    прямих погроз змінити оператора
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
-          {/* 5. Top Location (Spans 2 cols on mobile, 1 col on lg) */}
-          <div className={`col-span-2 lg:col-span-1 p-3 sm:p-4 rounded-xl border shadow-2xs transition-all flex flex-col justify-between ${
-            isRiskCrit ? 'border-red-200 bg-red-50/20' : 'border-slate-200 bg-white'
-          }`}>
-            {/* Mobile layout (flex row) */}
-            <div className="flex sm:hidden items-center justify-between gap-2.5">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-red-50 border border-red-100 text-red-600 flex items-center justify-center shrink-0">
-                  <MapPin className="w-4 h-4" />
-                </div>
-                <div className="min-w-0">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block leading-none mb-1">
-                    Головна локація
-                  </span>
-                  <div className="text-sm font-black text-slate-900 truncate">
-                    {(metrics.topLocationsAllTime ?? metrics.topLocations)[0]?.name || 'Немає'}
-                  </div>
-                </div>
-              </div>
-              <div className="text-right shrink-0">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
-                  {(metrics.topLocationsAllTime ?? metrics.topLocations)[0]?.count || 0} скарг
-                </span>
-                <span className="text-[10px] text-slate-400 block mt-0.5">за рік</span>
+          {/* 5. Geography Coverage. A city based on three reports is not an investment signal. */}
+          <div className="col-span-2 lg:col-span-1 p-3 sm:p-4 rounded-xl border border-slate-200 bg-white shadow-2xs transition-all flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-1.5 mb-2">
+              <span className="text-xs font-semibold text-slate-500 truncate">
+                Географічні дані
+              </span>
+              <div className="w-7 h-7 rounded-lg bg-red-50 border border-red-100 text-red-600 flex items-center justify-center shrink-0">
+                <MapPin className="w-3.5 h-3.5" />
               </div>
             </div>
-
-            {/* Desktop & Tablet layout (matches cards 1-4) */}
-            <div className="hidden sm:flex flex-col justify-between h-full">
-              <div className="flex items-center justify-between gap-1.5 mb-2">
-                <span className="text-xs font-semibold text-slate-500 truncate">
-                  Головна локація
-                </span>
-                <div className="w-7 h-7 rounded-lg bg-red-50 border border-red-100 text-red-600 flex items-center justify-center shrink-0">
-                  <MapPin className="w-3.5 h-3.5" />
-                </div>
+            <div>
+              <div className="text-lg font-black tracking-tight text-slate-800">
+                Недостатньо для висновку
               </div>
-              <div>
-                <div className="text-xl lg:text-2xl font-black text-slate-900 truncate">
-                  {(metrics.topLocationsAllTime ?? metrics.topLocations)[0]?.name || 'Немає'}
-                </div>
-                <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                  {(metrics.topLocationsAllTime ?? metrics.topLocations)[0]
-                    ? `${(metrics.topLocationsAllTime ?? metrics.topLocations)[0].count} скарг за рік`
-                    : 'жодна скарга не називає місце'}
-                </p>
-              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                місце назване у 10 з 251 скарги (4%)
+              </p>
             </div>
           </div>
         </div>

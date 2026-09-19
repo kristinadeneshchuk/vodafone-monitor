@@ -797,7 +797,7 @@ export default function TimelinePage() {
         }`}>
           <div className="flex items-center justify-between gap-1 mb-2">
             <span className="text-xs font-semibold text-slate-500 truncate">
-              Відтік
+              Сигнал відтоку
             </span>
             <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${
               periodMetrics.churnPercent >= 15 ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
@@ -806,26 +806,37 @@ export default function TimelinePage() {
             </div>
           </div>
           <div>
-            <div className="flex items-baseline gap-1">
-              <span className={`text-xl sm:text-2xl font-black tracking-tight ${
-                periodMetrics.churnPercent >= 15 ? 'text-red-600' : 'text-slate-900'
-              }`}>
-                {periodMetrics.churnPercent}%
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-              {periodMetrics.churnCount > 0
-                ? `${periodMetrics.churnCount} ${periodMetrics.churnCount === 1 ? 'погроза' : periodMetrics.churnCount < 5 ? 'погрози' : 'погроз'}`
-                : 'прямих погроз не виявлено'}
-            </p>
+            {periodMetrics.churnCount > 0 ? (
+              <>
+                <div className="flex items-baseline gap-1">
+                  <span className={`text-xl sm:text-2xl font-black tracking-tight ${
+                    periodMetrics.churnPercent >= 15 ? 'text-red-600' : 'text-slate-900'
+                  }`}>
+                    {periodMetrics.churnPercent}%
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                  {periodMetrics.churnCount} {periodMetrics.churnCount === 1 ? 'пряма погроза' : periodMetrics.churnCount < 5 ? 'прямі погрози' : 'прямих погроз'}
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="text-base sm:text-lg font-black tracking-tight text-slate-900">
+                  Не виявлено
+                </div>
+                <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                  прямих погроз змінити оператора
+                </p>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Card 4: Top Location */}
+        {/* Card 4: Location evidence. One named city is a lead, not a conclusion. */}
         <div className="p-3 sm:p-4 rounded-xl border border-slate-200 bg-white shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between gap-1 mb-2">
             <span className="text-xs font-semibold text-slate-500 truncate">
-              {isRange ? 'Топ-локація' : 'Епіцентр'}
+              Географія
             </span>
             <div className="w-6 h-6 rounded-lg bg-red-50 text-red-600 border border-red-100 flex items-center justify-center shrink-0">
               <MapPin className="w-3.5 h-3.5" />
@@ -833,12 +844,12 @@ export default function TimelinePage() {
           </div>
           <div>
             <div className="text-sm sm:text-base font-black text-slate-900 truncate" title={periodTopLocation.name}>
-              {periodTopLocation.name}
+              {periodTopLocation.count >= 3 ? periodTopLocation.name : 'Недостатньо даних'}
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5 truncate">
               {periodTopLocation.count > 0 
-                ? `${periodTopLocation.count} зі скарг з названою локацією (${periodTopLocation.percent}%)`
-                : 'аномалій немає'}
+                ? `${periodTopLocation.count} із ${periodMetrics.complaintCount} скарг називають місце`
+                : 'місце не назване у скаргах'}
             </p>
           </div>
         </div>
