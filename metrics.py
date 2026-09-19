@@ -150,23 +150,31 @@ def resolution_lag(limit=None):
     """).fetchall()
 
     out = []
+    used = set()          # одне й те саме повідомлення не може підтверджувати
+                          # відновлення для кількох різних алертів
     for a in alerts:
         end = datetime.fromisoformat(a['window_end'])
         until = end + timedelta(days=RESOLUTION_WINDOW_DAYS)
 
+        # Звіряємо не лише бренд, а й ПРИЧИНУ. Інакше відгук
+        # "дякую, відновили роботу додатку" зараховувався як підтвердження
+        # відновлення мережі — різні проблеми, різні команди, різний час.
         rows = con.execute("""
-            SELECT m.published_at, m.text
+            SELECT m.id, m.published_at, m.text
             FROM analysis an JOIN mentions m ON m.id = an.mention_id
-            WHERE m.brand_query = ?
+            WHERE m.brand_query = ? AND an.cause = ?
               AND m.published_at > ? AND m.published_at <= ?
               AND an.sentiment IN ('positive','mixed')
             ORDER BY m.published_at
-        """, (a['brand'], a['window_end'], until.isoformat())).fetchall()
+        """, (a['brand'], a['cause'], a['window_end'], until.isoformat())).fetchall()
 
         found = None
         for r in rows:
+            if r['id'] in used:
+                continue
             if keywords.is_recovery(r['text']):
                 found = r
+                used.add(r['id'])
                 break
 
         lag_hours = None
