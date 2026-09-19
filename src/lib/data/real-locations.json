@@ -3,18 +3,18 @@
   "name": "Київ",
   "lat": 50.4501,
   "lng": 30.5234,
-  "complaints": 12,
+  "complaints": 10,
   "praise": 6,
-  "negativityShare": 66.7,
-  "daysWithComplaints": 22,
-  "intensity": 0.55,
-  "gridShare": 58.3,
-  "chronicGapShare": 25.0,
+  "negativityShare": 62.5,
+  "daysWithComplaints": 21,
+  "intensity": 0.48,
+  "gridShare": 50.0,
+  "chronicGapShare": 30.0,
   "pattern": "grid",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 9,
    "vodafone": 9,
+   "unknown": 8,
    "kyivstar": 7,
    "lifecell": 2
   },
@@ -25,44 +25,20 @@
   ]
  },
  {
-  "name": "Полтава",
-  "lat": 49.5883,
-  "lng": 34.5514,
-  "complaints": 10,
-  "praise": 1,
-  "negativityShare": 90.9,
-  "daysWithComplaints": 26,
-  "intensity": 0.38,
-  "gridShare": 240.0,
-  "chronicGapShare": 20.0,
-  "pattern": "grid",
-  "topCause": "blackout",
-  "byBrand": {
-   "unknown": 28,
-   "vodafone": 1,
-   "kyivstar": 1
-  },
-  "samples": [
-   "Блекаути та мобільний зв’язок: на Полтавщині сотні станцій готують до роботи без світла - Кременчуцький Телеграф. Блекау",
-   "Полтава відстає у забезпеченні станцій мобільного зв'язку генераторами: що кажуть в ОВА - Суспільне | Новини. Полтава ві",
-   "У Полтаві 14 вересня за низкою адрес немає світла: перелік вулиць і будинків - Суспільне | Новини. У Полтаві 14 вересня "
-  ]
- },
- {
   "name": "Львів",
   "lat": 49.8397,
   "lng": 24.0297,
   "complaints": 6,
   "praise": 5,
   "negativityShare": 54.5,
-  "daysWithComplaints": 23,
-  "intensity": 0.26,
-  "gridShare": 266.7,
+  "daysWithComplaints": 17,
+  "intensity": 0.35,
+  "gridShare": 150.0,
   "chronicGapShare": 33.3,
   "pattern": "grid",
-  "topCause": "blackout",
+  "topCause": "internet",
   "byBrand": {
-   "unknown": 20,
+   "unknown": 13,
    "kyivstar": 7,
    "vodafone": 2
   },
@@ -73,20 +49,44 @@
   ]
  },
  {
+  "name": "Полтава",
+  "lat": 49.5883,
+  "lng": 34.5514,
+  "complaints": 5,
+  "praise": 1,
+  "negativityShare": 83.3,
+  "daysWithComplaints": 12,
+  "intensity": 0.42,
+  "gridShare": 160.0,
+  "chronicGapShare": 40.0,
+  "pattern": "grid",
+  "topCause": "blackout",
+  "byBrand": {
+   "unknown": 12,
+   "vodafone": 1,
+   "kyivstar": 1
+  },
+  "samples": [
+   "Блекаути та мобільний зв’язок: на Полтавщині сотні станцій готують до роботи без світла - Кременчуцький Телеграф. Блекау",
+   "Полтава відстає у забезпеченні станцій мобільного зв'язку генераторами: що кажуть в ОВА - Суспільне | Новини. Полтава ві",
+   "У ОВА розкритикували Vodafone через знищені на складах генератори та загальмовану роботу в Полтаві - Інтернет-видання «П"
+  ]
+ },
+ {
   "name": "Дніпро",
   "lat": 48.4647,
   "lng": 35.0462,
-  "complaints": 6,
+  "complaints": 5,
   "praise": 1,
-  "negativityShare": 85.7,
-  "daysWithComplaints": 12,
+  "negativityShare": 83.3,
+  "daysWithComplaints": 10,
   "intensity": 0.5,
   "gridShare": 100.0,
-  "chronicGapShare": 16.7,
+  "chronicGapShare": 20.0,
   "pattern": "grid",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 9,
+   "unknown": 7,
    "kyivstar": 2,
    "vodafone": 1
   },
@@ -97,46 +97,21 @@
   ]
  },
  {
-  "name": "Запоріжжя",
-  "lat": 47.8388,
-  "lng": 35.1396,
-  "complaints": 3,
-  "praise": 2,
-  "negativityShare": 60.0,
-  "daysWithComplaints": 5,
-  "intensity": 0.6,
-  "gridShare": 66.7,
-  "chronicGapShare": 0.0,
-  "pattern": "grid",
-  "topCause": "coverage",
-  "byBrand": {
-   "vodafone": 2,
-   "kyivstar": 2,
-   "lifecell": 2,
-   "unknown": 1
-  },
-  "samples": [
-   "👷‍♂️РОБОТА В ЗАПОРІЖЖІ ❗️СТАБІЛЬНА ЗАРПЛАТА ❗️БРОНЮВАННЯ 👷‍♂️Найбільша українська будівельна компанія пропонує чоловікам",
-   "📣 В Запоріжжі оновлюють систему оповіщення Повідомлення автоматично з’являтиметься поверх усіх програм та навіть на забл",
-   "В Запоріжській обл не скрізь є покриття, але зв'язок якісний."
-  ]
- },
- {
   "name": "Харків",
   "lat": 49.9935,
   "lng": 36.2304,
-  "complaints": 3,
+  "complaints": 4,
   "praise": 1,
-  "negativityShare": 75.0,
-  "daysWithComplaints": 6,
-  "intensity": 0.5,
+  "negativityShare": 80.0,
+  "daysWithComplaints": 7,
+  "intensity": 0.57,
   "gridShare": 0.0,
   "chronicGapShare": 0.0,
   "pattern": "sporadic",
   "topCause": "coverage",
   "byBrand": {
+   "unknown": 3,
    "kyivstar": 2,
-   "unknown": 2,
    "lifecell": 1,
    "vodafone": 1
   },
@@ -177,19 +152,44 @@
   "complaints": 2,
   "praise": 0,
   "negativityShare": 100.0,
-  "daysWithComplaints": 5,
-  "intensity": 0.4,
-  "gridShare": 50.0,
+  "daysWithComplaints": 4,
+  "intensity": 0.5,
+  "gridShare": 0.0,
   "chronicGapShare": 50.0,
-  "pattern": "grid",
+  "pattern": "sporadic",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 5
+   "unknown": 4
   },
   "samples": [
    "[​​](http://telegraph.controller.bot/files/952802234/BQACAgIAAxkBAAEEVBBqggPyDH4_RevzJCoZXuWGrWGVRQAC5aoAAjYxEEjQ8maWBx-",
    "❗️Сьогодні КП «ЧЕЛУАШ» проводить поточні роботи на дорогах міста Черкаси У зв’язку з цим, рух транспорту на окремих діля",
    "⚠️ У Черкасах триває ремонт дороги на вулиці Юрія Іллєнка. Працівники КП «ЧЕЛУАШ» ліквідовують аварійні вибоїни та відно"
+  ]
+ },
+ {
+  "name": "Запоріжжя",
+  "lat": 47.8388,
+  "lng": 35.1396,
+  "complaints": 2,
+  "praise": 3,
+  "negativityShare": 40.0,
+  "daysWithComplaints": 5,
+  "intensity": 0.4,
+  "gridShare": 100.0,
+  "chronicGapShare": 0.0,
+  "pattern": "grid",
+  "topCause": "coverage",
+  "byBrand": {
+   "vodafone": 2,
+   "kyivstar": 2,
+   "lifecell": 2,
+   "unknown": 1
+  },
+  "samples": [
+   "👷‍♂️РОБОТА В ЗАПОРІЖЖІ ❗️СТАБІЛЬНА ЗАРПЛАТА ❗️БРОНЮВАННЯ 👷‍♂️Найбільша українська будівельна компанія пропонує чоловікам",
+   "📣 В Запоріжжі оновлюють систему оповіщення Повідомлення автоматично з’являтиметься поверх усіх програм та навіть на забл",
+   "В Запоріжській обл не скрізь є покриття, але зв'язок якісний."
   ]
  },
  {
@@ -222,14 +222,14 @@
   "complaints": 1,
   "praise": 6,
   "negativityShare": 14.3,
-  "daysWithComplaints": 7,
-  "intensity": 0.14,
-  "gridShare": 200.0,
+  "daysWithComplaints": 8,
+  "intensity": 0.12,
+  "gridShare": 300.0,
   "chronicGapShare": 100.0,
   "pattern": "healthy",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 5,
+   "unknown": 6,
    "vodafone": 2,
    "kyivstar": 2,
    "lifecell": 1
@@ -262,6 +262,26 @@
    "** 🚒 На Гетьмана Мазепи у Вінниці горіла автошкола** Зайнялося через коротке замикання електромережі. Надзвичайники опер",
    "🛟 **Шість наметів незламності на Вінниччині оснастили до зими** 🚒 Вінницькі рятувальники отримали меблі, освітлення та п",
    "🚧 **У Вінниці ремонтують провулок Гайдамацький** Цьогоріч це вже **шостий об’єкт**, який оновлюють за програмою співфіна"
+  ]
+ },
+ {
+  "name": "Хмельницький",
+  "lat": 49.4229,
+  "lng": 26.9871,
+  "complaints": 1,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 1,
+  "intensity": 1.0,
+  "gridShare": 0.0,
+  "chronicGapShare": 0.0,
+  "pattern": "sporadic",
+  "topCause": "coverage",
+  "byBrand": {
+   "unknown": 1
+  },
+  "samples": [
+   "Чотирьох військових госпіталізували, ще з кількома немає зв’язку внаслідок детонації боєприпасів на полігоні у Хмельниць"
   ]
  },
  {

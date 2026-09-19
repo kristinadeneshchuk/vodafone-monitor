@@ -155,7 +155,10 @@ def has_problem_statement(text):
     до 0.753, бо в п'ятизіркових відгуках теж є слово "інтернет".
     Повнота по негативу при цьому не зростала. Тому вето вузьке.
     """
-    return keywords.is_coverage_issue(text)
+    # is_coverage_issue ловить і просто ТЕМУ ("покриття"), тому відгук
+    # на пʼять зірок "покриття хорошее" ставав змішаним і потрапляв
+    # у набір скарг. Вето має спрацьовувати лише на заявлену поломку.
+    return bool(keywords.PROBLEM_STATED.search(text or ''))
 
 
 def predict_hybrid(texts):

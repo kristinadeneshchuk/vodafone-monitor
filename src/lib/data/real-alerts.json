@@ -2071,6 +2071,21 @@
  },
  {
   "level": "watch",
+  "event_type": "incident",
+  "brand": "vodafone",
+  "cause": "tariffs",
+  "cities": "Рівне",
+  "window_start": "2026-02-10T07:00:00+00:00",
+  "window_end": "2026-02-11T07:00:00+00:00",
+  "count": 9,
+  "baseline": 0.0,
+  "ratio": 18.0,
+  "n_source_types": 3,
+  "summary": "Сплеск скарг: тарифи, бренд vodafone. 9 негативних згадок за 24 год проти норми 0.0 у локаціях: Рівне. Джерел різних типів: 3 (news, review, telegram). Початок вікна: 2026-02-10 07:00 UTC.",
+  "recommended_action": "Комунікаціям — пояснювальний матеріал щодо зміни умов."
+ },
+ {
+  "level": "watch",
   "event_type": "media_attention",
   "brand": "vodafone",
   "cause": "tariffs",
