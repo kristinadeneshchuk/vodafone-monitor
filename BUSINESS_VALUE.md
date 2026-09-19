@@ -203,6 +203,8 @@ Vodafone, порахувати, скільки публікацій вийшло
 
 ## Джерела шару A
 
-- [Vodafone Україна у І пів.-2026 збільшив чистий прибуток на 14,2% за зростання виручки на 10,6% — Інтерфакс-Україна](https://interfax.com.ua/news/telecom/1196790.html)
+- [Фінансові показники Vodafone Україна, І півріччя 2026 — офіційна сторінка компанії](https://www.vodafone.ua/news/business-invest/vodafone-invests) — ARPU 154 грн, 15,1 млн абонентів, виручка 14 949 млн грн,
+  інвестиції 3 510 млн грн. **Першоджерело: усі цифри шару [Ф] звідси.**
+- [Vodafone Україна у І пів.-2026 збільшив чистий прибуток на 14,2% — Інтерфакс-Україна](https://interfax.com.ua/news/telecom/1196790.html)
 - [Виторг Vodafone Україна у 2025 році зріс на 14% до 27,8 млрд грн — Forbes.ua](https://forbes.ua/news/vitorg-vodafone-ukraina-u-2025-rotsi-zris-na-14-do-278-mlrd-grn-13042026-37922)
 - [Vodafone у 1 півріччі 2025 року інвестував понад 3,5 млрд грн в економіку України — vodafone.ua](https://www.vodafone.ua/news/vodafone-u-1-pivrichchi-2025-roku-investuvav-ponad-35-mlrd-grn-v-ekonomiku-ukrani)

@@ -430,7 +430,9 @@ Google News                       локація          28 днів         б
 
 ## Джерела публічних цифр
 
-- [Vodafone Україна, І пів. 2026 — Інтерфакс-Україна](https://interfax.com.ua/news/telecom/1196790.html)
+- [Фінансові показники Vodafone Україна, І півріччя 2026 — офіційна сторінка компанії](https://www.vodafone.ua/news/business-invest/vodafone-invests) — ARPU 154 грн, 15,1 млн абонентів, виручка 14 949 млн грн,
+  інвестиції 3 510 млн грн. **Першоджерело: усі цифри шару [Ф] звідси.**
+- [Vodafone Україна, І пів. 2026 — Інтерфакс-Україна](https://interfax.com.ua/news/telecom/1196790.html) — те саме в переказі агентства
 - [Виторг 2025 — Forbes.ua](https://forbes.ua/news/vitorg-vodafone-ukraina-u-2025-rotsi-zris-na-14-do-278-mlrd-grn-13042026-37922)
 - [Інвестиції — vodafone.ua](https://www.vodafone.ua/news/vodafone-u-1-pivrichchi-2025-roku-investuvav-ponad-35-mlrd-grn-v-ekonomiku-ukrani)
 - Робоча версія: https://vodafone-reputation.vercel.app/dashboard
