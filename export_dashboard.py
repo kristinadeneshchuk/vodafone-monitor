@@ -279,15 +279,9 @@ def fetch_alerts():
     return [dict(r) for r in rows]
 
 
-def main():
-    p = argparse.ArgumentParser()
-    p.add_argument('--limit', type=int)
-    p.add_argument('--days', type=int)
-    p.add_argument('--scope', default='coverage',
-                   choices=['coverage', 'problems', 'negative', 'all'])
-    args = p.parse_args()
-
-    records = fetch(args.scope, args.limit, args.days)
+def export(scope='coverage', limit=None, days=None):
+    """Пише всі файли, які читає дашборд. Викликається і з run_pipeline."""
+    records = fetch(scope, limit, days)
     alerts = fetch_alerts()
 
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
@@ -334,6 +328,17 @@ def main():
     print(f"  {alerts_path}")
     print(f"  {summary_path}")
     print(f"  {loc_path}")
+    return records
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument('--limit', type=int)
+    p.add_argument('--days', type=int)
+    p.add_argument('--scope', default='coverage',
+                   choices=['coverage', 'problems', 'negative', 'all'])
+    args = p.parse_args()
+    export(args.scope, args.limit, args.days)
 
 
 if __name__ == '__main__':

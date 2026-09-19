@@ -5,21 +5,21 @@
  "healthyLocations": 2,
  "incidentLocations": 0,
  "marketWideMentions": 35,
- "coverageMentions": 1077,
- "coverageComplaints": 758,
+ "coverageMentions": 1084,
+ "coverageComplaints": 761,
  "coveragePraise": 167,
- "gridOutageShare": 23.9,
- "gridOutageCount": 257,
+ "gridOutageShare": 24.1,
+ "gridOutageCount": 261,
  "withLocation": 92,
  "withLocationShare": 8.5,
  "chronicGaps": 32,
  "byBrand": {
-  "kyivstar": 465,
+  "kyivstar": 467,
   "vodafone": 346,
-  "unknown": 197,
+  "unknown": 202,
   "lifecell": 69
  },
  "wakeAlertsPerYear": 2,
- "alertsTotal": 200,
+ "alertsTotal": 207,
  "maxSpikeVelocity": 36.0
 }
