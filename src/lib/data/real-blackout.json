@@ -1,13 +1,13 @@
 {
- "total": 139,
- "winterShare": 82.7,
- "winterCount": 115,
+ "total": 138,
+ "winterShare": 82.6,
+ "winterCount": 114,
  "byMonth": {
   "2025-10": 4,
   "2025-11": 18,
   "2025-12": 18,
   "2026-01": 44,
-  "2026-02": 35,
+  "2026-02": 34,
   "2026-03": 8,
   "2026-04": 4,
   "2026-05": 3,
@@ -29,7 +29,7 @@
  "byBrand": {
   "kyivstar": 63,
   "vodafone": 50,
-  "unknown": 18,
+  "unknown": 17,
   "lifecell": 8
  },
  "durationsHours": [

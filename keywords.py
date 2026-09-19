@@ -330,6 +330,28 @@ MILITARY_CONTEXT = _compile([
     r'\bракет\w*\s+(удар|обстріл)', r'\bлінія\s+фронт',
 ])
 
+# Складені слова, де "інтернет" не означає звʼязок: інтернет-банкінг,
+# інтернет-магазин, інтернет-провайдер. Збій банку не є збоєм оператора.
+# Якщо в тексті названо оператора, згадка "інтернет-провайдер" може
+# стосуватись саме його — тоді вето не застосовуємо.
+BRAND_IN_TEXT = _compile([
+    r'vodafone|водафон|київстар|киевстар|kyivstar|lifecell|лайфсел',
+])
+
+INTERNET_COMPOUND = _compile([
+    r'інтернет-(банкінг|банк|магазин|торгівл|еквайринг|реклам|видан|змі|'
+    r'ресурс|аукціон|казино|платеж|провайдер\w*\s+(придба|купи))',
+])
+
+# Новини про чужі країни й окуповані території. Вони не є скаргами
+# абонентів Vodafone, хоча слова про звʼязок там є.
+FOREIGN_GEO = _compile([
+    r'\bу\s+(москві|росії|білорусі|мінську)', r'\bмоскв\w*\s+(та|і)\s+област',
+    r'бєлгород\w*|белгород\w*|курськ\w*|воронеж\w*|ростов\w*',
+    r'сімферопол\w*|севастопол\w*|окупован\w*\s+(крим|територ|донбас)',
+    r'влада\s+росії|в\s+рф\b',
+])
+
 CAUSE_PRIORITY = [
     'blackout', 'outage', 'billing', 'roaming', 'esim', 'number',
     'calls', 'coverage', 'internet', 'support', 'tariffs', 'app',
@@ -385,6 +407,18 @@ def detect_cause(text, source_type=None):
     # "відключення" там є.
     if 'blackout' in scores and not TELECOM_SENSE.search(text):
         del scores['blackout']
+
+    # "Інтернет-банкінг", "інтернет-магазин" — не про звʼязок. Знімаємо
+    # ВСІ причини звʼязку, бо інакше "інтернет-магазин зазнав кібератаки"
+    # лишався масовим збоєм через слово "кібератака".
+    if INTERNET_COMPOUND.search(text) and not BRAND_IN_TEXT.search(text):
+        for c in ('internet', 'coverage', 'calls', 'outage'):
+            scores.pop(c, None)
+
+    # Новина про Москву чи окуповану територію — не скарга абонента.
+    if FOREIGN_GEO.search(text):
+        for c in ('internet', 'coverage', 'calls', 'outage', 'blackout'):
+            scores.pop(c, None)
 
     # Військовий матеріал не є скаргою на звʼязок.
     if MILITARY_CONTEXT.search(text) and not PROBLEM_STATED.search(text):
