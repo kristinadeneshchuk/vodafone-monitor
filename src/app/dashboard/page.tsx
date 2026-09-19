@@ -408,7 +408,7 @@ export default function DashboardOverview() {
             </CardHeader>
             <CardContent>
               <div className={`text-lg font-bold truncate ${isRiskCrit ? 'text-red-600' : 'text-slate-700'}`}>
-                {metrics.topLocations[0]?.name || 'Нормально'}
+                {metrics.topLocations[0]?.name || 'Немає'}
               </div>
               <p className="text-xs text-slate-500 mt-1">
                 {metrics.topLocations[0] ? `${metrics.topLocations[0].count} скарг за 30 днів` : 'аномалій не виявлено'}
@@ -425,7 +425,7 @@ export default function DashboardOverview() {
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold text-slate-800 flex items-center gap-1.5 uppercase tracking-wide">
             <Zap className="w-4 h-4 text-slate-500" />
-            Глибокі бізнес-метрики загрози (Enterprise Risk) — Вчора
+            Глибокі бізнес-метрики загрози (Enterprise Risk) — за 30 днів
           </h2>
           <span className="text-xs text-slate-400">Аналіз впливу на LTV, вірусність та аварії</span>
         </div>
