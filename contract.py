@@ -168,7 +168,7 @@ def build(text, sentiment_name, source_type, source_name='', q=None):
     text = text or ''
     q = q or quality.score(text)
 
-    cause = keywords.detect_cause(text)
+    cause = keywords.detect_cause(text, source_type)
     location = geo.resolve(text)
     has_location = location is not None
 

@@ -50,7 +50,7 @@ WAKE_MIN_ABS = 12
 WAKE_MIN_SOURCE_TYPES = 2  # головний запобіжник від хибних тривог
 
 # Скарги з цим контекстом — хронічні, не аварія.
-CHRONIC_CONTEXT = ('transport', 'terrain')
+CHRONIC_CONTEXT = ('transport', 'terrain', 'rural')
 
 # Частка blackout-згадок, за якої подія вважається знеструмленням.
 BLACKOUT_SHARE = 0.4
