@@ -148,7 +148,7 @@ export class RealFeedbackService implements IFeedbackService {
     // означали різні речі.
     let dateLabel = effectiveDayStr;
     try {
-      const from = format(subDays(parseISO(effectiveDayStr), 6), 'd MMM', { locale: uk });
+      const from = format(subDays(parseISO(effectiveDayStr), 29), 'd MMM', { locale: uk });
       const to = format(parseISO(effectiveDayStr), 'd MMMM yyyy', { locale: uk });
       dateLabel = `${from} — ${to}`;
     } catch {
@@ -161,7 +161,11 @@ export class RealFeedbackService implements IFeedbackService {
     // Порівнювати "вчора проти норми" на таких числах означає міряти шум:
     // дашборд показував усюди нулі просто тому, що 18 вересня випало 0.
     // Тиждень дає 14-20 скарг — на цьому вже видно динаміку.
-    const WINDOW_DAYS = 7;
+    // 30, а не 7. На звʼязок Vodafone припадає близько чотирьох скарг
+    // на тиждень, і тижневе вікно показувало "1 скарга, штатний режим"
+    // навіть тоді, коли в місяці була видима динаміка. Місяць дає
+    // 15 згадок і 7 скарг — на цьому вже можна щось стверджувати.
+    const WINDOW_DAYS = 30;
     const windowStart = format(subDays(parseISO(effectiveDayStr), WINDOW_DAYS - 1), 'yyyy-MM-dd');
     const dayFeedbacks = feedbacks.filter(
       f => f.timestamp.slice(0, 10) >= windowStart

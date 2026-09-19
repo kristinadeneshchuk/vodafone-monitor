@@ -46,7 +46,7 @@ export function generateHeuristicBriefing(
   feedbacks: FeedbackRecord[],
   metrics: DashboardMetrics
 ): DailyBriefing {
-  // Метрики рахуються за 7 днів, тому підпис теж має бути періодом,
+  // Метрики рахуються за 30 днів, тому підпис теж має бути періодом,
   // а не однією датою: було "Основний масив скарг за 16 вересня".
   let dateLabel = date;
   try {
@@ -163,7 +163,7 @@ export async function generateBriefingWithGemini(
 ): Promise<DailyBriefing> {
   const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-  // Метрики рахуються за 7 днів, тому підпис теж має бути періодом,
+  // Метрики рахуються за 30 днів, тому підпис теж має бути періодом,
   // а не однією датою: було "Основний масив скарг за 16 вересня".
   let dateLabel = date;
   try {
