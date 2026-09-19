@@ -27,6 +27,9 @@ import json
 import sqlite3
 import time
 
+import re
+
+import contract
 import keywords
 import quality
 import sentiment_model
@@ -49,9 +52,49 @@ CREATE TABLE IF NOT EXISTS analysis (
     emotional_noise REAL,
     promo_like     REAL,
     features       TEXT,               -- сирі ознаки, JSON
+
+    -- контракт для №6: enum числами заради місця
+    is_relevant       INTEGER,
+    relevance_score   REAL,
+    is_constructive   INTEGER,
+    constructive_score REAL,
+    importance        INTEGER,          -- 0 low .. 3 critical
+    sentiment_enum    INTEGER,          -- 0 positive, 1 neutral, 2 negative
+    problem_type      INTEGER,          -- 0 no_signal .. 3 other
+    risk_score        INTEGER,          -- 0..100
+    lat               REAL,
+    lng               REAL,
+    address_name      TEXT,
+
     FOREIGN KEY(mention_id) REFERENCES mentions(id)
 )
 """
+
+
+# Модель тональності навчена на ВІДГУКАХ. Новини — інший жанр: там немає
+# емоційних слів, і модель на них помиляється. Реальний приклад: новину
+# "У Києві запустили 5G" вона відносила до негативу з ризиком 96.
+# Тому для новин тональність визначається за явними маркерами, а за
+# замовчуванням — нейтральна. Це чесніше, ніж вгадувати не своїм жанром.
+NEWS_NEGATIVE = re.compile(
+    r'збій|збо[ії]|аварі|не\s+працю|скарг|атак|зламал|витік\s+даних|'
+    r'штраф|суд\b|позов|критик|розслідуванн|перебо|обмеженн|'
+    r'подорожч|підвищ\w*\s+(цін|тариф)|відключ', re.IGNORECASE)
+NEWS_POSITIVE = re.compile(
+    r'запуст|розшир|покращ|модерніз|рекорд|нагород|інвестув|'
+    r'відновив|新|збільш\w*\s+швидк|нов\w*\s+послуг', re.IGNORECASE)
+
+
+def news_sentiment(text):
+    neg = bool(NEWS_NEGATIVE.search(text))
+    pos = bool(NEWS_POSITIVE.search(text))
+    if neg and not pos:
+        return 'negative'
+    if pos and not neg:
+        return 'positive'
+    if neg and pos:
+        return 'mixed'
+    return 'neutral'
 
 
 def classify_tonality(sentiment, q):
@@ -81,12 +124,12 @@ def classify_tonality(sentiment, q):
 
 
 def enrich_batch(rows):
-    """rows: [(id, text, rating)] -> список кортежів для вставки."""
+    """rows: [(id, text, rating, source_type)] -> кортежі для вставки."""
     texts = [r[1] or '' for r in rows]
     preds = sentiment_model.predict_hybrid(texts)
 
     out = []
-    for (mid, text, rating), (sent, conf) in zip(rows, preds):
+    for (mid, text, rating, source_type), (sent, conf) in zip(rows, preds):
         text = text or ''
 
         # Якщо зірки є — вони важливіші за модель. Це пряма оцінка автора,
@@ -99,11 +142,17 @@ def enrich_batch(rows):
         elif rating == 3:
             sent, conf = 'mixed', 1.0
 
+        if source_type == 'news':
+            sent, conf = news_sentiment(text), 0.6
+
         q = quality.score(text)
         cause = keywords.detect_cause(text)
         context = keywords.detect_context(text)
         cities = q['cities']
         tonality, trust = classify_tonality(sent, q)
+
+        c = contract.build(text, sent, source_type, q=q)
+        loc = c['location']
 
         out.append((
             mid, sent, conf, tonality, trust, cause,
@@ -111,6 +160,12 @@ def enrich_batch(rows):
             context[0] if context else None,
             q['actionability'], q['emotional_noise'], q['promo_like'],
             json.dumps(q, ensure_ascii=False),
+            int(c['isRelevant']), c['relevanceScore'],
+            int(c['isConstructive']), c['constructiveScore'],
+            c['importance'], c['sentiment'], c['problemType'], c['reputationalRiskScore'],
+            loc['lat'] if loc else None,
+            loc['lng'] if loc else None,
+            loc['addressName'] if loc else None,
         ))
     return out
 
@@ -134,13 +189,13 @@ def run(redo=False):
     done = 0
     while True:
         rows = con.execute(
-            "SELECT id, text, rating FROM mentions "
+            "SELECT id, text, rating, source_type FROM mentions "
             "WHERE id NOT IN (SELECT mention_id FROM analysis) LIMIT ?", (BATCH,)
         ).fetchall()
         if not rows:
             break
         con.executemany(
-            "INSERT OR REPLACE INTO analysis VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT OR REPLACE INTO analysis VALUES (" + ",".join("?"*23) + ")",
             enrich_batch(rows))
         con.commit()
         done += len(rows)

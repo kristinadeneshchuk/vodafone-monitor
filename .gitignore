@@ -14,3 +14,4 @@ telegram_mentions.json
 .env
 .ruff_cache/
 data_*.json
+export_for_frontend.json

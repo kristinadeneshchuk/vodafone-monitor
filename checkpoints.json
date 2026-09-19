@@ -34,5 +34,35 @@
   "scanned": 5173,
   "found": 16,
   "done": "16 згадок з 5173 постів"
+ },
+ "lvivych_news": {
+  "last_id": 75215,
+  "scanned": 7457,
+  "found": 62,
+  "done": "62 згадок з 7457 постів"
+ },
+ "odessa_infonews": {
+  "last_id": 99161,
+  "scanned": 8106,
+  "found": 10,
+  "done": "10 згадок з 8106 постів"
+ },
+ "rivne_golovne": {
+  "last_id": 56315,
+  "scanned": 5531,
+  "found": 8,
+  "done": "8 згадок з 5531 постів"
+ },
+ "svoiKR": {
+  "last_id": 58336,
+  "scanned": 7139,
+  "found": 16,
+  "done": "16 згадок з 7139 постів"
+ },
+ "truexakharkiv": {
+  "last_id": 101272,
+  "scanned": 4576,
+  "found": 7,
+  "done": "7 згадок з 4576 постів"
  }
 }
