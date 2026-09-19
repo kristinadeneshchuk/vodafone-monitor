@@ -20,6 +20,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: 'Аналіз періодів (Timeline)', href: '/dashboard/timeline', icon: Clock },
     { name: 'Географія проблем', href: '/dashboard/map', icon: Map },
     { name: 'Стрічка повідомлень', href: '/dashboard/feed', icon: MessageSquare },
+    { name: 'Доказова аналітика', href: '/dashboard/insights', icon: Activity },
     { name: 'AI Аналітика', href: '/dashboard/analytics', icon: Activity },
   ];
 
