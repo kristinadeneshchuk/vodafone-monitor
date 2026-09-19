@@ -259,6 +259,7 @@ export class RealFeedbackService implements IFeedbackService {
 
     return {
       date: effectiveDayStr,
+      windowStart,
       dateLabel,
       totalComplaints: dayNegatives,
       totalMentions: dayCount,

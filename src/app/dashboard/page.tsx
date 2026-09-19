@@ -51,7 +51,11 @@ export default function DashboardOverview() {
     const fetchBriefing = async () => {
       setLoadingBriefing(true);
       try {
-        const localKey = `briefing_${metrics.date}`;
+        // Ключ включає самі цифри: бриф, збережений на попередньому
+        // вікні звіту, інакше лишався в браузері назавжди і підписував
+        // нові метрики старим текстом.
+        const localKey = `briefing_${metrics.date}_${metrics.windowStart ?? ''}`
+          + `_${metrics.totalComplaints}_${metrics.totalMentions ?? 0}`;
         const cachedLocal = typeof window !== 'undefined' ? localStorage.getItem(localKey) : null;
         if (cachedLocal) {
           try {
@@ -99,7 +103,10 @@ export default function DashboardOverview() {
           setBriefing(json.briefing);
           setIsCached(false);
           if (typeof window !== 'undefined') {
-            localStorage.setItem(`briefing_${metrics.date}`, JSON.stringify(json.briefing));
+            localStorage.setItem(
+              `briefing_${metrics.date}_${metrics.windowStart ?? ''}`
+                + `_${metrics.totalComplaints}_${metrics.totalMentions ?? 0}`,
+              JSON.stringify(json.briefing));
           }
         }
       }
@@ -169,7 +176,7 @@ export default function DashboardOverview() {
           <Button
             size="sm"
             className="bg-red-600 hover:bg-red-700 text-white font-medium text-xs h-8 gap-1.5 shadow-xs"
-            onClick={() => router.push(`/dashboard/feed?date=${metrics.date}`)}
+            onClick={() => router.push('/dashboard/feed')}
           >
             Стрічка за період <ArrowRight className="w-3 h-3" />
           </Button>

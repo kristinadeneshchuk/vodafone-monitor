@@ -77,7 +77,10 @@ export interface DashboardMetrics {
   averageResonance: number;     // коефіцієнт резонансу / вірусності (Reach x Relevance)
   spikeVelocityRatio: number;   // швидкість спалаху скарг (перевищення норми baseline, x разів)
 
-  date?: string;                // YYYY-MM-DD
+  date?: string;                // YYYY-MM-DD — останній день вікна
+  /** Перший день вікна звіту. Бриф має описувати той самий період,
+   *  що й цифри над ним, а не одну добу. */
+  windowStart?: string;         // YYYY-MM-DD
   dateLabel?: string;           // Наприклад "19 вересня 2026"
 
   sentimentDistribution: {
