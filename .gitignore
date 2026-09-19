@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+
+# сесія Telegram = доступ до акаунта, у репозиторій НЕ комітимо
+*.session
+*.session-journal
+
+# база і вивантаження — у кожного свої
+mentions.db
+telegram_mentions.json
+*.json.bak
+
+.env
+.ruff_cache/
