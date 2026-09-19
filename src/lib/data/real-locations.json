@@ -6,15 +6,15 @@
   "complaints": 10,
   "praise": 6,
   "negativityShare": 62.5,
-  "daysWithComplaints": 21,
-  "intensity": 0.48,
+  "daysWithComplaints": 23,
+  "intensity": 0.43,
   "gridShare": 50.0,
   "chronicGapShare": 30.0,
   "pattern": "grid",
   "topCause": "coverage",
   "byBrand": {
+   "unknown": 10,
    "vodafone": 9,
-   "unknown": 8,
    "kyivstar": 7,
    "lifecell": 2
   },
@@ -29,23 +29,23 @@
   "lat": 49.8397,
   "lng": 24.0297,
   "complaints": 6,
-  "praise": 5,
-  "negativityShare": 54.5,
-  "daysWithComplaints": 17,
-  "intensity": 0.35,
-  "gridShare": 150.0,
+  "praise": 4,
+  "negativityShare": 60.0,
+  "daysWithComplaints": 16,
+  "intensity": 0.38,
+  "gridShare": 133.3,
   "chronicGapShare": 33.3,
   "pattern": "grid",
   "topCause": "internet",
   "byBrand": {
-   "unknown": 13,
+   "unknown": 12,
    "kyivstar": 7,
    "vodafone": 2
   },
   "samples": [
-   "На Львівщині перевіряють готовність мобільного зв’язку до тривалих відключень: передали понад 73% генераторів - lvnews.o",
    "На Львівщині понад 73% станцій звʼязку уже забезпечили генераторами на випадок знеструмлень - lviv.media. На Львівщині п",
-   "Оператори мобільного зв’язку готуються до знеструмлень на Львівщині - Львівський портал. Оператори мобільного зв’язку го"
+   "Оператори мобільного зв’язку готуються до знеструмлень на Львівщині - Львівський портал. Оператори мобільного зв’язку го",
+   "**Київстар розширює покриття Домашнього Інтернету у Львові** Нові житлові квартали та райони міста отримали доступ до ст"
   ]
  },
  {
@@ -55,21 +55,20 @@
   "complaints": 5,
   "praise": 1,
   "negativityShare": 83.3,
-  "daysWithComplaints": 12,
-  "intensity": 0.42,
+  "daysWithComplaints": 13,
+  "intensity": 0.38,
   "gridShare": 160.0,
   "chronicGapShare": 40.0,
   "pattern": "grid",
   "topCause": "blackout",
   "byBrand": {
-   "unknown": 12,
-   "vodafone": 1,
+   "unknown": 13,
    "kyivstar": 1
   },
   "samples": [
    "Блекаути та мобільний зв’язок: на Полтавщині сотні станцій готують до роботи без світла - Кременчуцький Телеграф. Блекау",
    "Полтава відстає у забезпеченні станцій мобільного зв'язку генераторами: що кажуть в ОВА - Суспільне | Новини. Полтава ві",
-   "У ОВА розкритикували Vodafone через знищені на складах генератори та загальмовану роботу в Полтаві - Інтернет-видання «П"
+   "Чи буде на Полтавщині мобільний зв’язок під час можливих блекаутів - Суспільне | Новини. Чи буде на Полтавщині мобільний"
   ]
  },
  {
@@ -146,6 +145,31 @@
   ]
  },
  {
+  "name": "Одеса",
+  "lat": 46.4825,
+  "lng": 30.7233,
+  "complaints": 2,
+  "praise": 6,
+  "negativityShare": 25.0,
+  "daysWithComplaints": 9,
+  "intensity": 0.22,
+  "gridShare": 200.0,
+  "chronicGapShare": 50.0,
+  "pattern": "healthy",
+  "topCause": "coverage",
+  "byBrand": {
+   "unknown": 7,
+   "vodafone": 2,
+   "kyivstar": 2,
+   "lifecell": 1
+  },
+  "samples": [
+   "5G без доплати вже в Одесі: lifecell, \"Київстар\" і Vodafone назвали локації покриття - Знай.ua. 5G без доплати вже в Оде",
+   "В Одесі запустили 5G: швидкість понад 1 Гбіт/с, але мережа покриває не все місто - Знай.ua. В Одесі запустили 5G: швидкі",
+   "В Одесі запустили тестування 5G: швидкість перевищує 1 Гбіт/с - Ukr.net. В Одесі запустили тестування 5G: швидкість пере"
+  ]
+ },
+ {
   "name": "Черкаси",
   "lat": 49.4444,
   "lng": 32.0598,
@@ -193,6 +217,29 @@
   ]
  },
  {
+  "name": "Тернопіль",
+  "lat": 49.5535,
+  "lng": 25.5948,
+  "complaints": 2,
+  "praise": 1,
+  "negativityShare": 66.7,
+  "daysWithComplaints": 6,
+  "intensity": 0.33,
+  "gridShare": 100.0,
+  "chronicGapShare": 0.0,
+  "pattern": "grid",
+  "topCause": "coverage",
+  "byBrand": {
+   "unknown": 7,
+   "kyivstar": 2
+  },
+  "samples": [
+   "**Домашній Інтернет у Тернополі стабільно працює навіть без електроенергії** Для жителів Тернополя стабільний доступ до ",
+   "**Жінка втратила гроші через онлайн кохання.** 100 тисяч гривень [віддала](https://tp.npu.gov.ua/news/obitsianyi-podarun",
+   "**Жінка втратила гроші через онлайн кохання.** 100 тисяч гривень [віддала](https://tp.npu.gov.ua/news/obitsianyi-podarun"
+  ]
+ },
+ {
   "name": "Рівне",
   "lat": 50.6199,
   "lng": 26.2516,
@@ -216,28 +263,25 @@
   ]
  },
  {
-  "name": "Одеса",
-  "lat": 46.4825,
-  "lng": 30.7233,
-  "complaints": 1,
-  "praise": 6,
-  "negativityShare": 14.3,
-  "daysWithComplaints": 8,
-  "intensity": 0.12,
-  "gridShare": 300.0,
-  "chronicGapShare": 100.0,
-  "pattern": "healthy",
+  "name": "Карпати",
+  "lat": 48.55,
+  "lng": 24.3,
+  "complaints": 2,
+  "praise": 0,
+  "negativityShare": 100.0,
+  "daysWithComplaints": 3,
+  "intensity": 0.67,
+  "gridShare": 50.0,
+  "chronicGapShare": 150.0,
+  "pattern": "grid",
   "topCause": "coverage",
   "byBrand": {
-   "unknown": 6,
-   "vodafone": 2,
-   "kyivstar": 2,
-   "lifecell": 1
+   "unknown": 3
   },
   "samples": [
-   "5G без доплати вже в Одесі: lifecell, \"Київстар\" і Vodafone назвали локації покриття - Знай.ua. 5G без доплати вже в Оде",
-   "В Одесі запустили 5G: швидкість понад 1 Гбіт/с, але мережа покриває не все місто - Знай.ua. В Одесі запустили 5G: швидкі",
-   "В Одесі запустили тестування 5G: швидкість перевищує 1 Гбіт/с - Ukr.net. В Одесі запустили тестування 5G: швидкість пере"
+   "**Скандал довкола смерті мобілізованого з Волині на Франківщині,** – [ЗМІ.](https://kovel.media/tczk-prymusovo-mobilizuv",
+   "**На перевалах Прикарпаття організували чергування дорожніх служб.** Через вологу на Буковецьких, Вишківських, Кривопіль",
+   "**Чому у деяких регіонах заходи обмеження споживання вже скасовані, а в інших – відключення залишаються тривалими?** Так"
   ]
  },
  {
@@ -329,29 +373,6 @@
   ]
  },
  {
-  "name": "Карпати",
-  "lat": 48.55,
-  "lng": 24.3,
-  "complaints": 1,
-  "praise": 0,
-  "negativityShare": 100.0,
-  "daysWithComplaints": 3,
-  "intensity": 0.33,
-  "gridShare": 100.0,
-  "chronicGapShare": 300.0,
-  "pattern": "grid",
-  "topCause": "coverage",
-  "byBrand": {
-   "unknown": 2,
-   "vodafone": 1
-  },
-  "samples": [
-   "**Скандал довкола смерті мобілізованого з Волині на Франківщині,** – [ЗМІ.](https://kovel.media/tczk-prymusovo-mobilizuv",
-   "На Прикарпатті базові станції «Київстар» і Vodafone підключатимуть до генераторів - PRAVDA.IF.UA. На Прикарпатті базові ",
-   "**На перевалах Прикарпаття організували чергування дорожніх служб.** Через вологу на Буковецьких, Вишківських, Кривопіль"
-  ]
- },
- {
   "name": "Суми",
   "lat": 50.9077,
   "lng": 34.7981,
@@ -369,29 +390,6 @@
   },
   "samples": [
    "Суцільне розчарування, зателефонувати у підтримку неможливо,Зоряна не налаштована на інфу про безлад співробітників.Дома"
-  ]
- },
- {
-  "name": "Тернопіль",
-  "lat": 49.5535,
-  "lng": 25.5948,
-  "complaints": 0,
-  "praise": 1,
-  "negativityShare": 0.0,
-  "daysWithComplaints": 5,
-  "intensity": 0.0,
-  "gridShare": 0.0,
-  "chronicGapShare": 0.0,
-  "pattern": "healthy",
-  "topCause": "coverage",
-  "byBrand": {
-   "unknown": 6,
-   "kyivstar": 1
-  },
-  "samples": [
-   "**Домашній Інтернет у Тернополі стабільно працює навіть без електроенергії** Для жителів Тернополя стабільний доступ до ",
-   "**Жінка втратила гроші через онлайн кохання.** 100 тисяч гривень [віддала](https://tp.npu.gov.ua/news/obitsianyi-podarun",
-   "**Жінка втратила гроші через онлайн кохання.** 100 тисяч гривень [віддала](https://tp.npu.gov.ua/news/obitsianyi-podarun"
   ]
  }
 ]

@@ -68,6 +68,18 @@ export default function TimelinePage() {
   const daysData = useMemo(() => {
     const now = new Date();
     // Build 30 days chronologically from 29 days ago to today
+    // медіана скарг на добу по всьому масиву — спільна норма для всіх днів
+    const negByDay: Record<string, number> = {};
+    for (const f of allFeedbacks) {
+      if (f.sentiment !== 'negative') continue;
+      const d = f.timestamp.slice(0, 10);
+      negByDay[d] = (negByDay[d] ?? 0) + 1;
+    }
+    const sortedCounts = Object.values(negByDay).sort((a, b) => a - b);
+    const dailyBaseline = sortedCounts.length
+      ? sortedCounts[Math.floor(sortedCounts.length / 2)]
+      : 1;
+
     const days = Array.from({ length: 30 }, (_, i) => {
       const date = subDays(now, 29 - i);
       const dateStr = format(date, 'yyyy-MM-dd');
@@ -77,20 +89,29 @@ export default function TimelinePage() {
 
       // Filter records for this day
       const dayRecords = allFeedbacks.filter(f => f.timestamp.startsWith(dateStr));
-      const count = dayRecords.length;
+      // СКАРГА — це негативна згадка. Раніше сюди йшли всі записи дня,
+      // і нейтральна новина "Vodafone та ДТЕК отримають $500 млн"
+      // рахувалась як дві скарги.
+      const negativeRecords = dayRecords.filter(r => r.sentiment === 'negative');
+      const count = negativeRecords.length;
+      const mentionsCount = dayRecords.length;
       const riskyRecords = dayRecords.filter(r => r.reputationalRiskScore > 0);
       const totalRisk = riskyRecords.reduce((sum, r) => sum + r.reputationalRiskScore, 0);
       const avgRisk = riskyRecords.length > 0 ? Math.round(totalRisk / riskyRecords.length) : 0;
       const highRiskCount = dayRecords.filter(r => r.reputationalRiskScore >= 50).length;
-      const constructiveCount = dayRecords.filter(r => r.isConstructive).length;
+      // чисельник і знаменник мають бути з одного набору: рахуємо
+      // конструктивні та наміри піти серед СКАРГ, а не серед усіх згадок
+      const constructiveCount = negativeRecords.filter(r => r.isConstructive).length;
       const constructivePercent = count > 0 ? Math.round((constructiveCount / count) * 100) : 0;
 
-      const churnCount = dayRecords.filter(r => r.churnIntent).length;
+      const churnCount = negativeRecords.filter(r => r.churnIntent).length;
       const churnPercent = count > 0 ? Math.round((churnCount / count) * 1000) / 10 : 0;
-      const totalResonance = dayRecords.reduce((sum, r) => sum + (r.resonance ?? (r.relevanceScore * (r.reachWeight ?? 1))), 0);
+      const totalResonance = negativeRecords.reduce((sum, r) => sum + (r.resonance ?? (r.relevanceScore * (r.reachWeight ?? 1))), 0);
       const avgResonance = (totalResonance / (count || 1)).toFixed(1);
-      const baseline = 45; // базова середня норма
-      const spikeRatio = Math.round((count / baseline) * 10) / 10;
+      // Норма — медіана скарг на добу, порахована З ДАНИХ.
+      // Було baseline = 45: число нізвідки, через нього дві скарги
+      // давали "0х норми", бо 2/45 округлювалось до нуля.
+      const spikeRatio = Math.round((count / Math.max(dailyBaseline, 1)) * 10) / 10;
 
       // Find top location
       const locCounts: Record<string, number> = {};
@@ -110,6 +131,7 @@ export default function TimelinePage() {
         daysAgo,
         records: dayRecords,
         count,
+        mentionsCount,
         riskyCount: riskyRecords.length,
         avgRisk,
         highRiskCount,
