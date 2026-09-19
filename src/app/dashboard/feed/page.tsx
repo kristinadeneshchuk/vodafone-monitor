@@ -470,7 +470,7 @@ function FeedPageContent() {
                       className="cursor-pointer hover:bg-slate-100 transition-colors text-right w-[110px]"
                       onClick={() => handleSort('relevanceScore')}
                     >
-                      Релев. (0-1) {renderSortIndicator('relevanceScore')}
+                      До покриття (0-1) {renderSortIndicator('relevanceScore')}
                     </TableHead>
                     <TableHead 
                       className="cursor-pointer hover:bg-slate-100 transition-colors text-right w-[120px]"
@@ -554,7 +554,7 @@ function FeedPageContent() {
                             variant="outline" 
                             className={record.isRelevant ? "text-[10px] py-0 px-1.5 border-blue-200 bg-blue-50 text-blue-700" : "text-[10px] py-0 px-1.5 border-slate-200 text-slate-400"}
                           >
-                            {record.isRelevant ? "Релев." : "Нерелев."}
+                            {record.isRelevant ? "Про покриття" : "Інша тема"}
                           </Badge>
                           <div className="inline-flex items-center gap-1.5">
                             <span className="font-semibold text-xs text-blue-700">

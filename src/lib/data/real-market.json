@@ -1,6 +1,6 @@
 {
- "total": 34,
- "unique": 33,
+ "total": 35,
+ "unique": 34,
  "items": [
   {
    "content": "Київстар, Водафон, Лайфселл - куди скаржитися на поганий зв'язок - informator.ua. Київстар, Водафон, Лайфселл - куди скаржитися на поганий зв'язок informator.ua",
@@ -257,6 +257,14 @@
    "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBjcGxyOGtfdHVSX1VrdzE3NGdmODdZZGE4UzRXYThRUklkOWRLRGszNmZNRVY5eGlRTXZuVnp2SUo3bVdGWklmRXcxei1LVlZDdkRmaXhoYi1jUDZ4?oc=5",
    "cause": "blackout",
    "sentiment": "neutral"
+  },
+  {
+   "content": "🕐Vodafone попередив про тимчасові обмеження в роботі через перебої зі світлом.\n\nНавантаження виникає, коли усі одразу переходять на мобільний інтернет при відключенні електрики. Оператор порадив користуватися національним роумінгом.\n\nПідписники також скаржаться на труднощі в роботі Київстар🫠\n\n✈️ [Скинути фото/відео/інфу](https://t.me/svoi_kr)",
+   "timestamp": "2025-11-09T08:12:33+00:00",
+   "source": "telegram",
+   "url": "https://t.me/svoiKR/46714",
+   "cause": "outage",
+   "sentiment": "negative"
   },
   {
    "content": "«Укртелеком», Vodafone – лідери з енергостійкого інтернету, у «Київстару» інша стратегія. Які провайдери дають інтернет без світла - Forbes. «Укртелеком», Vodafone – лідери з енергостійкого інтернету, у «Київстару» інша стратегія. Які провайдери дають інтернет без світла Forbes",

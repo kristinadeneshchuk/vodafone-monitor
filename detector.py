@@ -312,6 +312,11 @@ def run(window_hours=WINDOW_HOURS, brand=None, save=True):
     alerts.extend(detect_media_bursts(con))
 
     if save and alerts:
+        # Повний прогін перебудовує таблицю, а не доливає в стару.
+        # З INSERT OR IGNORE рядок, порахований на попередній версії
+        # класифікації, лишався назавжди: за 2 липня поруч стояли
+        # застарілий 'інше x17' і свіжий 'масовий збій x36'.
+        con.execute("DELETE FROM alerts")
         con.executemany("""
             INSERT OR IGNORE INTO alerts
             (level,event_type,brand,cause,cities,window_start,window_end,
