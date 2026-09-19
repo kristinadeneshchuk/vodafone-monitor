@@ -41,6 +41,13 @@ SAVE_EVERY = 500          # згадок між записами в базу
 PROGRESS_EVERY = 2000     # повідомлень між рядками прогресу
 MAX_FLOOD_WAIT = 600      # довше не чекаємо, переходимо до наступного каналу
 
+# Сповільнення. Ми лише читаємо історію публічних каналів і нікуди не
+# вступаємо — це найбезпечніший клас операцій. Паузи потрібні, щоб не
+# впиратись у ліміти: рівний темп Telegram сприймає спокійніше за ривки.
+SLEEP_BETWEEN_CHANNELS = 5.0     # пауза перед наступним каналом
+SLEEP_EVERY_N = 1000             # кожні N повідомлень
+SLEEP_DURATION = 1.5             # ...коротка пауза
+
 
 def load_env():
     """Читає .env, щоб не експортувати змінні щоразу вручну."""
@@ -127,6 +134,9 @@ async def collect_channel(client, channel, matchers, since, until, state, json_p
                     save_checkpoint(state, channel, last_id=last_id,
                                     scanned=scanned, found=found)
 
+                if scanned % SLEEP_EVERY_N == 0:
+                    await asyncio.sleep(SLEEP_DURATION)
+
                 if scanned % PROGRESS_EVERY == 0:
                     speed = scanned / max(time.time() - started, 1)
                     print(f"    {channel}: {scanned} постів, {found} згадок, "
@@ -177,6 +187,7 @@ async def run(days, only, json_path, loose):
             print(f"[{i}/{len(order)}] {channel}")
             total += await collect_channel(
                 client, channel, matchers, since, until, state, json_path)
+            await asyncio.sleep(SLEEP_BETWEEN_CHANNELS)
 
     print(f"\nВсього згадок: {total}")
     print(f"JSON: {json_path} | база: {db.DB_PATH}")
