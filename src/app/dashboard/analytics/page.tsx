@@ -88,12 +88,15 @@ export default function AnalyticsPage() {
 
           <div>
             <div className="text-xs text-slate-500 mb-2">Сезонність</div>
-            <div className="flex items-end gap-1 h-24">
+            <div className="flex items-end gap-1">
               {months.map(([m, n]) => (
                 <div key={m} className="flex-1 flex flex-col items-center gap-1">
+                  {/* висота в пікселях, а не у відсотках: відсоток від
+                      flex-контейнера без явної висоти дає нульовий стовпчик */}
+                  <span className="text-[10px] text-slate-500 tabular-nums">{n}</span>
                   <div
-                    className="w-full bg-amber-400/70 rounded-t"
-                    style={{ height: `${(n / peak) * 100}%` }}
+                    className="w-full bg-amber-400/80 rounded-t"
+                    style={{ height: `${Math.max(4, (n / peak) * 96)}px` }}
                     title={`${n}`}
                   />
                   <span className="text-[10px] text-slate-400">{MONTH_UA[m.slice(5, 7)]}</span>
