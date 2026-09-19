@@ -27,14 +27,12 @@ import {
   ArrowDown,
   AlertTriangle,
   Target,
-  Sparkles,
   MapPin,
   UserX,
-  Share2,
   Calendar
 } from 'lucide-react';
 
-type SortField = 'timestamp' | 'reputationalRiskScore' | 'relevanceScore' | 'constructivenessScore';
+type SortField = 'timestamp' | 'reputationalRiskScore' | 'relevanceScore';
 type SortOrder = 'asc' | 'desc';
 
 const PROBLEM_LABELS: Record<string, string> = {
@@ -49,12 +47,6 @@ const RELEVANCE_LABELS: Record<string, string> = {
   all: 'Уся релевантність',
   true: 'Релевантні (Так)',
   false: 'Нерелевантні (Ні)',
-};
-
-const CONSTRUCTIVE_LABELS: Record<string, string> = {
-  all: 'Будь-який відгук',
-  true: 'Конструктивні (Так)',
-  false: 'Емоційні / Без фактів',
 };
 
 const CHURN_LABELS: Record<string, string> = {
@@ -95,7 +87,6 @@ function FeedPageContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [problemFilter, setProblemFilter] = useState<string>('all');
   const [relevantFilter, setRelevantFilter] = useState<string>('all');
-  const [constructiveFilter, setConstructiveFilter] = useState<string>('all');
   const [churnFilter, setChurnFilter] = useState<string>('all');
 
   // Sorting state
@@ -107,7 +98,6 @@ function FeedPageContent() {
     let filters: any = {};
     if (problemFilter !== 'all') filters.problemType = [problemFilter as ProblemType];
     if (relevantFilter !== 'all') filters.isRelevant = relevantFilter === 'true';
-    if (constructiveFilter !== 'all') filters.isConstructive = constructiveFilter === 'true';
     if (churnFilter !== 'all') filters.churnOnly = churnFilter === 'true';
     
     let data = await feedbackService.getFeedbacks(filters);
@@ -139,7 +129,7 @@ function FeedPageContent() {
   useEffect(() => {
     fetchFeedbacks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [problemFilter, relevantFilter, constructiveFilter, churnFilter, activeDate, activeRange]);
+  }, [problemFilter, relevantFilter, churnFilter, activeDate, activeRange]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,11 +167,9 @@ function FeedPageContent() {
         avgRisk: 0, 
         highRiskCount: 0, 
         avgRelevance: 0, 
-        avgConstructiveness: 0, 
         topLocation: '-',
         churnCount: 0,
-        churnRate: '0.0',
-        avgResonance: '0.0'
+        churnRate: '0.0'
       };
     }
     const total = feedbacks.length;
@@ -191,7 +179,6 @@ function FeedPageContent() {
       : 0;
     const highRiskCount = feedbacks.filter(f => f.reputationalRiskScore >= 50).length;
     const avgRelevance = (feedbacks.reduce((acc, f) => acc + f.relevanceScore, 0) / total).toFixed(2);
-    const avgConstructiveness = (feedbacks.reduce((acc, f) => acc + f.constructivenessScore, 0) / total).toFixed(2);
     
     // Намір піти рахується від СКАРГ, а не від усіх згадок: ділити
     // девʼять погроз на 1246 згадок разом із похвалами безглуздо.
@@ -199,8 +186,6 @@ function FeedPageContent() {
     const churnCount = complaints.filter(f => f.churnIntent).length;
     const churnRate = complaints.length > 0
       ? ((churnCount / complaints.length) * 100).toFixed(1) : '0.0';
-    const totalResonance = feedbacks.reduce((acc, f) => acc + (f.resonance ?? (f.relevanceScore * (f.reachWeight ?? 1))), 0);
-    const avgResonance = (totalResonance / (total || 1)).toFixed(1);
 
     // "Топ епіцентр" має показувати місце з найбільшою кількістю ПРОБЛЕМ,
     // інакше туди потрапляє місто, де про оператора найбільше пишуть добре.
@@ -216,11 +201,9 @@ function FeedPageContent() {
       avgRisk, 
       highRiskCount, 
       avgRelevance, 
-      avgConstructiveness, 
       topLocation,
       churnCount,
-      churnRate,
-      avgResonance
+      churnRate
     };
   }, [feedbacks]);
 
@@ -317,18 +300,6 @@ function FeedPageContent() {
                     </SelectContent>
                   </Select>
 
-                  <Select value={constructiveFilter} onValueChange={(val) => { if (val) setConstructiveFilter(val); }}>
-                    <SelectTrigger className="w-[180px] bg-slate-50/50">
-                      <Sparkles className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
-                      <SelectValue placeholder="Конструктивність" labelMap={CONSTRUCTIVE_LABELS} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Будь-який відгук</SelectItem>
-                      <SelectItem value="true">Конструктивні (Так)</SelectItem>
-                      <SelectItem value="false">Емоційні / Без фактів</SelectItem>
-                    </SelectContent>
-                  </Select>
-
                   <Select value={churnFilter} onValueChange={(val) => { if (val) setChurnFilter(val); }}>
                     <SelectTrigger className="w-[170px] bg-slate-50/50">
                       <UserX className="w-3.5 h-3.5 mr-1.5 text-rose-600" />
@@ -346,7 +317,7 @@ function FeedPageContent() {
                 </div>
               </div>
 
-              {(problemFilter !== 'all' || relevantFilter !== 'all' || constructiveFilter !== 'all' || churnFilter !== 'all') && (
+              {(problemFilter !== 'all' || relevantFilter !== 'all' || churnFilter !== 'all') && (
                 <div className="flex flex-wrap items-center gap-1.5 pt-1 text-xs">
                   <span className="text-slate-400 text-[11px]">Активні фільтри:</span>
                   {problemFilter !== 'all' && (
@@ -359,11 +330,6 @@ function FeedPageContent() {
                       Релевантність: {RELEVANCE_LABELS[relevantFilter]} ×
                     </Badge>
                   )}
-                  {constructiveFilter !== 'all' && (
-                    <Badge variant="secondary" className="gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer text-xs" onClick={() => setConstructiveFilter('all')}>
-                      Конструктив: {CONSTRUCTIVE_LABELS[constructiveFilter]} ×
-                    </Badge>
-                  )}
                   {churnFilter !== 'all' && (
                     <Badge variant="secondary" className="gap-1 bg-rose-100 text-rose-800 hover:bg-rose-200 cursor-pointer text-xs" onClick={() => setChurnFilter('all')}>
                       Відтік: {CHURN_LABELS[churnFilter]} ×
@@ -374,7 +340,6 @@ function FeedPageContent() {
                     onClick={() => {
                       setProblemFilter('all');
                       setRelevantFilter('all');
-                      setConstructiveFilter('all');
                       setChurnFilter('all');
                     }}
                     className="text-[11px] text-red-600 hover:underline ml-1 cursor-pointer"
@@ -405,7 +370,6 @@ function FeedPageContent() {
               {sortField === 'timestamp' && 'Дата'}
               {sortField === 'reputationalRiskScore' && 'Репутаційний ризик'}
               {sortField === 'relevanceScore' && 'Релевантність'}
-              {sortField === 'constructivenessScore' && 'Конструктивність'}
               {' '}({sortOrder === 'desc' ? 'спадання' : 'зростання'})
             </Badge>
           </div>
@@ -414,7 +378,7 @@ function FeedPageContent() {
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Deep Analytics Block */}
           {!loading && feedbacks.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               <Card className="bg-slate-50/60 border-slate-200 shadow-none">
                 <CardContent className="p-3.5">
                   <div className="text-xs text-slate-500 mb-1">Середній ризик</div>
@@ -455,20 +419,6 @@ function FeedPageContent() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-blue-50/30 border-blue-200 shadow-none">
-                <CardContent className="p-3.5">
-                  <div className="text-xs text-blue-700 font-medium mb-1 flex items-center gap-1">
-                    <Share2 className="w-3 h-3 text-blue-600" /> Сер. резонанс
-                  </div>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-xl font-bold text-blue-700">
-                      {analytics.avgResonance}x
-                    </span>
-                    <span className="text-xs text-blue-400">охоплення</span>
-                  </div>
-                </CardContent>
-              </Card>
-
               <Card className="bg-slate-50/60 border-slate-200 shadow-none">
                 <CardContent className="p-3.5">
                   <div className="text-xs text-slate-500 mb-1 flex items-center gap-1">
@@ -483,21 +433,7 @@ function FeedPageContent() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-50/60 border-slate-200 shadow-none">
-                <CardContent className="p-3.5">
-                  <div className="text-xs text-slate-500 mb-1 flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-slate-400" /> Конструктив
-                  </div>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-xl font-bold text-emerald-600">
-                      {analytics.avgConstructiveness}
-                    </span>
-                    <span className="text-xs text-slate-400">/ 1.0</span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-slate-50/60 border-slate-200 shadow-none col-span-2 md:col-span-1">
+              <Card className="bg-slate-50/60 border-slate-200 shadow-none col-span-2 md:col-span-1 lg:col-span-1">
                 <CardContent className="p-3.5">
                   <div className="text-xs text-slate-500 mb-1 flex items-center gap-1">
                     <MapPin className="w-3 h-3 text-slate-400" /> Топ епіцентр
@@ -534,12 +470,6 @@ function FeedPageContent() {
                       onClick={() => handleSort('relevanceScore')}
                     >
                       До покриття (0-1) {renderSortIndicator('relevanceScore')}
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:bg-slate-100 transition-colors text-right w-[120px]"
-                      onClick={() => handleSort('constructivenessScore')}
-                    >
-                      Констр. (0-1) {renderSortIndicator('constructivenessScore')}
                     </TableHead>
                     <TableHead 
                       className="cursor-pointer hover:bg-slate-100 transition-colors text-right w-[110px]"
@@ -602,11 +532,6 @@ function FeedPageContent() {
                               <UserX className="w-2.5 h-2.5" /> Churn
                             </span>
                           )}
-                          {Boolean(record.resonance && record.resonance > 0) && (
-                            <span className="inline-flex items-center gap-1 ml-1.5 px-1 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-200" title="Коефіцієнт резонансу / вага джерела">
-                              <Share2 className="w-2.5 h-2.5" /> {record.resonance?.toFixed(1)}x
-                            </span>
-                          )}
                         </p>
                       </TableCell>
 
@@ -627,29 +552,6 @@ function FeedPageContent() {
                               <div 
                                 className="h-full bg-blue-500 rounded-full" 
                                 style={{ width: `${Math.round(record.relevanceScore * 100)}%` }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </TableCell>
-
-                      {/* Constructiveness Score (0 - 1) */}
-                      <TableCell className="align-top py-3 text-right">
-                        <div className="flex flex-col items-end gap-1">
-                          <Badge 
-                            variant="outline" 
-                            className={record.isConstructive ? "text-[10px] py-0 px-1.5 border-emerald-200 bg-emerald-50 text-emerald-700" : "text-[10px] py-0 px-1.5 border-slate-200 text-slate-400"}
-                          >
-                            {record.isConstructive ? "Конструктив" : "Емоції"}
-                          </Badge>
-                          <div className="inline-flex items-center gap-1.5">
-                            <span className="font-semibold text-xs text-emerald-700">
-                              {record.constructivenessScore.toFixed(2)}
-                            </span>
-                            <div className="w-10 h-1.5 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
-                              <div 
-                                className="h-full bg-emerald-500 rounded-full" 
-                                style={{ width: `${Math.round(record.constructivenessScore * 100)}%` }}
                               />
                             </div>
                           </div>

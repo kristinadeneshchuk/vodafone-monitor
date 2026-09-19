@@ -161,7 +161,8 @@ export async function generateBriefingWithGemini(
   feedbacks: FeedbackRecord[],
   metrics: DashboardMetrics
 ): Promise<DailyBriefing> {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  const rawKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  const apiKey = rawKey ? rawKey.trim().replace(/^["']|["']$/g, '') : '';
 
   // Метрики рахуються за 30 днів, тому підпис теж має бути періодом,
   // а не однією датою: було "Основний масив скарг за 16 вересня".
@@ -175,7 +176,7 @@ export async function generateBriefingWithGemini(
   }
 
   // If no Gemini API key is configured, fallback to heuristic generation
-  if (!apiKey) {
+  if (!apiKey || apiKey === 'your_gemini_api_key_here' || apiKey.length < 10) {
     console.log('[BriefingService] No GEMINI_API_KEY detected. Using analytical generator.');
     return generateHeuristicBriefing(date, feedbacks, metrics);
   }
@@ -200,7 +201,7 @@ export async function generateBriefingWithGemini(
 
 Метрики:
 - Скарг: ${metrics.totalComplaints}, Сер. ризик: ${metrics.averageRiskScore}/100, Ризик >50: ${metrics.highRiskIssuesCount}
-- Churn Intent: ${metrics.churnIntentRate}%, Резонанс: ${metrics.averageResonance}x, Спалах: ${metrics.spikeVelocityRatio}x
+- Churn Intent: ${metrics.churnIntentRate}%
 - Епіцентр: ${metrics.topLocations[0]?.name || 'Немає'} (${metrics.topLocations[0]?.count || 0})
 - Приклади: ${JSON.stringify(sampleFeedbacks)}
 
@@ -224,7 +225,7 @@ export async function generateBriefingWithGemini(
 }`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.6-flash',
       contents: prompt,
       config: {
         responseMimeType: 'application/json',

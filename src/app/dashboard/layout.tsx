@@ -16,8 +16,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   const navItems = [
-    { name: 'Головна (Overview)', href: '/dashboard', icon: BarChart3 },
-    { name: 'Аналіз періодів (Timeline)', href: '/dashboard/timeline', icon: Clock },
+    { name: 'Головна', href: '/dashboard', icon: BarChart3 },
+    { name: 'Аналіз періодів', href: '/dashboard/timeline', icon: Clock },
     { name: 'Географія проблем', href: '/dashboard/map', icon: Map },
     { name: 'Стрічка повідомлень', href: '/dashboard/feed', icon: MessageSquare },
     { name: 'AI Аналітика', href: '/dashboard/analytics', icon: Activity },

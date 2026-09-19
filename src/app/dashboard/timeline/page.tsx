@@ -26,7 +26,6 @@ import {
   Send, 
   MapPin, 
   UserX, 
-  Share2, 
   ArrowRight, 
   Calendar,
   Layers
@@ -168,7 +167,9 @@ export default function TimelinePage() {
   useEffect(() => {
     if (allDays.length > 0 && !initialized) {
       const lastIndex = allDays.length - 1;
-      const startIndex = Math.max(0, lastIndex - 6); // default last 7 days
+      const startIndex = Math.max(0, lastIndex - 29); // default last 30 days
+      setHorizon('30d');
+      setMode('range');
       setDayIndex(lastIndex);
       setRange([startIndex, lastIndex]);
       setInitialized(true);
@@ -198,7 +199,7 @@ export default function TimelinePage() {
   }, [totalLength, horizon, allDays]);
 
   // Active selected indices
-  const isRange = mode === 'range' && range[0] !== range[1];
+  const isRange = mode === 'range';
   const activeStartIndex = mode === 'single' ? dayIndex : Math.min(range[0], range[1]);
   const activeEndIndex = mode === 'single' ? dayIndex : Math.max(range[0], range[1]);
 
@@ -364,33 +365,53 @@ export default function TimelinePage() {
 
   // Date input handlers (with automatic horizon expansion)
   const handleStartDateChange = (newDateStr: string) => {
-    const idx = dateToIndexMap.get(newDateStr);
+    if (!newDateStr) return;
+    let idx = dateToIndexMap.get(newDateStr);
+    if (idx === undefined) {
+      const targetDate = parseISO(newDateStr);
+      const startDate = parseISO(minDateStr);
+      idx = Math.max(0, Math.min(totalLength - 1, differenceInCalendarDays(targetDate, startDate)));
+    }
     if (idx !== undefined) {
-      if (idx < horizonStart) {
-        setHorizon('all');
-      }
       if (mode === 'single') {
         setDayIndex(idx);
         setRange([idx, idx]);
+        if (idx < horizonStart || idx > horizonEnd) {
+          setHorizon('all');
+        }
       } else {
-        const newEnd = Math.max(idx, range[1]);
+        const currentEnd = Math.max(range[0], range[1]);
+        const newEnd = Math.max(idx, currentEnd);
         setRange([idx, newEnd]);
+        if (idx < horizonStart || newEnd > horizonEnd) {
+          setHorizon('all');
+        }
       }
     }
   };
 
   const handleEndDateChange = (newDateStr: string) => {
-    const idx = dateToIndexMap.get(newDateStr);
+    if (!newDateStr) return;
+    let idx = dateToIndexMap.get(newDateStr);
+    if (idx === undefined) {
+      const targetDate = parseISO(newDateStr);
+      const startDate = parseISO(minDateStr);
+      idx = Math.max(0, Math.min(totalLength - 1, differenceInCalendarDays(targetDate, startDate)));
+    }
     if (idx !== undefined) {
-      if (idx > horizonEnd) {
-        setHorizon('all');
-      }
       if (mode === 'single') {
         setDayIndex(idx);
         setRange([idx, idx]);
+        if (idx < horizonStart || idx > horizonEnd) {
+          setHorizon('all');
+        }
       } else {
-        const newStart = Math.min(range[0], idx);
+        const currentStart = Math.min(range[0], range[1]);
+        const newStart = Math.min(idx, currentStart);
         setRange([newStart, idx]);
+        if (newStart < horizonStart || idx > horizonEnd) {
+          setHorizon('all');
+        }
       }
     }
   };
@@ -447,20 +468,26 @@ export default function TimelinePage() {
                 Часовий проміжок та повзунок дат
               </CardTitle>
               <CardDescription>
-                Виберіть масштаб шкали, встановіть довільні дати в календарі або скористайтеся швидкими пресетами
+                Виберіть період (30 днів, 90 днів, пів року, весь проміжок), встановіть довільні дати в календарі або налаштуйте повзунок
               </CardDescription>
             </div>
 
             {/* Scale Horizon & Simulation Controls */}
             <div className="flex flex-wrap items-center gap-3">
-              {/* Horizon Scale Selector */}
+              {/* Horizon Scale & Period Selector */}
               <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-medium">
                 <span className="text-[11px] text-slate-500 px-2 flex items-center gap-1 font-semibold">
-                  <Layers className="w-3 h-3" /> Шкала:
+                  <Layers className="w-3 h-3" /> Період:
                 </span>
                 <button
                   type="button"
-                  onClick={() => setHorizon('30d')}
+                  onClick={() => {
+                    setHorizon('30d');
+                    setMode('range');
+                    const end = totalLength - 1;
+                    const start = Math.max(0, end - 29);
+                    setRange([start, end]);
+                  }}
                   className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
                     horizon === '30d'
                       ? 'bg-white text-slate-900 shadow-xs font-bold'
@@ -471,7 +498,13 @@ export default function TimelinePage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setHorizon('90d')}
+                  onClick={() => {
+                    setHorizon('90d');
+                    setMode('range');
+                    const end = totalLength - 1;
+                    const start = Math.max(0, end - 89);
+                    setRange([start, end]);
+                  }}
                   className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
                     horizon === '90d'
                       ? 'bg-white text-slate-900 shadow-xs font-bold'
@@ -482,7 +515,13 @@ export default function TimelinePage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setHorizon('180d')}
+                  onClick={() => {
+                    setHorizon('180d');
+                    setMode('range');
+                    const end = totalLength - 1;
+                    const start = Math.max(0, end - 179);
+                    setRange([start, end]);
+                  }}
                   className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
                     horizon === '180d'
                       ? 'bg-white text-slate-900 shadow-xs font-bold'
@@ -532,128 +571,42 @@ export default function TimelinePage() {
             </div>
           </div>
 
-          {/* Secondary Control Bar: Mode Toggle + Quick Presets + Date Pickers */}
+          {/* Secondary Control Bar: Mode Toggle + Date Pickers */}
           <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 mt-2">
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Mode Toggle */}
-              <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-medium">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode('single');
-                    setDayIndex(activeEndIndex);
-                    setRange([activeEndIndex, activeEndIndex]);
-                  }}
-                  className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
-                    mode === 'single'
-                      ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Один день
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode('range');
-                    if (range[0] === range[1]) {
-                      const start = Math.max(horizonStart, range[1] - 6);
-                      setRange([start, range[1]]);
-                    }
-                  }}
-                  className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
-                    mode === 'range'
-                      ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Період (діапазон)
-                </button>
-              </div>
-
-              {/* Quick Presets */}
-              <div className="flex items-center gap-1 text-xs">
-                <span className="text-slate-400 text-[11px] mr-1 hidden sm:inline">Швидко:</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-xs px-2 font-medium cursor-pointer"
-                  onClick={() => {
-                    setMode('single');
-                    const yIdx = Math.max(0, totalLength - 2);
-                    setDayIndex(yIdx);
-                    setRange([yIdx, yIdx]);
-                  }}
-                >
-                  Вчора
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-xs px-2 font-medium cursor-pointer"
-                  onClick={() => {
-                    setMode('single');
-                    const tIdx = Math.max(0, totalLength - 1);
-                    setDayIndex(tIdx);
-                    setRange([tIdx, tIdx]);
-                  }}
-                >
-                  Сьогодні
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-xs px-2 font-medium cursor-pointer"
-                  onClick={() => {
-                    setMode('range');
-                    const end = totalLength - 1;
-                    const start = Math.max(0, end - 6);
-                    setRange([start, end]);
-                  }}
-                >
-                  7 днів
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-xs px-2 font-medium cursor-pointer"
-                  onClick={() => {
-                    setHorizon('30d');
-                    setMode('range');
-                    const end = totalLength - 1;
-                    const start = Math.max(0, end - 29);
-                    setRange([start, end]);
-                  }}
-                >
-                  30 днів
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-xs px-2 font-medium cursor-pointer"
-                  onClick={() => {
-                    setHorizon('90d');
-                    setMode('range');
-                    const end = totalLength - 1;
-                    const start = Math.max(0, end - 89);
-                    setRange([start, end]);
-                  }}
-                >
-                  90 днів
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-xs px-2 font-bold text-red-700 hover:text-red-800 bg-red-50/60 border-red-200 cursor-pointer"
-                  onClick={() => {
-                    setHorizon('all');
-                    setMode('range');
-                    setRange([0, totalLength - 1]);
-                  }}
-                >
-                  Весь проміжок
-                </Button>
-              </div>
+            {/* Mode Toggle */}
+            <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-medium">
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('single');
+                  setDayIndex(activeEndIndex);
+                  setRange([activeEndIndex, activeEndIndex]);
+                }}
+                className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
+                  mode === 'single'
+                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Один день
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('range');
+                  if (range[0] === range[1]) {
+                    const start = Math.max(0, range[1] - 29);
+                    setRange([start, range[1]]);
+                  }
+                }}
+                className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
+                  mode === 'range'
+                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Період (діапазон)
+              </button>
             </div>
 
             {/* Direct Date Range Pickers */}
@@ -686,8 +639,8 @@ export default function TimelinePage() {
           <div className="px-2 pt-2">
             <Slider 
               value={mode === 'single' ? [activeEndIndex] : [activeStartIndex, activeEndIndex]} 
-              min={horizonStart} 
-              max={horizonEnd} 
+              min={Math.min(horizonStart, activeStartIndex)} 
+              max={Math.max(horizonEnd, activeEndIndex)} 
               step={1} 
               onValueChange={handleSliderChange}
               className="w-full cursor-pointer"
@@ -695,17 +648,17 @@ export default function TimelinePage() {
             
             <div className="flex justify-between text-xs text-slate-400 mt-2 font-medium">
               <span>
-                {allDays[horizonStart]?.dateStr} ({allDays[horizonStart]?.label})
+                {allDays[Math.min(horizonStart, activeStartIndex)]?.dateStr} ({allDays[Math.min(horizonStart, activeStartIndex)]?.label})
               </span>
               <span className="font-bold text-red-600">
                 {!isRange ? (
-                  <>Обрано день: {startDay?.fullLabel} ({startDay?.daysAgo === 0 ? 'Сьогодні' : startDay?.daysAgo === 1 ? 'Вчора' : `${startDay?.daysAgo} дн. тому`})</>
+                  <>Обрано день: {startDay?.fullLabel}</>
                 ) : (
                   <>Обрано період: {startDay?.dateStr} – {endDay?.dateStr} ({periodMetrics.daysCount} дн.)</>
                 )}
               </span>
               <span>
-                {allDays[horizonEnd]?.dateStr} ({allDays[horizonEnd]?.label})
+                {allDays[Math.max(horizonEnd, activeEndIndex)]?.dateStr} ({allDays[Math.max(horizonEnd, activeEndIndex)]?.label})
               </span>
             </div>
           </div>
@@ -740,7 +693,7 @@ export default function TimelinePage() {
                   <p className="text-sm text-slate-600">
                     {isRange ? (
                       periodMetrics.isSpike 
-                        ? `За обрані ${periodMetrics.daysCount} дн. зафіксовано ${periodMetrics.count.toLocaleString()} звернень (в середньому ${periodMetrics.avgDaily}/день, ${periodMetrics.spikeRatio}x від норми). Зафіксовано ${periodMetrics.highRiskCount} скарг з критичним ризиком (≥50). Топ-локація: ${periodTopLocation.name}.`
+                        ? `За обрані ${periodMetrics.daysCount} дн. зафіксовано ${periodMetrics.count.toLocaleString()} звернень (в середньому ${periodMetrics.avgDaily}/день). Зафіксовано ${periodMetrics.highRiskCount} скарг з критичним ризиком (≥50). Топ-локація: ${periodTopLocation.name}.`
                         : `За обрані ${periodMetrics.daysCount} дн. мережа працювала штатно: ${periodMetrics.count.toLocaleString()} звернень (в середньому ${periodMetrics.avgDaily}/день), середній ризик ${periodMetrics.avgRisk}/100.`
                     ) : (
                       startDay.isSpike 
@@ -771,7 +724,7 @@ export default function TimelinePage() {
       </Card>
 
       {/* Summary KPI Metrics Grid (Grey by default, Red when critical) */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         <Card className="border-slate-200">
           <CardContent className="p-3.5">
             <div className="text-xs text-slate-500 font-medium mb-1">
@@ -779,9 +732,11 @@ export default function TimelinePage() {
             </div>
             <div className="flex items-baseline gap-1.5">
               <span className="text-xl font-bold text-slate-900">{periodMetrics.count.toLocaleString()}</span>
-              <span className={`text-[11px] font-semibold ${periodMetrics.spikeRatio >= 2.0 ? 'text-red-600' : 'text-slate-400'}`}>
-                {isRange ? `~${periodMetrics.avgDaily}/дн (${periodMetrics.spikeRatio}x)` : `${periodMetrics.spikeRatio}x норми`}
-              </span>
+              {isRange && (
+                <span className="text-[11px] font-medium text-slate-400">
+                  ~{periodMetrics.avgDaily}/день
+                </span>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -821,32 +776,6 @@ export default function TimelinePage() {
                 {periodMetrics.churnPercent}%
               </span>
               <span className="text-xs text-slate-400">({periodMetrics.churnCount})</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200">
-          <CardContent className="p-3.5">
-            <div className="text-xs text-slate-500 font-medium mb-1 flex items-center gap-1">
-              <Share2 className="w-3 h-3 text-slate-400" /> Резонанс
-            </div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-xl font-bold text-slate-600">
-                {periodMetrics.avgResonance}x
-              </span>
-              <span className="text-xs text-slate-400">вага</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200">
-          <CardContent className="p-3.5">
-            <div className="text-xs text-slate-500 font-medium mb-1">Конструктив</div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-xl font-bold text-slate-600">
-                {periodMetrics.constructivePercent}%
-              </span>
-              <span className="text-xs text-slate-400">з фактами</span>
             </div>
           </CardContent>
         </Card>

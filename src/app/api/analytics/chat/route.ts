@@ -43,7 +43,6 @@ const TELECOM_DATASET_CONTEXT = `
 - Репутаційний ризик:
   * Середній репутаційний ризик за рік: 34/100 (штатний помірний рівень)
   * Скарги з високим ризиком (>=50/100): 7 випадків за рік (публікації у великих TG-каналах)
-  * Середній коефіцієнт резонансу (вірусності): 1.4x
 `;
 
 const SYSTEM_INSTRUCTION = `
@@ -76,12 +75,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Повідомлення обов’язкове' }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    const rawKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    const apiKey = rawKey ? rawKey.trim().replace(/^["']|["']$/g, '') : '';
     const isValidKey = apiKey && apiKey !== 'your_gemini_api_key_here' && apiKey.length > 10;
 
     if (isValidKey) {
       try {
-        const ai = new GoogleGenAI({ apiKey: apiKey! });
+        const ai = new GoogleGenAI({ apiKey });
 
         // Build conversation contents
         const contents: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
@@ -119,13 +119,13 @@ export async function POST(req: NextRequest) {
         });
 
         const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
+          model: 'gemini-3.6-flash',
           contents: contents as any,
         });
 
         const reply = response.text?.trim();
         if (reply) {
-          return NextResponse.json({ reply, source: 'gemini-2.5-flash' });
+          return NextResponse.json({ reply, source: 'gemini-3.6-flash' });
         }
       } catch (geminiError) {
         console.error('[Analytics Chat] Gemini API error, using smart fallback engine:', geminiError);

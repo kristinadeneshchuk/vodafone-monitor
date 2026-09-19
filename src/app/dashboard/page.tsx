@@ -10,7 +10,6 @@ import {
   Users, 
   MapPin, 
   UserX, 
-  Share2, 
   Zap, 
   Calendar,
   Sparkles,
@@ -127,12 +126,10 @@ export default function DashboardOverview() {
   }
 
   // Critical checks: metric is critical only under severe threat
-  const isComplaintsCrit = metrics.spikeVelocityRatio >= 2.0 && metrics.totalComplaints >= 50;
+  const isComplaintsCrit = metrics.totalComplaints >= 100;
   const isRiskCrit = metrics.averageRiskScore >= 50;
   const isHighRiskCrit = metrics.highRiskIssuesCount > 0;
   const isChurnCrit = metrics.churnIntentCount > 0;
-  const isReachCrit = metrics.averageResonance >= 3.0;
-  const isSpikeCrit = metrics.spikeVelocityRatio >= 2.0 && metrics.totalComplaints >= 50;
 
   return (
     <div className="space-y-6">
@@ -280,8 +277,8 @@ export default function DashboardOverview() {
                 </div>
               </div>
 
-              {/* Churn & Media Virality Analysis (Concise) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Churn Risk Analysis (Concise) */}
+              {briefing.churnRiskAnalysis && (
                 <div className={`p-3 rounded-lg border text-xs leading-relaxed ${
                   isChurnCrit ? 'bg-red-50/40 border-red-200 text-red-950' : 'bg-slate-50 border-slate-200 text-slate-700'
                 }`}>
@@ -292,18 +289,7 @@ export default function DashboardOverview() {
                   </div>
                   <p>{briefing.churnRiskAnalysis}</p>
                 </div>
-
-                <div className={`p-3 rounded-lg border text-xs leading-relaxed ${
-                  isReachCrit ? 'bg-red-50/40 border-red-200 text-red-950' : 'bg-slate-50 border-slate-200 text-slate-700'
-                }`}>
-                  <div className={`flex items-center gap-1.5 font-bold text-xs mb-1 ${
-                    isReachCrit ? 'text-red-700' : 'text-slate-600'
-                  }`}>
-                    <Share2 className="w-3.5 h-3.5" /> Медійний резонанс (ЗМІ / Telegram)
-                  </div>
-                  <p>{briefing.mediaViralityRisk}</p>
-                </div>
-              </div>
+              )}
 
               {/* Action Plan for Today (Concise Bullets) */}
               <div className="pt-2 border-t border-slate-100">
@@ -353,7 +339,7 @@ export default function DashboardOverview() {
           <span className="text-xs text-slate-500">Фактичні цифри за звітний період</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
           {/* Complaints Count */}
           <Card className={`border shadow-sm transition-colors ${
             isComplaintsCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
@@ -400,6 +386,24 @@ export default function DashboardOverview() {
             </CardContent>
           </Card>
 
+          {/* Churn Intent */}
+          <Card className={`border shadow-sm transition-colors ${
+            isChurnCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
+          }`}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-slate-500">Відтік (Churn Intent)</CardTitle>
+              <UserX className={`w-4 h-4 ${isChurnCrit ? 'text-red-600' : 'text-slate-400'}`} />
+            </CardHeader>
+            <CardContent>
+              <div className={`text-2xl font-bold ${isChurnCrit ? 'text-red-600' : 'text-slate-600'}`}>
+                {metrics.churnIntentRate}%
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                <span className="font-semibold text-slate-700">{metrics.churnIntentCount}</span> погроз за 30 днів
+              </p>
+            </CardContent>
+          </Card>
+
           {/* Top Location */}
           <Card className="border-slate-200 shadow-sm bg-white">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -412,75 +416,6 @@ export default function DashboardOverview() {
               </div>
               <p className="text-xs text-slate-500 mt-1">
                 {metrics.topLocations[0] ? `${metrics.topLocations[0].count} скарг за 30 днів` : 'аномалій не виявлено'}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* ========================================================================= */}
-      {/* 3. ENTERPRISE RISK METRICS (GREY DEFAULT, RED ONLY WHEN CRITICAL) */}
-      {/* ========================================================================= */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-slate-800 flex items-center gap-1.5 uppercase tracking-wide">
-            <Zap className="w-4 h-4 text-slate-500" />
-            Глибокі бізнес-метрики загрози (Enterprise Risk) — за 30 днів
-          </h2>
-          <span className="text-xs text-slate-400">Аналіз впливу на LTV, вірусність та аварії</span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Churn Intent */}
-          <Card className={`border shadow-sm transition-colors ${
-            isChurnCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
-          }`}>
-            <CardHeader className="flex flex-row items-center justify-between pb-1 pt-4 px-4">
-              <CardTitle className="text-xs font-semibold text-slate-600">Індекс відтоку (Churn Intent)</CardTitle>
-              <UserX className={`w-4 h-4 ${isChurnCrit ? 'text-red-600' : 'text-slate-400'}`} />
-            </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <div className={`text-2xl font-bold ${isChurnCrit ? 'text-red-600' : 'text-slate-600'}`}>
-                {metrics.churnIntentRate}%
-              </div>
-              <p className="text-xs text-slate-500 mt-1">
-                <span className="font-semibold text-slate-700">{metrics.churnIntentCount}</span> погроз змінити оператора за 30 днів
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Resonance / Reach */}
-          <Card className={`border shadow-sm transition-colors ${
-            isReachCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
-          }`}>
-            <CardHeader className="flex flex-row items-center justify-between pb-1 pt-4 px-4">
-              <CardTitle className="text-xs font-semibold text-slate-600">Коефіцієнт резонансу (Reach)</CardTitle>
-              <Share2 className={`w-4 h-4 ${isReachCrit ? 'text-red-600' : 'text-slate-400'}`} />
-            </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <div className={`text-2xl font-bold ${isReachCrit ? 'text-red-600' : 'text-slate-600'}`}>
-                {metrics.averageResonance}x
-              </div>
-              <p className="text-xs text-slate-500 mt-1">
-                середня вага джерел за 30 днів
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Spike Velocity */}
-          <Card className={`border shadow-sm transition-colors ${
-            isSpikeCrit ? 'border-red-200 bg-red-50/15' : 'border-slate-200 bg-white'
-          }`}>
-            <CardHeader className="flex flex-row items-center justify-between pb-1 pt-4 px-4">
-              <CardTitle className="text-xs font-semibold text-slate-600">Spike Velocity (Спалах)</CardTitle>
-              <Zap className={`w-4 h-4 ${isSpikeCrit ? 'text-red-600' : 'text-slate-400'}`} />
-            </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <div className={`text-2xl font-bold ${isSpikeCrit ? 'text-red-600' : 'text-slate-600'}`}>
-                {metrics.spikeVelocityRatio}x
-              </div>
-              <p className="text-xs text-slate-500 mt-1">
-                перевищення місячної норми
               </p>
             </CardContent>
           </Card>

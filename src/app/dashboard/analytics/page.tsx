@@ -39,7 +39,7 @@ const INITIAL_MESSAGE: ChatMessage = {
 
 Готовий надавати чітку аналітику, перевірені цифри та прогнози **ПА ДЄЛУ**. Оберіть швидке питання вище або запитайте про будь-який аспект мережі чи репутації бренду.`,
   timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-  source: 'gemini-2.5-flash'
+  source: 'gemini-3.6-flash'
 };
 
 const PRESET_QUERIES = [
@@ -129,7 +129,7 @@ export default function AnalyticsPage() {
         role: 'model',
         content: data.reply || 'Не вдалося сформувати відповідь. Спробуйте ще раз.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        source: data.source || 'gemini-2.5-flash'
+        source: data.source || 'gemini-3.6-flash'
       };
 
       setMessages(prev => [...prev, aiMessage]);
@@ -170,7 +170,7 @@ export default function AnalyticsPage() {
               AI Аналітика & Прогнози
             </h1>
             <Badge className="bg-red-600 text-white font-bold text-[10px] px-2 py-0.5">
-              Gemini 2.5 Flash
+              Gemini 3.6 Flash
             </Badge>
           </div>
           <p className="text-sm text-slate-500 mt-0.5">
@@ -268,7 +268,7 @@ export default function AnalyticsPage() {
                       <>
                         <span>·</span>
                         <span className="text-[10px] text-slate-400 font-mono">
-                          {msg.source === 'gemini-2.5-flash' ? 'Gemini 2.5 Flash' : 'Аналітичний рушій'}
+                          {msg.source === 'gemini-3.6-flash' ? 'Gemini 3.6 Flash' : 'Аналітичний рушій'}
                         </span>
                         <button
                           type="button"
