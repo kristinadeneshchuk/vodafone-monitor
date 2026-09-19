@@ -39,7 +39,11 @@ SENTIMENT_NAMES = {v: k for k, v in SENTIMENT.items()}
 IMPORTANCE = {'low': 0, 'medium': 1, 'high': 2, 'critical': 3}
 IMPORTANCE_NAMES = {v: k for k, v in IMPORTANCE.items()}
 
-PROBLEM_TYPE = {'no_signal': 0, 'slow_internet': 1, 'dropped_calls': 2, 'other': 3}
+# 4 = проблеми немає: повідомлення про звʼязок, але не скарга
+# ("звʼязок нормальний"). Без цього значення похвала показувалась
+# у стрічці з ярликом "Немає сигналу" — рівно навпаки до змісту.
+PROBLEM_TYPE = {'no_signal': 0, 'slow_internet': 1, 'dropped_calls': 2,
+                'other': 3, 'none': 4}
 PROBLEM_TYPE_NAMES = {v: k for k, v in PROBLEM_TYPE.items()}
 
 # Причини, які взагалі стосуються покриття. Решта (тарифи, застосунок,
@@ -55,7 +59,12 @@ SLOW_RX = re.compile(
     re.IGNORECASE)
 
 
-def problem_type(text, cause):
+def problem_type(text, cause, sentiment_name=None):
+    # Проблема є тільки там, де вона названа. Позитивний або
+    # нейтральний відгук про звʼязок проблемою не є.
+    if sentiment_name in ('positive', 'neutral') \
+            and not keywords.PROBLEM_STATED.search(text or ''):
+        return PROBLEM_TYPE['none']
     if cause == 'calls':
         return PROBLEM_TYPE['dropped_calls']
     if cause in ('coverage', 'outage'):
@@ -80,6 +89,11 @@ def relevance_score(text, cause, has_location):
     s = 0.0
     if keywords.is_coverage_issue(text):
         s += 0.55                      # пряма фраза про проблему зі зв'язком
+    elif cause in COVERAGE_CAUSES and keywords.PROBLEM_STATED.search(text):
+        # "Vodafone попереджає про можливі збої в роботі інтернету" —
+        # проблема названа іншими словами, ніж у словнику покриття.
+        # Без цього новина про аварію виходила нерелевантною з ризиком 40.
+        s += 0.45
     if cause in COVERAGE_CAUSES:
         s += 0.30
     if has_location:
@@ -179,9 +193,18 @@ MARKET_WIDE = re.compile(
     re.IGNORECASE)
 
 
-def is_market_wide(text):
-    """Скільки операторів названо. Два й більше — це про ринок."""
+def is_market_wide(text, source_type=None):
+    """
+    Матеріал про ринок, а не про конкретного оператора.
+
+    Відгук у магазині застосунків ринковим не буває ніколи, навіть коли
+    в ньому названо трьох операторів: "київстар дно, купляйте лайфсел"
+    — це особиста скарга з порівнянням, і їй місце серед скарг.
+    Тому ознака діє лише для новин і телеграм-постів.
+    """
     text = text or ''
+    if source_type == 'review':
+        return False
     named = sum(1 for rx in _OPERATOR_RX if rx.search(text))
     return named >= 2 or bool(MARKET_WIDE.search(text))
 
@@ -236,9 +259,10 @@ def build(text, sentiment_name, source_type, source_name='', q=None):
         'location': ({'lat': location['lat'], 'lng': location['lng'],
                       'addressName': location['addressName']}
                      if location else None),
-        'problemType': problem_type(text, cause),
+        'problemType': problem_type(text, cause, sentiment_name),
         'reputationalRiskScore': risk_score,
-        'isMarketWide': is_market_wide(text),
+        'isMarketWide': is_market_wide(text, source_type),
+        'isAd': keywords.is_advert(text, source_type),
         'churnIntent': churn_intent,
         'churnScore': churn_score,
         'reachWeight': reach_weight,

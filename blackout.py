@@ -79,6 +79,7 @@ def load():
           -- Без нього сюди потрапляли скарги на застосунок і тарифи,
           -- які просто згадують світло: 304 записи проти 139 справжніх.
           AND a.cause IN ('coverage','internet','calls','outage','blackout')
+          AND a.is_ad = 0 AND a.is_market_wide = 0
     """).fetchall()
 
 

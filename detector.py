@@ -117,7 +117,7 @@ def negatives_in_window(con, brand, cause, start, end):
           AND a.sentiment IN ('negative','mixed')
           -- галузевий матеріал зберігається по разу на кожен бренд,
           -- тому одна стаття про ринок давала сплеск одразу в трьох
-          AND a.is_market_wide = 0
+          AND a.is_market_wide = 0 AND a.is_ad = 0
           AND m.published_at >= ? AND m.published_at < ?
     """, (brand, cause, start, end)).fetchall()
     return [r for r in rows if r['context'] not in CHRONIC_CONTEXT]

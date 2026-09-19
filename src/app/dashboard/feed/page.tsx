@@ -205,6 +205,7 @@ function FeedPageContent() {
       case 'slow_internet': return 'Повільний 4G';
       case 'dropped_calls': return 'Обриви дзвінків';
       case 'other': return 'Інше';
+      case 'none': return 'Без проблеми';
     }
   };
 
@@ -509,11 +510,24 @@ function FeedPageContent() {
                         </div>
                       </TableCell>
 
-                      {/* Problem Type */}
+                      {/* Problem Type + тон: без тону похвала читалась як скарга */}
                       <TableCell className="align-top py-3">
-                        <Badge variant="outline" className="text-xs font-normal text-slate-700 bg-slate-50">
-                          {getProblemLabel(record.problemType)}
-                        </Badge>
+                        <div className="flex flex-col gap-1 items-start">
+                          <Badge variant="outline" className={
+                            record.sentiment === 'negative'
+                              ? 'text-xs font-normal text-red-700 bg-red-50 border-red-200'
+                              : record.sentiment === 'positive'
+                              ? 'text-xs font-normal text-emerald-700 bg-emerald-50 border-emerald-200'
+                              : 'text-xs font-normal text-slate-600 bg-slate-50'}>
+                            {record.sentiment === 'negative' ? 'Скарга'
+                              : record.sentiment === 'positive' ? 'Похвала' : 'Нейтрально'}
+                          </Badge>
+                          {record.problemType !== 'none' && (
+                            <Badge variant="outline" className="text-xs font-normal text-slate-700 bg-slate-50">
+                              {getProblemLabel(record.problemType)}
+                            </Badge>
+                          )}
+                        </div>
                       </TableCell>
 
                       {/* Message Content */}

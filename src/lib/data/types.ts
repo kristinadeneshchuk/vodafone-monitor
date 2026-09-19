@@ -2,7 +2,8 @@
 // даних (16 600 записів), без нього збірка падає на типах.
 export type SourceType = 'telegram' | 'twitter' | 'facebook' | 'news' | 'review';
 export type SentimentType = 'positive' | 'neutral' | 'negative';
-export type ProblemType = 'no_signal' | 'slow_internet' | 'dropped_calls' | 'other';
+/** 'none' — згадка про звʼязок, у якій проблеми немає (похвала, нейтральна новина). */
+export type ProblemType = 'no_signal' | 'slow_internet' | 'dropped_calls' | 'other' | 'none';
 
 export interface FeedbackRecord {
   id: string;
