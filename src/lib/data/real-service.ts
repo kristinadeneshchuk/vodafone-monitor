@@ -3,6 +3,8 @@ import realAlerts from './real-alerts.json';
 import {
   CrisisAlert, DashboardMetrics, FeedbackFilters, FeedbackRecord, IFeedbackService,
 } from './types';
+import { format, parseISO, subDays } from 'date-fns';
+import { uk } from 'date-fns/locale';
 
 /**
  * Реальні дані: 19.5 тис. згадок про Vodafone, Київстар і lifecell
@@ -68,65 +70,129 @@ export class RealFeedbackService implements IFeedbackService {
       return {
         totalComplaints: 0, averageRiskScore: 0, highRiskIssuesCount: 0,
         averageRelevance: 0, averageConstructiveness: 0,
+        churnIntentRate: 0, churnIntentCount: 0, averageResonance: 0,
+        spikeVelocityRatio: 0,
         sentimentDistribution: { positive: 0, neutral: 0, negative: 0 },
         topLocations: [], timelineData: [],
       };
     }
 
-    const sentimentDistribution = { positive: 0, neutral: 0, negative: 0 };
-    // Середній ризик рахуємо ЛИШЕ по згадках із ненульовим ризиком.
-    // Середнє по всьому масиві безглузде: 98% записів це не скарги
-    // ("дякую, все супер" має ризик 0) і вони тягнуть показник у нуль.
-    let riskyCount = 0;
-    const locationMap: Record<string, number> = {};
+    // 1. Графік останніх днів (Timeline) формуємо за всіма останніми днями (30 днів)
     const timelineMap: Record<string, { count: number; totalRisk: number }> = {};
-    let totalRisk = 0;
-    let highRiskIssuesCount = 0;
-    let totalRelevance = 0;
-    let totalConstructiveness = 0;
-
     for (const f of feedbacks) {
-      sentimentDistribution[f.sentiment] += 1;
-      if (f.reputationalRiskScore > 0) {
-        totalRisk += f.reputationalRiskScore;
-        riskyCount += 1;
-      }
-      // Поріг 60, а не 70: шкала інтерпретації формули ризику каже
-      // "високий = 6.0-7.9", тобто 60-79 на сотні. З порогом 70
-      // лічильник показував нуль, бо після воріт наш максимум ~60.
-      if (f.reputationalRiskScore >= 60) highRiskIssuesCount += 1;
-      totalRelevance += f.relevanceScore;
-      totalConstructiveness += f.constructivenessScore;
-
-      // "Невідомо" у топ локацій не показуємо: це не місце.
-      if (f.locationName && f.locationName !== 'Невідомо') {
-        locationMap[f.locationName] = (locationMap[f.locationName] ?? 0) + 1;
-      }
-
       const date = f.timestamp.slice(0, 10);
       timelineMap[date] ??= { count: 0, totalRisk: 0 };
       timelineMap[date].count += 1;
       timelineMap[date].totalRisk += f.reputationalRiskScore;
     }
 
+    const timelineData = Object.entries(timelineMap)
+      .map(([date, d]) => ({
+        date,
+        issuesCount: d.count,
+        averageRisk: d.count > 0 ? Math.round(d.totalRisk / d.count) : 0,
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(-30);
+
+    // 2. Визначаємо «вчорашній день» для Morning Briefing (повністю завершена 24-годинна доба)
+    const now = new Date();
+    const yesterday = subDays(now, 1);
+    const yesterdayStr = format(yesterday, 'yyyy-MM-dd');
+    const hasYesterday = feedbacks.some(f => f.timestamp.startsWith(yesterdayStr));
+
+    // Якщо вчорашній день є в базі — використовуємо його.
+    // Якщо відкрили іншого дня — беремо останній повний завершений день з бази
+    const effectiveDayStr = filters?.startDate?.slice(0, 10) 
+      || (hasYesterday ? yesterdayStr : (() => {
+          const allDates = [...new Set(feedbacks.map(f => f.timestamp.slice(0, 10)))].sort();
+          return allDates.length >= 2 ? allDates[allDates.length - 2] : allDates[allDates.length - 1] || yesterdayStr;
+      })());
+
+    let dateLabel = effectiveDayStr;
+    try {
+      dateLabel = format(parseISO(effectiveDayStr), 'd MMMM yyyy', { locale: uk });
+    } catch {
+      dateLabel = effectiveDayStr;
+    }
+
+    // 3. Всі інші метрики розраховуємо СУВОРО за вчорашній день (Morning Briefing)
+    const dayFeedbacks = feedbacks.filter(f => f.timestamp.startsWith(effectiveDayStr));
+    const sentimentDistribution = { positive: 0, neutral: 0, negative: 0 };
+
+    let riskyCount = 0;
+    let totalRisk = 0;
+    let highRiskIssuesCount = 0;
+    let totalRelevance = 0;
+    let totalConstructiveness = 0;
+    let churnIntentCount = 0;
+    let totalResonance = 0;
+    const locationMap: Record<string, number> = {};
+
+    for (const f of dayFeedbacks) {
+      sentimentDistribution[f.sentiment] += 1;
+      if (f.reputationalRiskScore > 0) {
+        totalRisk += f.reputationalRiskScore;
+        riskyCount += 1;
+      }
+      if (f.reputationalRiskScore >= 50) {
+        highRiskIssuesCount += 1;
+      }
+      totalRelevance += f.relevanceScore;
+      totalConstructiveness += f.constructivenessScore;
+
+      if (f.churnIntent) {
+        churnIntentCount += 1;
+      }
+      totalResonance += (f.resonance ?? (f.relevanceScore * (f.reachWeight ?? 1)));
+
+      if (f.locationName && f.locationName !== 'Невідомо') {
+        locationMap[f.locationName] = (locationMap[f.locationName] ?? 0) + 1;
+      }
+    }
+
+    const dayCount = dayFeedbacks.length;
+
+    // Швидкість сплеску за день (порівняно з нормою 45 скарг або алертами)
+    const alerts = realAlerts as unknown as CrisisAlert[];
+    const dayAlert = alerts.find(a => 
+      a.window_start.startsWith(effectiveDayStr) || 
+      a.window_end.startsWith(effectiveDayStr)
+    );
+    const baseline = 45;
+    const spikeVelocityRatio = dayAlert ? dayAlert.ratio : Math.round((dayCount / baseline) * 10) / 10;
+
+    const churnIntentRate = dayCount > 0 
+      ? Math.round((churnIntentCount / dayCount) * 1000) / 10 
+      : 0;
+
+    const averageResonance = dayCount > 0
+      ? Math.round((totalResonance / dayCount) * 10) / 10
+      : 0;
+
+    const topLocations = Object.entries(locationMap)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
     return {
-      totalComplaints: feedbacks.length,
-      averageRiskScore: riskyCount ? Math.round(totalRisk / riskyCount) : 0,
+      date: effectiveDayStr,
+      dateLabel,
+      totalComplaints: dayCount,
+      averageRiskScore: riskyCount > 0 ? Math.round(totalRisk / riskyCount) : 0,
       highRiskIssuesCount,
-      averageRelevance: Math.round((totalRelevance / feedbacks.length) * 100) / 100,
-      averageConstructiveness: Math.round((totalConstructiveness / feedbacks.length) * 100) / 100,
+      averageRelevance: dayCount > 0 ? Math.round((totalRelevance / dayCount) * 100) / 100 : 0,
+      averageConstructiveness: dayCount > 0 ? Math.round((totalConstructiveness / dayCount) * 100) / 100 : 0,
+      
+      // 3 Enterprise Actionable Metrics (Resolution lag видалено)
+      churnIntentRate,
+      churnIntentCount,
+      averageResonance,
+      spikeVelocityRatio,
+      
       sentimentDistribution,
-      topLocations: Object.entries(locationMap)
-        .map(([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 10),
-      timelineData: Object.entries(timelineMap)
-        .map(([date, d]) => ({
-          date,
-          issuesCount: d.count,
-          averageRisk: Math.round(d.totalRisk / d.count),
-        }))
-        .sort((a, b) => a.date.localeCompare(b.date)),
+      topLocations,
+      timelineData,
     };
   }
 }
