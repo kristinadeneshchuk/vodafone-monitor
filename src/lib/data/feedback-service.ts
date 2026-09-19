@@ -5,18 +5,26 @@ import { format, parseISO } from 'date-fns';
 export class MockFeedbackService implements IFeedbackService {
   async getFeedbacks(filters?: FeedbackFilters): Promise<FeedbackRecord[]> {
     // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise(resolve => setTimeout(resolve, 200));
     
     let result = [...mockFeedbacks];
 
     if (filters) {
-      if (filters.importance && filters.importance.length > 0) {
-        result = result.filter(f => filters.importance!.includes(f.importance));
-      }
       if (filters.problemType && filters.problemType.length > 0) {
         result = result.filter(f => filters.problemType!.includes(f.problemType));
       }
-      // Simple date filtering (ignoring time for simplicity in mock)
+      if (filters.isRelevant !== undefined) {
+        result = result.filter(f => f.isRelevant === filters.isRelevant);
+      }
+      if (filters.isConstructive !== undefined) {
+        result = result.filter(f => f.isConstructive === filters.isConstructive);
+      }
+      if (filters.minRelevance !== undefined) {
+        result = result.filter(f => f.relevanceScore >= filters.minRelevance!);
+      }
+      if (filters.minConstructiveness !== undefined) {
+        result = result.filter(f => f.constructivenessScore >= filters.minConstructiveness!);
+      }
       if (filters.startDate) {
         const start = new Date(filters.startDate).getTime();
         result = result.filter(f => new Date(f.timestamp).getTime() >= start);
@@ -31,7 +39,7 @@ export class MockFeedbackService implements IFeedbackService {
   }
 
   async getFeedbackById(id: string): Promise<FeedbackRecord | null> {
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 50));
     return mockFeedbacks.find(f => f.id === id) || null;
   }
 
@@ -42,7 +50,9 @@ export class MockFeedbackService implements IFeedbackService {
       return {
         totalComplaints: 0,
         averageRiskScore: 0,
-        criticalIssuesCount: 0,
+        highRiskIssuesCount: 0,
+        averageRelevance: 0,
+        averageConstructiveness: 0,
         sentimentDistribution: { positive: 0, neutral: 0, negative: 0 },
         topLocations: [],
         timelineData: []
@@ -52,8 +62,11 @@ export class MockFeedbackService implements IFeedbackService {
     const totalComplaints = feedbacks.length;
     const totalRisk = feedbacks.reduce((acc, curr) => acc + curr.reputationalRiskScore, 0);
     const averageRiskScore = Math.round(totalRisk / totalComplaints);
-    const criticalIssuesCount = feedbacks.filter(f => f.importance === 'critical' || f.importance === 'high').length;
+    const highRiskIssuesCount = feedbacks.filter(f => f.reputationalRiskScore >= 70).length;
     
+    const avgRelevance = Math.round((feedbacks.reduce((acc, curr) => acc + curr.relevanceScore, 0) / totalComplaints) * 100) / 100;
+    const avgConstructiveness = Math.round((feedbacks.reduce((acc, curr) => acc + curr.constructivenessScore, 0) / totalComplaints) * 100) / 100;
+
     const sentimentDistribution = {
       positive: feedbacks.filter(f => f.sentiment === 'positive').length,
       neutral: feedbacks.filter(f => f.sentiment === 'neutral').length,
@@ -95,7 +108,9 @@ export class MockFeedbackService implements IFeedbackService {
     return {
       totalComplaints,
       averageRiskScore,
-      criticalIssuesCount,
+      highRiskIssuesCount,
+      averageRelevance: avgRelevance,
+      averageConstructiveness: avgConstructiveness,
       sentimentDistribution,
       topLocations,
       timelineData

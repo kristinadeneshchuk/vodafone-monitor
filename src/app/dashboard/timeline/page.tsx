@@ -33,11 +33,8 @@ export default function TimelinePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSliderChange = (value: number[]) => {
-    if (value.length === 2) {
-      // Reversing values because the slider goes left to right (0 to 30), 
-      // but we want left to be '30 days ago' and right to be 'today (0)'
-      // Wait, shadcn slider usually supports ranges natively.
+  const handleSliderChange = (value: number | readonly number[]) => {
+    if (Array.isArray(value) && value.length === 2) {
       const newRange = [30 - value[0], 30 - value[1]] as [number, number];
       setDaysRange(newRange);
       fetchMetrics(newRange);
@@ -118,8 +115,8 @@ export default function TimelinePage() {
                 </span>
               </div>
               <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg text-red-700">
-                <span>Критичних проблем:</span>
-                <span className="font-bold text-lg">{metrics.criticalIssuesCount}</span>
+                <span>Високий ризик (&gt;70):</span>
+                <span className="font-bold text-lg">{metrics.highRiskIssuesCount}</span>
               </div>
             </CardContent>
           </Card>

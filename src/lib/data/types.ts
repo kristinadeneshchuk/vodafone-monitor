@@ -1,5 +1,4 @@
 export type SourceType = 'telegram' | 'twitter' | 'facebook' | 'news';
-export type ImportanceLevel = 'low' | 'medium' | 'high' | 'critical';
 export type SentimentType = 'positive' | 'neutral' | 'negative';
 export type ProblemType = 'no_signal' | 'slow_internet' | 'dropped_calls' | 'other';
 
@@ -12,7 +11,8 @@ export interface FeedbackRecord {
   
   isRelevant: boolean;
   isConstructive: boolean;
-  importance: ImportanceLevel;
+  relevanceScore: number; // 0.0 to 1.0
+  constructivenessScore: number; // 0.0 to 1.0
   sentiment: SentimentType;
   
   locationName: string; 
@@ -24,7 +24,9 @@ export interface FeedbackRecord {
 export interface DashboardMetrics {
   totalComplaints: number;
   averageRiskScore: number;
-  criticalIssuesCount: number;
+  highRiskIssuesCount: number; // risk > 70
+  averageRelevance: number;
+  averageConstructiveness: number;
   sentimentDistribution: {
     positive: number;
     neutral: number;
@@ -37,9 +39,12 @@ export interface DashboardMetrics {
 export interface FeedbackFilters {
   startDate?: string;
   endDate?: string;
-  importance?: ImportanceLevel[];
   problemType?: ProblemType[];
   location?: string;
+  isRelevant?: boolean;
+  isConstructive?: boolean;
+  minRelevance?: number;
+  minConstructiveness?: number;
 }
 
 export interface IFeedbackService {

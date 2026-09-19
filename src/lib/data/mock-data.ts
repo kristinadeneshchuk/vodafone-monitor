@@ -1,9 +1,7 @@
-import { FeedbackRecord, ImportanceLevel, ProblemType, SentimentType, SourceType } from './types';
+import { FeedbackRecord, ProblemType, SentimentType, SourceType } from './types';
 
 const sources: SourceType[] = ['telegram', 'twitter', 'facebook', 'news'];
-const sentiments: SentimentType[] = ['positive', 'neutral', 'negative'];
 const problemTypes: ProblemType[] = ['no_signal', 'slow_internet', 'dropped_calls', 'other'];
-const importances: ImportanceLevel[] = ['low', 'medium', 'high', 'critical'];
 
 const locations = [
   'Київ, Оболонь', 'Траса Київ-Чоп (Житомир)', 'Невідомо', 'Львів, Центр', 
@@ -29,10 +27,12 @@ function getRandomItem<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function roundTwo(num: number): number {
+  return Math.round(num * 100) / 100;
+}
+
 function generateData(count: number): FeedbackRecord[] {
   const data: FeedbackRecord[] = [];
-  
-  // Create a realistic distribution of dates over the last 30 days
   const now = new Date();
   
   for (let i = 0; i < count; i++) {
@@ -43,12 +43,25 @@ function generateData(count: number): FeedbackRecord[] {
     // Randomize timestamp within last 30 days
     const timestamp = new Date(now.getTime() - Math.random() * 30 * 24 * 60 * 60 * 1000);
     
-    // Correlate sentiment with problem type slightly
+    const isPositive = content.includes('Дякую') || content.includes('чудова');
+    const sentiment: SentimentType = isPositive ? 'positive' : (Math.random() > 0.85 ? 'neutral' : 'negative');
     const problemType = getRandomItem(problemTypes);
-    const sentiment = content.includes('Дякую') || content.includes('чудова') ? 'positive' : 'negative';
-    const isConstructive = Math.random() > 0.3; // 70% constructive
-    const importance = sentiment === 'positive' ? 'low' : getRandomItem(importances);
-    const riskScore = sentiment === 'positive' ? 0 : Math.floor(Math.random() * 80) + 20; // 20-100 for negatives
+    
+    // Scalar scores between 0 and 1
+    // Relevance to network coverage problem
+    const relevanceScore = isPositive 
+      ? roundTwo(0.3 + Math.random() * 0.4) 
+      : roundTwo(0.5 + Math.random() * 0.5);
+
+    // Constructiveness score (does it have details like place, time, symptoms vs raw emotion)
+    const isVague = content.includes('взагалі не тягне') || content.includes('жахлива');
+    const constructivenessScore = isVague 
+      ? roundTwo(0.1 + Math.random() * 0.4) 
+      : roundTwo(0.45 + Math.random() * 0.55);
+
+    const riskScore = isPositive 
+      ? 0 
+      : Math.floor(relevanceScore * 60 + Math.random() * 40);
 
     data.push({
       id: `f-${i}`,
@@ -56,13 +69,14 @@ function generateData(count: number): FeedbackRecord[] {
       originalUrl: `https://example.com/post/${i}`,
       content,
       timestamp: timestamp.toISOString(),
-      isRelevant: true,
-      isConstructive,
-      importance,
+      isRelevant: relevanceScore >= 0.5,
+      isConstructive: constructivenessScore >= 0.5,
+      relevanceScore,
+      constructivenessScore,
       sentiment,
       locationName: loc,
       problemType,
-      reputationalRiskScore: riskScore,
+      reputationalRiskScore: Math.min(100, Math.max(0, riskScore)),
     });
   }
   

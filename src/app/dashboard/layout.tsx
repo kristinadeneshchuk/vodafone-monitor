@@ -60,14 +60,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <h1 className="text-xl font-semibold text-slate-800">
             {navItems.find(i => i.href === pathname)?.name || 'Дашборд'}
           </h1>
-          <div className="flex items-center gap-4">
+          {/* <div className="flex items-center gap-4">
             <div className="text-sm text-slate-500">
               Аналітика репутаційних ризиків (Проблема покриття)
             </div>
             <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold">
               А
             </div>
-          </div>
+          </div> */}
         </header>
         <main className="flex-1 overflow-auto p-8">
           {children}
