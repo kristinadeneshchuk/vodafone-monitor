@@ -140,7 +140,7 @@ export default function DashboardOverview() {
             Ранковий аналітичний бриф
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            Звітний період: <span className="font-semibold text-slate-800">{metrics.dateLabel || 'Вчора'}</span> (повний 24-годинний зріз)
+            Звітний період: <span className="font-semibold text-slate-800">{metrics.dateLabel || 'останні 7 днів'}</span> (7 днів)
           </p>
         </div>
 
@@ -192,7 +192,7 @@ export default function DashboardOverview() {
                   </Badge>
                 </div>
                 <CardDescription className="text-slate-400 text-xs mt-0.5">
-                  Синтезовано штучним інтелектом на основі {metrics.totalComplaints} звернень та телеметрії за {metrics.dateLabel}
+                  Синтезовано штучним інтелектом на основі {metrics.totalComplaints} звернень та телеметрії за період {metrics.dateLabel}
                 </CardDescription>
               </div>
             </div>
@@ -351,7 +351,7 @@ export default function DashboardOverview() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-slate-900">{metrics.totalComplaints}</div>
-              <p className="text-xs text-slate-500 mt-1">завершені 24 години</p>
+              <p className="text-xs text-slate-500 mt-1">за звітний період</p>
             </CardContent>
           </Card>
 
@@ -463,7 +463,7 @@ export default function DashboardOverview() {
                 {metrics.spikeVelocityRatio}x
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                перевищення добової норми baseline
+                перевищення тижневої норми
               </p>
             </CardContent>
           </Card>
@@ -523,7 +523,7 @@ export default function DashboardOverview() {
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Топ проблемних ділянок за 7 днів</CardTitle>
             <CardDescription className="text-xs">
-              Локації з найбільшою кількістю звернень за звітну добу ({metrics.dateLabel})
+              Локації з найбільшою кількістю звернень за звітний період ({metrics.dateLabel})
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-2">

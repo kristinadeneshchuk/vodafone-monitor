@@ -109,9 +109,14 @@ export class RealFeedbackService implements IFeedbackService {
           return allDates.length >= 2 ? allDates[allDates.length - 2] : allDates[allDates.length - 1] || yesterdayStr;
       })());
 
+    // Підпис періоду має збігатися з вікном розрахунку. Раніше тут була
+    // одна дата, а метрики рахувались за тиждень — цифра й підпис
+    // означали різні речі.
     let dateLabel = effectiveDayStr;
     try {
-      dateLabel = format(parseISO(effectiveDayStr), 'd MMMM yyyy', { locale: uk });
+      const from = format(subDays(parseISO(effectiveDayStr), 6), 'd MMM', { locale: uk });
+      const to = format(parseISO(effectiveDayStr), 'd MMMM yyyy', { locale: uk });
+      dateLabel = `${from} — ${to}`;
     } catch {
       dateLabel = effectiveDayStr;
     }
