@@ -29,11 +29,22 @@ import {
   Target,
   MapPin,
   UserX,
-  Calendar
+  Calendar,
+  Globe,
+  Smartphone
 } from 'lucide-react';
 
 type SortField = 'timestamp' | 'reputationalRiskScore' | 'relevanceScore';
 type SortOrder = 'asc' | 'desc';
+
+const SOURCE_LABELS: Record<string, string> = {
+  all: 'Усі джерела',
+  review: 'Google Play',
+  telegram: 'Telegram',
+  news: 'ЗМІ / Новини',
+  twitter: 'Twitter/X',
+  facebook: 'Facebook',
+};
 
 const PROBLEM_LABELS: Record<string, string> = {
   all: 'Усі проблеми',
@@ -85,6 +96,7 @@ function FeedPageContent() {
 
   // Filters state
   const [searchQuery, setSearchQuery] = useState('');
+  const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [problemFilter, setProblemFilter] = useState<string>('all');
   const [relevantFilter, setRelevantFilter] = useState<string>('all');
   const [churnFilter, setChurnFilter] = useState<string>('all');
@@ -96,6 +108,7 @@ function FeedPageContent() {
   const fetchFeedbacks = async () => {
     setLoading(true);
     let filters: any = {};
+    if (sourceFilter !== 'all') filters.source = sourceFilter as SourceType;
     if (problemFilter !== 'all') filters.problemType = [problemFilter as ProblemType];
     if (relevantFilter !== 'all') filters.isRelevant = relevantFilter === 'true';
     if (churnFilter !== 'all') filters.churnOnly = churnFilter === 'true';
@@ -129,7 +142,7 @@ function FeedPageContent() {
   useEffect(() => {
     fetchFeedbacks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [problemFilter, relevantFilter, churnFilter, activeDate, activeRange]);
+  }, [sourceFilter, problemFilter, relevantFilter, churnFilter, activeDate, activeRange]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -217,12 +230,34 @@ function FeedPageContent() {
     }
   };
 
-  const getSourceBadge = (source: SourceType) => {
+  const getExternalUrl = (url: string) => {
+    if (!url) return '#';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('play_store_')) {
+      const match = url.match(/^play_store_([a-zA-Z0-9._]+)_[a-f0-9-]+$/);
+      const appId = match ? match[1] : 'ua.vodafone.myvodafone';
+      return `https://play.google.com/store/apps/details?id=${appId}`;
+    }
+    if (url.startsWith('t.me/') || url.startsWith('telegram.me/')) {
+      return `https://${url}`;
+    }
+    return url;
+  };
+
+  const getSourceBadge = (source: string) => {
     switch(source) {
       case 'telegram': return <Badge variant="outline" className="bg-sky-50 text-sky-700 border-sky-200">Telegram</Badge>;
       case 'twitter': return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Twitter/X</Badge>;
       case 'facebook': return <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200">Facebook</Badge>;
       case 'news': return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">ЗМІ / Новини</Badge>;
+      case 'review':
+      case 'play_store':
+      case 'google_play':
+        return <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">Google Play</Badge>;
+      case 'app_store':
+        return <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200">App Store</Badge>;
+      default:
+        return <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200">{source}</Badge>;
     }
   };
 
@@ -274,6 +309,21 @@ function FeedPageContent() {
                 </div>
                 
                 <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
+                  <Select value={sourceFilter} onValueChange={(val) => { if (val) setSourceFilter(val); }}>
+                    <SelectTrigger className="w-[160px] bg-slate-50/50">
+                      <Globe className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
+                      <SelectValue placeholder="Джерело" labelMap={SOURCE_LABELS} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Усі джерела</SelectItem>
+                      <SelectItem value="review">Google Play</SelectItem>
+                      <SelectItem value="telegram">Telegram</SelectItem>
+                      <SelectItem value="news">ЗМІ / Новини</SelectItem>
+                      <SelectItem value="twitter">Twitter/X</SelectItem>
+                      <SelectItem value="facebook">Facebook</SelectItem>
+                    </SelectContent>
+                  </Select>
+
                   <Select value={problemFilter} onValueChange={(val) => { if (val) setProblemFilter(val); }}>
                     <SelectTrigger className="w-[170px] bg-slate-50/50">
                       <Filter className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
@@ -317,9 +367,14 @@ function FeedPageContent() {
                 </div>
               </div>
 
-              {(problemFilter !== 'all' || relevantFilter !== 'all' || churnFilter !== 'all') && (
+              {(sourceFilter !== 'all' || problemFilter !== 'all' || relevantFilter !== 'all' || churnFilter !== 'all') && (
                 <div className="flex flex-wrap items-center gap-1.5 pt-1 text-xs">
                   <span className="text-slate-400 text-[11px]">Активні фільтри:</span>
+                  {sourceFilter !== 'all' && (
+                    <Badge variant="secondary" className="gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer text-xs" onClick={() => setSourceFilter('all')}>
+                      Джерело: {SOURCE_LABELS[sourceFilter]} ×
+                    </Badge>
+                  )}
                   {problemFilter !== 'all' && (
                     <Badge variant="secondary" className="gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer text-xs" onClick={() => setProblemFilter('all')}>
                       Проблема: {PROBLEM_LABELS[problemFilter]} ×
@@ -338,6 +393,7 @@ function FeedPageContent() {
                   <button
                     type="button"
                     onClick={() => {
+                      setSourceFilter('all');
                       setProblemFilter('all');
                       setRelevantFilter('all');
                       setChurnFilter('all');
@@ -576,11 +632,11 @@ function FeedPageContent() {
                       {/* External Link */}
                       <TableCell className="align-top py-3 text-center">
                         <a 
-                          href={record.originalUrl} 
+                          href={getExternalUrl(record.originalUrl)} 
                           target="_blank" 
                           rel="noreferrer"
-                          className="inline-flex p-1 text-slate-400 hover:text-red-600 transition-colors"
-                          title="Відкрити оригінал"
+                          className="inline-flex p-1 text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
+                          title={record.source === 'review' || record.originalUrl?.startsWith('play_store_') ? "Відкрити додаток у Google Play" : "Відкрити оригінал"}
                         >
                           <ExternalLink className="w-4 h-4" />
                         </a>

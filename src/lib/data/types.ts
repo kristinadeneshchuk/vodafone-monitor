@@ -125,6 +125,7 @@ export interface FeedbackFilters {
   /** Оператор. За замовчуванням 'vodafone' — це продукт для Vodafone,
    *  конкуренти показуються окремим порівнянням, а не впереміш. */
   brand?: string;
+  source?: SourceType;
   startDate?: string;
   endDate?: string;
   problemType?: ProblemType[];

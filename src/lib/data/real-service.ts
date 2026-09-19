@@ -39,6 +39,9 @@ export class RealFeedbackService implements IFeedbackService {
 
     if (!filters) return result;
 
+    if (filters.source) {
+      result = result.filter(f => f.source === filters.source);
+    }
     if (filters.problemType?.length) {
       result = result.filter(f => filters.problemType!.includes(f.problemType));
     }

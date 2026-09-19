@@ -28,14 +28,28 @@ import {
   UserX, 
   ArrowRight, 
   Calendar,
-  Layers
+  Layers,
+  Smartphone
 } from 'lucide-react';
 import { feedbackService } from '@/lib/data/feedback-service';
 import { FeedbackRecord } from '@/lib/data/types';
 import { format, addDays, parseISO, differenceInCalendarDays } from 'date-fns';
 import { uk } from 'date-fns/locale';
+import CompetitorAnalysisSection from './CompetitorAnalysisSection';
+import realMarketData from '@/lib/data/real-market.json';
 
 type HorizonType = '30d' | '90d' | '180d' | 'all';
+
+function cleanFeedText(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\*\*\*(.*?)\*\*\*/g, '$1')
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/_{1,2}(.*?)_{1,2}/g, '$1')
+    .trim();
+}
 
 export default function TimelinePage() {
   const router = useRouter();
@@ -44,6 +58,7 @@ export default function TimelinePage() {
   // STATE: DATA & TIMELINE RANGE
   // ----------------------------------------------------
   const [allFeedbacks, setAllFeedbacks] = useState<FeedbackRecord[]>([]);
+  const [allMarketRecords, setAllMarketRecords] = useState<FeedbackRecord[]>([]);
   const [loadingData, setLoadingData] = useState<boolean>(true);
   
   // Horizon scope of the timeline view
@@ -62,8 +77,12 @@ export default function TimelinePage() {
   useEffect(() => {
     const loadData = async () => {
       setLoadingData(true);
-      const data = await feedbackService.getFeedbacks();
+      const [data, marketData] = await Promise.all([
+        feedbackService.getFeedbacks(),
+        feedbackService.getFeedbacks({ brand: 'all' })
+      ]);
       setAllFeedbacks(data);
+      setAllMarketRecords(marketData);
       setLoadingData(false);
     };
     loadData();
@@ -119,8 +138,6 @@ export default function TimelinePage() {
       const totalRisk = riskyRecords.reduce((sum, r) => sum + r.reputationalRiskScore, 0);
       const avgRisk = riskyRecords.length > 0 ? Math.round(totalRisk / riskyRecords.length) : 0;
       const highRiskCount = dayRecords.filter(r => r.reputationalRiskScore >= 50).length;
-      const constructiveCount = dayRecords.filter(r => r.isConstructive).length;
-      const constructivePercent = count > 0 ? Math.round((constructiveCount / count) * 100) : 0;
 
       const churnCount = dayRecords.filter(r => r.churnIntent).length;
       const churnPercent = count > 0 ? Math.round((churnCount / count) * 1000) / 10 : 0;
@@ -150,7 +167,6 @@ export default function TimelinePage() {
         riskyCount: riskyRecords.length,
         avgRisk,
         highRiskCount,
-        constructivePercent,
         topLocation: topLoc,
         churnCount,
         churnPercent,
@@ -235,9 +251,6 @@ export default function TimelinePage() {
     const churnCount = periodRecords.filter(r => r.churnIntent).length;
     const churnPercent = count > 0 ? Math.round((churnCount / count) * 1000) / 10 : 0;
 
-    const constructiveCount = periodRecords.filter(r => r.isConstructive).length;
-    const constructivePercent = count > 0 ? Math.round((constructiveCount / count) * 100) : 0;
-
     const totalResonance = periodRecords.reduce(
       (sum, r) => sum + (r.resonance ?? (r.relevanceScore * (r.reachWeight ?? 1))),
       0
@@ -256,7 +269,6 @@ export default function TimelinePage() {
       highRiskCount,
       churnCount,
       churnPercent,
-      constructivePercent,
       avgResonance,
       isSpike
     };
@@ -426,7 +438,30 @@ export default function TimelinePage() {
       case 'telegram': return <Send className="w-3 h-3 text-sky-500" />;
       case 'twitter': return <span className="font-bold text-[10px] text-blue-500">𝕏</span>;
       case 'news': return <Newspaper className="w-3 h-3 text-amber-600" />;
+      case 'review':
+      case 'play_store':
+      case 'google_play':
+        return <Smartphone className="w-3 h-3 text-emerald-600" />;
       default: return <Radio className="w-3 h-3 text-slate-400" />;
+    }
+  };
+
+  const getSourceLabel = (source: string) => {
+    switch (source) {
+      case 'review':
+      case 'play_store':
+      case 'google_play':
+        return 'Google Play';
+      case 'telegram':
+        return 'Telegram';
+      case 'twitter':
+        return 'Twitter/X';
+      case 'news':
+        return 'ЗМІ / Новини';
+      case 'facebook':
+        return 'Facebook';
+      default:
+        return source;
     }
   };
 
@@ -665,11 +700,7 @@ export default function TimelinePage() {
 
           {/* Status Banner for Selected Day or Range */}
           {startDay && endDay && (
-            <div className={`p-4 rounded-xl border transition-all ${
-              periodMetrics.isSpike 
-                ? 'bg-red-50/70 border-red-200' 
-                : 'bg-slate-50 border-slate-200'
-            }`}>
+            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 transition-all">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-3">
@@ -679,27 +710,15 @@ export default function TimelinePage() {
                         : startDay.fullLabel
                       }
                     </span>
-                    <Badge className={
-                      periodMetrics.isSpike 
-                        ? 'bg-red-600 text-white font-bold' 
-                        : 'bg-emerald-50 text-emerald-700 border-emerald-300'
-                    }>
-                      {periodMetrics.isSpike 
-                        ? (isRange ? 'Період підвищеної напруги' : 'Аномальний сплеск скарг')
-                        : (isRange ? 'Нормальний період' : 'Нормальний фоновий стан')
-                      }
+                    <Badge variant="outline" className="bg-white text-slate-700 border-slate-300 font-semibold text-xs">
+                      {isRange ? `${periodMetrics.daysCount} дн.` : '1 день'}
                     </Badge>
                   </div>
                   <p className="text-sm text-slate-600">
-                    {isRange ? (
-                      periodMetrics.isSpike 
-                        ? `За обрані ${periodMetrics.daysCount} дн. зафіксовано ${periodMetrics.count.toLocaleString()} звернень (в середньому ${periodMetrics.avgDaily}/день). Зафіксовано ${periodMetrics.highRiskCount} скарг з критичним ризиком (≥50). Топ-локація: ${periodTopLocation.name}.`
-                        : `За обрані ${periodMetrics.daysCount} дн. мережа працювала штатно: ${periodMetrics.count.toLocaleString()} звернень (в середньому ${periodMetrics.avgDaily}/день), середній ризик ${periodMetrics.avgRisk}/100.`
-                    ) : (
-                      startDay.isSpike 
-                        ? `Цього дня зафіксовано високий рівень ризику (${startDay.avgRisk}/100) та підвищену концентрацію скарг на локації: ${startDay.topLocation}.`
-                        : `Мережа працювала у звичному режимі. Основна маса звернень — побутові питання та планові роботи.`
-                    )}
+                    {isRange 
+                      ? `За обрані ${periodMetrics.daysCount} дн. зафіксовано ${periodMetrics.count.toLocaleString()} звернень (в середньому ${periodMetrics.avgDaily}/день), середній ризик ${periodMetrics.avgRisk}/100.${periodTopLocation.count > 0 ? ` Топ-локація: ${periodTopLocation.name}.` : ''}`
+                      : `Зафіксовано ${startDay.count} звернень. Середній ризик: ${startDay.avgRisk}/100.${startDay.topLocation !== 'Немає даних' ? ` Головна локація: ${startDay.topLocation}.` : ''}`
+                    }
                   </p>
                 </div>
 
@@ -929,14 +948,14 @@ export default function TimelinePage() {
                   <div className="flex justify-between items-center text-slate-500">
                     <div className="flex items-center gap-1.5 font-medium text-slate-700">
                       {getSourceIcon(record.source)}
-                      <span className="capitalize">{record.source}</span>
+                      <span className="capitalize">{getSourceLabel(record.source)}</span>
                     </div>
                     <span className="text-[10px] font-mono">
                       {format(parseISO(record.timestamp), 'dd.MM.yy HH:mm')}
                     </span>
                   </div>
                   <p className="text-slate-800 leading-relaxed font-normal">
-                    {record.content}
+                    {cleanFeedText(record.content)}
                   </p>
                   <div className="flex justify-between items-center pt-1 border-t border-slate-200/50">
                     <span className="text-[10px] text-slate-500 flex items-center gap-1">
@@ -975,6 +994,20 @@ export default function TimelinePage() {
           </div>
         </Card>
       </div>
+
+      {/* ---------------------------------------------------- */}
+      {/* COMPETITOR & MARKET ANALYSIS BLOCK (AT THE BOTTOM)   */}
+      {/* ---------------------------------------------------- */}
+      <CompetitorAnalysisSection
+        startDateStr={startDay?.dateStr || minDateStr}
+        endDateStr={endDay?.dateStr || maxDateStr}
+        fullDateLabel={isRange ? `${startDay?.fullLabel} — ${endDay?.fullLabel}` : startDay?.fullLabel || ''}
+        dateLabel={isRange ? `${startDay?.label} – ${endDay?.label}` : startDay?.label || ''}
+        isRange={isRange}
+        daysCount={periodMetrics.daysCount}
+        allMarketRecords={allMarketRecords}
+        marketNews={realMarketData.items}
+      />
     </div>
   );
 }

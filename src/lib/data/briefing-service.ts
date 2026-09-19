@@ -121,7 +121,7 @@ export function generateHeuristicBriefing(
     },
     {
       team: 'Служба підтримки' as const,
-      action: metrics.churnIntentCount > 0 ? `Персональний контакт із ${metrics.churnIntentCount} абонентами (пропозиція бонусів).` : 'Обробка запитів у штатному режимі (SLA < 15 хв).',
+      action: metrics.churnIntentCount > 0 ? `Персональний контакт із ${metrics.churnIntentCount} абонентами (пропозиція бонусів).` : 'Обробка запитів у нормальному режимі (SLA < 15 хв).',
       priority: (metrics.churnIntentCount > 0 ? 'high' : 'low') as 'high' | 'medium' | 'low'
     },
     {
@@ -153,6 +153,49 @@ export function generateHeuristicBriefing(
   };
 }
 
+function getGeminiApiKey(): string {
+  const envCandidates = [
+    process.env.GEMINI_API_KEY,
+    process.env.NEXT_PUBLIC_GEMINI_API_KEY
+  ];
+  for (const c of envCandidates) {
+    if (c) {
+      const clean = c.trim().replace(/^["']|["']$/g, '');
+      if (clean && clean !== 'your_gemini_api_key_here' && clean.length > 10) {
+        return clean;
+      }
+    }
+  }
+
+  const filesToCheck = [
+    path.join(process.cwd(), '.env.local'),
+    path.join(process.cwd(), '.env')
+  ];
+  for (const fullPath of filesToCheck) {
+    try {
+      if (fs.existsSync(fullPath)) {
+        const content = fs.readFileSync(fullPath, 'utf8');
+        for (const line of content.split(/\r?\n/)) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith('#') || !trimmed.includes('=')) continue;
+          const [key, ...rest] = trimmed.split('=');
+          const cleanKey = key.trim();
+          if (cleanKey === 'GEMINI_API_KEY' || cleanKey === 'NEXT_PUBLIC_GEMINI_API_KEY') {
+            const val = rest.join('=').trim().replace(/^["']|["']$/g, '');
+            if (val && val !== 'your_gemini_api_key_here' && val.length > 10) {
+              return val;
+            }
+          }
+        }
+      }
+    } catch {
+      // Ignore
+    }
+  }
+
+  return '';
+}
+
 /**
  * Generates an executive daily morning briefing using Gemini API (with heuristic fallback)
  */
@@ -161,8 +204,7 @@ export async function generateBriefingWithGemini(
   feedbacks: FeedbackRecord[],
   metrics: DashboardMetrics
 ): Promise<DailyBriefing> {
-  const rawKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-  const apiKey = rawKey ? rawKey.trim().replace(/^["']|["']$/g, '') : '';
+  const apiKey = getGeminiApiKey();
 
   // Метрики рахуються за 30 днів, тому підпис теж має бути періодом,
   // а не однією датою: було "Основний масив скарг за 16 вересня".
@@ -176,7 +218,7 @@ export async function generateBriefingWithGemini(
   }
 
   // If no Gemini API key is configured, fallback to heuristic generation
-  if (!apiKey || apiKey === 'your_gemini_api_key_here' || apiKey.length < 10) {
+  if (!apiKey) {
     console.log('[BriefingService] No GEMINI_API_KEY detected. Using analytical generator.');
     return generateHeuristicBriefing(date, feedbacks, metrics);
   }
@@ -224,15 +266,31 @@ export async function generateBriefingWithGemini(
   ]
 }`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.6-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-      }
-    });
+    const modelsToTry = ['gemini-3.5-flash-lite', 'gemini-3.6-flash'];
+    let responseText = '';
 
-    const responseText = response.text?.trim() || '';
+    for (const model of modelsToTry) {
+      try {
+        const response = await ai.models.generateContent({
+          model,
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json',
+          }
+        });
+        const text = response.text?.trim() || '';
+        if (text) {
+          responseText = text;
+          break;
+        }
+      } catch (mErr: any) {
+        console.warn(`[BriefingService] Model ${model} failed, trying next:`, mErr?.message || mErr);
+      }
+    }
+
+    if (!responseText) {
+      throw new Error('All Gemini briefing models returned empty response');
+    }
     const parsed = JSON.parse(responseText);
 
     const briefing: DailyBriefing = {

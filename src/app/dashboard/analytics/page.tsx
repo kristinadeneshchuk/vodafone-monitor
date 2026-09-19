@@ -33,11 +33,11 @@ interface ChatMessage {
 const INITIAL_MESSAGE: ChatMessage = {
   id: 'welcome-msg',
   role: 'model',
-  content: `🎯 **Вітаю. Я AI-аналітик ризиків та прогнозування Vodafone Україна.**
+  content: `Вітаю! Я аналітичний AI-асистент Vodafone Україна з моніторингу репутаційних ризиків та прогнозування.
 
-Підключено повну базу моніторингу за **2025–2026 роки** (1 051 верифікована згадка, телеметрія блекаутів, дані щодо Київстар та lifecell, Churn-сигнали).
+Доступна повна база даних моніторингу за 2025–2026 роки (1 051 верифіковане звернення, телеметрія впливу енергетичних відключень, порівняльні дані щодо Київстар та lifecell, а також індикатори ризику відтоку абонентів).
 
-Готовий надавати чітку аналітику, перевірені цифри та прогнози **ПА ДЄЛУ**. Оберіть швидке питання вище або запитайте про будь-який аспект мережі чи репутації бренду.`,
+Готовий надати структурований аналіз, фактологічні показники та обґрунтовані прогнози щодо стану мережі й репутаційних загроз. Оберіть одне зі швидких запитань вище або сформулюйте власний запит.`,
   timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
   source: 'gemini-3.6-flash'
 };
@@ -45,30 +45,116 @@ const INITIAL_MESSAGE: ChatMessage = {
 const PRESET_QUERIES = [
   {
     icon: TrendingUp,
-    label: '🔮 Прогноз відтоку (Churn)',
+    label: 'Прогноз відтоку (Churn)',
     query: 'Який поточний ризик відтоку абонентів (Churn)? Зроби чіткий прогноз на наступний місяць: хто піде і до кого?'
   },
   {
     icon: Zap,
-    label: '⚡ Ризики блекаутів та зими',
+    label: 'Ризики блекаутів та зими',
     query: 'Проаналізуй ризики зимових блекаутів. Що станеться з мережею, якщо світла не буде понад 4 години? Дай прогноз по містах.'
   },
   {
     icon: MapPin,
-    label: '📍 Епіцентри та хронічні зони',
+    label: 'Епіцентри та хронічні зони',
     query: 'Які топ проблемні локації за рік? Де зафіксовано хронічні деградаційні проблеми і де чекати наступний сплеск?'
   },
   {
     icon: Users,
-    label: '🥊 Vodafone vs Київстар та lifecell',
+    label: 'Vodafone vs Київстар та lifecell',
     query: 'Як виглядає репутація Vodafone у порівнянні з Київстар та lifecell у скаргах користувачів? Хто лідирує за стійкістю?'
   },
   {
     icon: ShieldAlert,
-    label: '🚨 Прогноз медійної кризи',
+    label: 'Прогноз медійної кризи',
     query: 'Які інциденти мають найвищу ймовірність медіа-ескалації та потрапляння у великі Telegram-канали? Що робити PR прямо зараз?'
   },
 ];
+
+function cleanAiContent(text: string): string {
+  if (!text) return '';
+  return text
+    // Strip emojis
+    .replace(/[\u{1F300}-\u{1FAFF}]|[\u{2600}-\u{27BF}]|[\u{FE00}-\u{FE0F}]|[\u{1F900}-\u{1F9FF}]/gu, '')
+    // Strip bold/italic markdown asterisks
+    .replace(/\*\*\*(.*?)\*\*\*/g, '$1')
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/\*/g, '')
+    // Strip markdown headings #, ##, etc.
+    .replace(/^#{1,6}\s*/gm, '')
+    // Clean up excessive whitespace
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim();
+}
+
+function renderAiParagraph(rawParagraph: string, pIdx: number) {
+  const paragraph = cleanAiContent(rawParagraph);
+  if (!paragraph) return null;
+
+  // Check if paragraph is or starts with a section header (e.g., "Резюме:", "Факти та метрики:", etc.)
+  const sectionHeaderRegex = /^(Резюме|Факти та метрики|Прогноз та оцінка ризиків|Рекомендовані заходи|Висновки|Оцінка ситуації|Ключові фактори|Метрики|Прогноз|Рекомендації):/i;
+
+  if (sectionHeaderRegex.test(paragraph.trim())) {
+    const colonIndex = paragraph.indexOf(':');
+    const headerTitle = paragraph.slice(0, colonIndex + 1);
+    const rest = paragraph.slice(colonIndex + 1).trim();
+
+    return (
+      <div key={pIdx} className="space-y-1.5 pt-1 first:pt-0">
+        <div className="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-600 inline-block shrink-0" />
+          <span>{headerTitle}</span>
+        </div>
+        {rest && <p className="leading-relaxed text-slate-800 text-sm pl-3">{rest}</p>}
+      </div>
+    );
+  }
+
+  // Handle list items within the paragraph
+  const lines = paragraph.split('\n');
+  const hasListItems = lines.some(l => l.trim().startsWith('-') || /^\d+\./.test(l.trim()));
+
+  if (hasListItems) {
+    return (
+      <div key={pIdx} className="space-y-1.5">
+        {lines.map((line, lIdx) => {
+          const trimmed = line.trim();
+          if (trimmed.startsWith('-')) {
+            const itemText = trimmed.replace(/^-\s*/, '');
+            return (
+              <div key={lIdx} className="flex items-start gap-2 text-sm pl-2">
+                <span className="text-red-500 font-bold mt-1 text-xs shrink-0">•</span>
+                <span className="leading-relaxed text-slate-800">{itemText}</span>
+              </div>
+            );
+          }
+          if (/^\d+\./.test(trimmed)) {
+            const numMatch = trimmed.match(/^(\d+\.)\s*(.*)/);
+            if (numMatch) {
+              return (
+                <div key={lIdx} className="flex items-start gap-2 text-sm pl-2">
+                  <span className="font-bold text-red-600 text-xs mt-0.5 shrink-0">{numMatch[1]}</span>
+                  <span className="leading-relaxed text-slate-800">{numMatch[2]}</span>
+                </div>
+              );
+            }
+          }
+          return (
+            <p key={lIdx} className="leading-relaxed text-sm text-slate-800">
+              {line}
+            </p>
+          );
+        })}
+      </div>
+    );
+  }
+
+  return (
+    <p key={pIdx} className="leading-relaxed text-sm text-slate-800">
+      {paragraph}
+    </p>
+  );
+}
 
 export default function AnalyticsPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_MESSAGE]);
@@ -105,7 +191,7 @@ export default function AnalyticsPage() {
 
     try {
       // Build conversation history excluding welcome message
-      const history = newMessages
+      const history = messages
         .filter(m => m.id !== 'welcome-msg')
         .map(m => ({
           role: m.role,
@@ -118,18 +204,14 @@ export default function AnalyticsPage() {
         body: JSON.stringify({ message: text, history })
       });
 
-      if (!res.ok) {
-        throw new Error(`Server returned ${res.status}`);
-      }
-
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       const aiMessage: ChatMessage = {
         id: `ai-${Date.now()}`,
         role: 'model',
-        content: data.reply || 'Не вдалося сформувати відповідь. Спробуйте ще раз.',
+        content: data.reply || (res.ok ? 'Не вдалося сформувати відповідь. Спробуйте ще раз.' : `Помилка зв'язку (${res.status}). Будь ласка, спробуйте ще раз.`),
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        source: data.source || 'gemini-3.6-flash'
+        source: data.source || 'gemini'
       };
 
       setMessages(prev => [...prev, aiMessage]);
@@ -138,7 +220,7 @@ export default function AnalyticsPage() {
       const errorMessage: ChatMessage = {
         id: `err-${Date.now()}`,
         role: 'model',
-        content: '⚠️ Виникла технічна затримка зв’язку із сервером аналітики. Будь ласка, надішліть запит повторно.',
+        content: 'Виникла технічна затримка зв’язку із сервером аналітики. Будь ласка, надішліть запит повторно.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -149,7 +231,7 @@ export default function AnalyticsPage() {
   };
 
   const handleCopy = (id: string, text: string) => {
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(cleanAiContent(text));
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
@@ -246,18 +328,11 @@ export default function AnalyticsPage() {
                       : 'bg-red-600 text-white font-medium rounded-tr-xs'
                   }`}>
                     {isAI ? (
-                      <div className="whitespace-pre-line space-y-2">
-                        {msg.content.split('\n\n').map((paragraph, pIdx) => {
-                          // Handle bold headings or bullet points cleanly
-                          return (
-                            <p key={pIdx} className="leading-relaxed">
-                              {paragraph}
-                            </p>
-                          );
-                        })}
+                      <div className="space-y-3">
+                        {msg.content.split('\n\n').map((paragraph, pIdx) => renderAiParagraph(paragraph, pIdx))}
                       </div>
                     ) : (
-                      <p className="whitespace-pre-line">{msg.content}</p>
+                      <p className="whitespace-pre-line">{cleanAiContent(msg.content)}</p>
                     )}
                   </div>
 

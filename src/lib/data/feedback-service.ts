@@ -10,6 +10,9 @@ export class MockFeedbackService implements IFeedbackService {
     let result = [...mockFeedbacks];
 
     if (filters) {
+      if (filters.source) {
+        result = result.filter(f => f.source === filters.source);
+      }
       if (filters.problemType && filters.problemType.length > 0) {
         result = result.filter(f => filters.problemType!.includes(f.problemType));
       }
